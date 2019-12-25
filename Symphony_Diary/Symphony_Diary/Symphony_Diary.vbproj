@@ -104,6 +104,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Util.vb" />
+    <Compile Include="WorkDataGridView.Designer.vb">
+      <DependentUpon>WorkDataGridView.vb</DependentUpon>
+    </Compile>
+    <Compile Include="WorkDataGridView.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="勤務画面.Designer.vb">
       <DependentUpon>勤務画面.vb</DependentUpon>
     </Compile>
