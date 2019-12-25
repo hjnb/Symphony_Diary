@@ -49,6 +49,9 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ADBox">
+      <HintPath>..\..\..\adBox\ADBox\ADBox\bin\Release\ADBox.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -72,11 +75,17 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.vb">
+    <Compile Include="passwordForm.Designer.vb">
+      <DependentUpon>passwordForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="passwordForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.vb">
-      <DependentUpon>Form1.vb</DependentUpon>
+    <Compile Include="TopForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TopForm.Designer.vb">
+      <DependentUpon>TopForm.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -94,6 +103,49 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Util.vb" />
+    <Compile Include="勤務画面.Designer.vb">
+      <DependentUpon>勤務画面.vb</DependentUpon>
+    </Compile>
+    <Compile Include="勤務画面.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="勤務項目名マスタ.Designer.vb">
+      <DependentUpon>勤務項目名マスタ.vb</DependentUpon>
+    </Compile>
+    <Compile Include="勤務項目名マスタ.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="定数マスタ.Designer.vb">
+      <DependentUpon>定数マスタ.vb</DependentUpon>
+    </Compile>
+    <Compile Include="定数マスタ.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="職員マスタ.Designer.vb">
+      <DependentUpon>職員マスタ.vb</DependentUpon>
+    </Compile>
+    <Compile Include="職員マスタ.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ＣＳＶ書出し.Designer.vb">
+      <DependentUpon>ＣＳＶ書出し.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ＣＳＶ書出し.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ＣＳＶ読込み.Designer.vb">
+      <DependentUpon>ＣＳＶ読込み.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ＣＳＶ読込み.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ＤＢ整理.Designer.vb">
+      <DependentUpon>ＤＢ整理.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ＤＢ整理.vb">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -101,6 +153,15 @@
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="passwordForm.resx">
+      <DependentUpon>passwordForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TopForm.resx">
+      <DependentUpon>TopForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="勤務画面.resx">
+      <DependentUpon>勤務画面.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +174,18 @@
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="ADODB">
+      <Guid>{2A75196C-D9EB-4129-B803-931327F72D5C}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>True</Private>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
