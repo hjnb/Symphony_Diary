@@ -8,6 +8,9 @@ Public Class 職員マスタ
     '勤務
     Private kinDIc As New Dictionary(Of String, Integer) From {{"特養", 1}, {"事務", 2}, {"ｼｮｰﾄｽﾃｲ", 3}, {"ﾃﾞｲｻｰﾋﾞｽ", 4}, {"ﾍﾙﾊﾟｰｽﾃｰｼｮﾝ", 5}, {"居宅介護支援", 6}, {"老人介護支援ｾﾝﾀｰ", 7}, {"生活支援ﾊｳｽ", 8}}
 
+    'テキストボックスのマウスダウンイベント制御用
+    Private mdFlag As Boolean = False
+
     ''' <summary>
     ''' 行ヘッダーのカレントセルを表す三角マークを非表示に設定する為のクラス。
     ''' </summary>
@@ -39,6 +42,7 @@ Public Class 職員マスタ
         InitializeComponent()
         Me.StartPosition = FormStartPosition.CenterScreen
         Me.FormBorderStyle = FormBorderStyle.FixedSingle
+        Me.KeyPreview = True
     End Sub
 
     ''' <summary>
@@ -56,6 +60,20 @@ Public Class 職員マスタ
 
         'マスタデータ表示
         displayNamM()
+    End Sub
+
+    ''' <summary>
+    ''' keyDownイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub 職員マスタ_KeyDown(sender As Object, e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
+        If e.KeyCode = Keys.Enter Then
+            If e.Control = False Then
+                Me.SelectNextControl(Me.ActiveControl, Not e.Shift, True, True, True)
+            End If
+        End If
     End Sub
 
     ''' <summary>
@@ -212,6 +230,8 @@ Public Class 職員マスタ
             Dim kinNum As Integer
             kinNum = If(kinDIc.ContainsKey(kin), kinDIc(kin), 1)
             DirectCast(kinGroupBox.Controls("rbtnKin" & kinNum), RadioButton).Checked = True
+            'フォーカス
+            idBox.Focus()
         End If
     End Sub
 
@@ -378,5 +398,19 @@ Public Class 職員マスタ
         '再表示
         clearText()
         displayNamM()
+    End Sub
+
+    Private Sub textBox_Enter(sender As Object, e As System.EventArgs) Handles idBox.Enter, namBox.Enter, memoBox.Enter
+        Dim tb As TextBox = CType(sender, TextBox)
+        tb.SelectAll()
+        mdFlag = True
+    End Sub
+
+    Private Sub textBox_MouseDown(sender As Object, e As System.Windows.Forms.MouseEventArgs) Handles idBox.MouseDown, namBox.MouseDown, memoBox.MouseDown
+        If mdFlag = True Then
+            Dim tb As TextBox = CType(sender, TextBox)
+            tb.SelectAll()
+            mdFlag = False
+        End If
     End Sub
 End Class

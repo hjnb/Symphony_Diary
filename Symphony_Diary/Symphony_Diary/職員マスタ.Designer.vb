@@ -104,7 +104,7 @@ Partial Class 職員マスタ
         Me.btnRegist.Location = New System.Drawing.Point(415, 199)
         Me.btnRegist.Name = "btnRegist"
         Me.btnRegist.Size = New System.Drawing.Size(75, 33)
-        Me.btnRegist.TabIndex = 13
+        Me.btnRegist.TabIndex = 8
         Me.btnRegist.Text = "登録"
         Me.btnRegist.UseVisualStyleBackColor = True
         '
@@ -114,7 +114,7 @@ Partial Class 職員マスタ
         Me.memoBox.Location = New System.Drawing.Point(87, 207)
         Me.memoBox.Name = "memoBox"
         Me.memoBox.Size = New System.Drawing.Size(288, 19)
-        Me.memoBox.TabIndex = 12
+        Me.memoBox.TabIndex = 7
         '
         'kinGroupBox
         '
@@ -299,7 +299,7 @@ Partial Class 職員マスタ
         Me.namBox.Location = New System.Drawing.Point(214, 33)
         Me.namBox.Name = "namBox"
         Me.namBox.Size = New System.Drawing.Size(97, 19)
-        Me.namBox.TabIndex = 7
+        Me.namBox.TabIndex = 6
         '
         'Label5
         '
