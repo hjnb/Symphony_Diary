@@ -22,8 +22,43 @@ Partial Class 定数マスタ
     'コード エディターを使って変更しないでください。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        components = New System.ComponentModel.Container
+        Me.components = New System.ComponentModel.Container()
+        Me.Button1 = New System.Windows.Forms.Button()
+        Me.dgvConstM = New Symphony_Diary.ConstMDataGridView(Me.components)
+        CType(Me.dgvConstM, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SuspendLayout()
+        '
+        'Button1
+        '
+        Me.Button1.Location = New System.Drawing.Point(545, 227)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(75, 30)
+        Me.Button1.TabIndex = 1
+        Me.Button1.Text = "登録"
+        Me.Button1.UseVisualStyleBackColor = True
+        '
+        'dgvConstM
+        '
+        Me.dgvConstM.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgvConstM.Location = New System.Drawing.Point(12, 30)
+        Me.dgvConstM.Name = "dgvConstM"
+        Me.dgvConstM.RowTemplate.Height = 21
+        Me.dgvConstM.Size = New System.Drawing.Size(1030, 183)
+        Me.dgvConstM.TabIndex = 2
+        '
+        '定数マスタ
+        '
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.Text = "定数マスタ"
+        Me.ClientSize = New System.Drawing.Size(1058, 269)
+        Me.Controls.Add(Me.dgvConstM)
+        Me.Controls.Add(Me.Button1)
+        Me.Name = "定数マスタ"
+        Me.Text = "Diary 定数マスタ"
+        CType(Me.dgvConstM, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.ResumeLayout(False)
+
     End Sub
+    Friend WithEvents Button1 As System.Windows.Forms.Button
+    Friend WithEvents dgvConstM As Symphony_Diary.ConstMDataGridView
 End Class

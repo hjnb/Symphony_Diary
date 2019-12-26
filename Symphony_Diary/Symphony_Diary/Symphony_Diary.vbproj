@@ -52,6 +52,9 @@
     <Reference Include="ADBox">
       <HintPath>..\..\..\adBox\ADBox\ADBox\bin\Release\ADBox.dll</HintPath>
     </Reference>
+    <Reference Include="Symphony_Diary, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <ExecutableExtension>.exe</ExecutableExtension>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -75,6 +78,12 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConstMDataGridView.Designer.vb">
+      <DependentUpon>ConstMDataGridView.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ConstMDataGridView.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="passwordForm.Designer.vb">
       <DependentUpon>passwordForm.vb</DependentUpon>
     </Compile>
@@ -171,6 +180,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="勤務項目名マスタ.resx">
       <DependentUpon>勤務項目名マスタ.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="定数マスタ.resx">
+      <DependentUpon>定数マスタ.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="職員マスタ.resx">
       <DependentUpon>職員マスタ.vb</DependentUpon>
