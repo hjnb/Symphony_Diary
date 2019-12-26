@@ -200,6 +200,91 @@ Symphony_Diary
 	<param name="sender"></param>
 	<param name="e"></param>
 	<remarks></remarks>
+</member><member name="T:Symphony_Diary.勤務項目名マスタ.dgvRowHeaderCell">
+	<summary>
+ 行ヘッダーのカレントセルを表す三角マークを非表示に設定する為のクラス。
+ </summary>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.#ctor">
+	<summary>
+ コンストラクタ
+ </summary>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.勤務項目名マスタ_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)">
+	<summary>
+ keyDownイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.勤務項目名マスタ_Load(System.Object,System.EventArgs)">
+	<summary>
+ loadイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.initDgvKmkM">
+	<summary>
+ データグリッドビュー初期設定
+ </summary>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.clearText">
+	<summary>
+ 内容クリア
+ </summary>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.displayDgvKmkM(System.String)">
+	<summary>
+ データ表示
+ </summary>
+	<param name="kin">勤務</param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.dgvKmkM_CellMouseClick(System.Object,System.Windows.Forms.DataGridViewCellMouseEventArgs)">
+	<summary>
+ CellMouseClickイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.dgvKmkM_CellPainting(System.Object,System.Windows.Forms.DataGridViewCellPaintingEventArgs)">
+	<summary>
+ CellPaintingイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.initKinBox">
+	<summary>
+ 勤務ボックス初期設定
+ </summary>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.initEntBox">
+	<summary>
+ 入力時項目名ボックス初期設定
+ </summary>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.kinBox_TextChanged(System.Object,System.EventArgs)">
+	<summary>
+ 勤務ボックス値変更時イベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.btnRegist_Click(System.Object,System.EventArgs)">
+	<summary>
+ 登録ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務項目名マスタ.btnDelete_Click(System.Object,System.EventArgs)">
+	<summary>
+ 削除ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
 </member><member name="P:Symphony_Diary.My.Resources.Resources.ResourceManager">
 	<summary>
   Returns the cached ResourceManager instance used by this class.

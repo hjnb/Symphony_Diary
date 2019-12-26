@@ -169,6 +169,9 @@
     <EmbeddedResource Include="勤務画面.resx">
       <DependentUpon>勤務画面.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="勤務項目名マスタ.resx">
+      <DependentUpon>勤務項目名マスタ.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="職員マスタ.resx">
       <DependentUpon>職員マスタ.vb</DependentUpon>
     </EmbeddedResource>

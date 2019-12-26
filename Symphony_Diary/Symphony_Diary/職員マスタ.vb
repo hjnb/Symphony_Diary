@@ -107,7 +107,7 @@ Public Class 職員マスタ
             .ShowCellToolTips = False
             .EnableHeadersVisualStyles = False
             .Font = New Font("ＭＳ Ｐゴシック", 8.5)
-            .ReadOnly = False
+            .ReadOnly = True
         End With
     End Sub
 
