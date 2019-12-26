@@ -2,6 +2,12 @@
 
 Public Class 職員マスタ
 
+    '形態
+    Private keiDic As New Dictionary(Of String, Integer) From {{"常勤専従", 1}, {"常勤兼務", 2}, {"常勤以外専従", 3}, {"常勤以外兼務", 4}}
+
+    '勤務
+    Private kinDIc As New Dictionary(Of String, Integer) From {{"特養", 1}, {"事務", 2}, {"ｼｮｰﾄｽﾃｲ", 3}, {"ﾃﾞｲｻｰﾋﾞｽ", 4}, {"ﾍﾙﾊﾟｰｽﾃｰｼｮﾝ", 5}, {"居宅介護支援", 6}, {"老人介護支援ｾﾝﾀｰ", 7}, {"生活支援ﾊｳｽ", 8}}
+
     ''' <summary>
     ''' 行ヘッダーのカレントセルを表す三角マークを非表示に設定する為のクラス。
     ''' </summary>
@@ -160,7 +166,10 @@ Public Class 職員マスタ
         idBox.Text = ""
         namBox.Text = ""
         syuLabel.Text = ""
+        rbtnKei1.Checked = True '形態初期位置
+        rbtnKin1.Checked = True '勤務初期位置
         memoBox.Text = ""
+        syuListBox.ClearSelected()
     End Sub
 
     ''' <summary>
@@ -195,6 +204,14 @@ Public Class 職員マスタ
             namBox.Text = nam
             syuLabel.Text = syu
             memoBox.Text = memo
+            '形態ラジオボタン
+            Dim keiNum As Integer
+            keiNum = If(keiDic.ContainsKey(kei), keiDic(kei), 1)
+            DirectCast(keiGroupBox.Controls("rbtnKei" & keiNum), RadioButton).Checked = True
+            '勤務ラジオボタン
+            Dim kinNum As Integer
+            kinNum = If(kinDIc.ContainsKey(kin), kinDIc(kin), 1)
+            DirectCast(kinGroupBox.Controls("rbtnKin" & kinNum), RadioButton).Checked = True
         End If
     End Sub
 
@@ -224,5 +241,142 @@ Public Class 職員マスタ
             '描画が完了したことを知らせる
             e.Handled = True
         End If
+    End Sub
+
+    ''' <summary>
+    ''' 職種リスト値変更時イベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub syuListBox_SelectedValueChanged(sender As Object, e As System.EventArgs) Handles syuListBox.SelectedValueChanged
+        Dim syu As String = If(IsNothing(syuListBox.SelectedItem), "", syuListBox.SelectedItem.ToString())
+        syuLabel.Text = syu
+    End Sub
+
+    ''' <summary>
+    ''' 登録ボタンクリックイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub btnRegist_Click(sender As System.Object, e As System.EventArgs) Handles btnRegist.Click
+        '入力値チェック
+        '職員No.
+        Dim id As String = idBox.Text
+        If id = "" Then
+            MsgBox("職員No.を入力して下さい。", MsgBoxStyle.Exclamation)
+            idBox.Focus()
+            Return
+        End If
+        If Not System.Text.RegularExpressions.Regex.IsMatch(id, "^\d+$") Then
+            MsgBox("職員No.は数値を入力して下さい。", MsgBoxStyle.Exclamation)
+            idBox.Focus()
+            Return
+        End If
+        '氏名
+        Dim nam As String = namBox.Text
+        If nam = "" Then
+            MsgBox("氏名を入力して下さい。", MsgBoxStyle.Exclamation)
+            namBox.Focus()
+            Return
+        End If
+        '職種
+        Dim syu As String = syuLabel.Text
+        If syu = "" Then
+            MsgBox("職種を選択して下さい。", MsgBoxStyle.Exclamation)
+            Return
+        End If
+        '形態
+        Dim kei As String = ""
+        For Each ctrl As Control In keiGroupBox.Controls
+            Dim rbtn As RadioButton = TryCast(ctrl, RadioButton)
+            If Not IsNothing(rbtn) AndAlso rbtn.Checked Then
+                kei = rbtn.Text
+                Exit For
+            End If
+        Next
+        '勤務
+        Dim kin As String = ""
+        For Each ctrl As Control In kinGroupBox.Controls
+            Dim rbtn As RadioButton = TryCast(ctrl, RadioButton)
+            If Not IsNothing(rbtn) AndAlso rbtn.Checked Then
+                kin = rbtn.Text
+                Exit For
+            End If
+        Next
+        '特記
+        Dim memo As String = memoBox.Text
+
+        '登録
+        Dim cn As New ADODB.Connection()
+        cn.Open(TopForm.DB_Diary)
+        Dim sql As String = "select * from NamM where Id = " & CInt(id)
+        Dim rs As New ADODB.Recordset
+        rs.Open(sql, cn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockOptimistic)
+        If rs.RecordCount <= 0 Then
+            rs.AddNew()
+        End If
+        rs.Fields("Id").Value = id
+        rs.Fields("Nam").Value = nam
+        rs.Fields("Syu").Value = syu
+        rs.Fields("Kei").Value = kei
+        rs.Fields("Kin").Value = kin
+        rs.Fields("Memo").Value = memo
+        rs.Update()
+        rs.Close()
+        cn.Close()
+
+        '再表示
+        clearText()
+        displayNamM()
+    End Sub
+
+    ''' <summary>
+    ''' 削除ボタンクリックイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub btnDelete_Click(sender As System.Object, e As System.EventArgs) Handles btnDelete.Click
+        '職員No.
+        Dim id As String = idBox.Text
+        If id = "" Then
+            MsgBox("職員No.を入力して下さい。", MsgBoxStyle.Exclamation)
+            idBox.Focus()
+            Return
+        End If
+        If Not System.Text.RegularExpressions.Regex.IsMatch(id, "^\d+$") Then
+            MsgBox("職員No.は数値を入力して下さい。", MsgBoxStyle.Exclamation)
+            idBox.Focus()
+            Return
+        End If
+
+        '削除
+        Dim cn As New ADODB.Connection()
+        cn.Open(TopForm.DB_Diary)
+        Dim sql As String = "select * from NamM where Id = " & CInt(id)
+        Dim rs As New ADODB.Recordset
+        rs.Open(sql, cn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockOptimistic)
+        If rs.RecordCount <= 0 Then
+            MsgBox("登録されていません。", MsgBoxStyle.Exclamation)
+            rs.Close()
+            cn.Close()
+            Return
+        Else
+            Dim result As DialogResult = MessageBox.Show("削除してよろしいですか？", "削除", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+            If result = Windows.Forms.DialogResult.Yes Then
+                rs.Delete()
+                rs.Update()
+                rs.Close()
+                cn.Close()
+            Else
+                Return
+            End If
+        End If
+
+        '再表示
+        clearText()
+        displayNamM()
     End Sub
 End Class

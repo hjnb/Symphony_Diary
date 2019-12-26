@@ -27,20 +27,20 @@ Partial Class 職員マスタ
         Me.btnDelete = New System.Windows.Forms.Button()
         Me.btnRegist = New System.Windows.Forms.Button()
         Me.memoBox = New System.Windows.Forms.TextBox()
-        Me.GroupBox3 = New System.Windows.Forms.GroupBox()
-        Me.RadioButton9 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton10 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton11 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton12 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton5 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton6 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton7 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton8 = New System.Windows.Forms.RadioButton()
-        Me.GroupBox2 = New System.Windows.Forms.GroupBox()
-        Me.RadioButton4 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton3 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton2 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton1 = New System.Windows.Forms.RadioButton()
+        Me.kinGroupBox = New System.Windows.Forms.GroupBox()
+        Me.rbtnKin5 = New System.Windows.Forms.RadioButton()
+        Me.rbtnKin8 = New System.Windows.Forms.RadioButton()
+        Me.rbtnKin7 = New System.Windows.Forms.RadioButton()
+        Me.rbtnKin6 = New System.Windows.Forms.RadioButton()
+        Me.rbtnKin4 = New System.Windows.Forms.RadioButton()
+        Me.rbtnKin3 = New System.Windows.Forms.RadioButton()
+        Me.rbtnKin2 = New System.Windows.Forms.RadioButton()
+        Me.rbtnKin1 = New System.Windows.Forms.RadioButton()
+        Me.keiGroupBox = New System.Windows.Forms.GroupBox()
+        Me.rbtnKei4 = New System.Windows.Forms.RadioButton()
+        Me.rbtnKei3 = New System.Windows.Forms.RadioButton()
+        Me.rbtnKei2 = New System.Windows.Forms.RadioButton()
+        Me.rbtnKei1 = New System.Windows.Forms.RadioButton()
         Me.syuLabel = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.namBox = New System.Windows.Forms.TextBox()
@@ -52,8 +52,8 @@ Partial Class 職員マスタ
         Me.Label1 = New System.Windows.Forms.Label()
         Me.dgvNamM = New System.Windows.Forms.DataGridView()
         Me.GroupBox1.SuspendLayout()
-        Me.GroupBox3.SuspendLayout()
-        Me.GroupBox2.SuspendLayout()
+        Me.kinGroupBox.SuspendLayout()
+        Me.keiGroupBox.SuspendLayout()
         CType(Me.dgvNamM, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -63,8 +63,8 @@ Partial Class 職員マスタ
         Me.GroupBox1.Controls.Add(Me.btnDelete)
         Me.GroupBox1.Controls.Add(Me.btnRegist)
         Me.GroupBox1.Controls.Add(Me.memoBox)
-        Me.GroupBox1.Controls.Add(Me.GroupBox3)
-        Me.GroupBox1.Controls.Add(Me.GroupBox2)
+        Me.GroupBox1.Controls.Add(Me.kinGroupBox)
+        Me.GroupBox1.Controls.Add(Me.keiGroupBox)
         Me.GroupBox1.Controls.Add(Me.syuLabel)
         Me.GroupBox1.Controls.Add(Me.Label6)
         Me.GroupBox1.Controls.Add(Me.namBox)
@@ -116,165 +116,165 @@ Partial Class 職員マスタ
         Me.memoBox.Size = New System.Drawing.Size(288, 19)
         Me.memoBox.TabIndex = 12
         '
-        'GroupBox3
+        'kinGroupBox
         '
-        Me.GroupBox3.Controls.Add(Me.RadioButton9)
-        Me.GroupBox3.Controls.Add(Me.RadioButton10)
-        Me.GroupBox3.Controls.Add(Me.RadioButton11)
-        Me.GroupBox3.Controls.Add(Me.RadioButton12)
-        Me.GroupBox3.Controls.Add(Me.RadioButton5)
-        Me.GroupBox3.Controls.Add(Me.RadioButton6)
-        Me.GroupBox3.Controls.Add(Me.RadioButton7)
-        Me.GroupBox3.Controls.Add(Me.RadioButton8)
-        Me.GroupBox3.Location = New System.Drawing.Point(87, 113)
-        Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(480, 82)
-        Me.GroupBox3.TabIndex = 11
-        Me.GroupBox3.TabStop = False
+        Me.kinGroupBox.Controls.Add(Me.rbtnKin5)
+        Me.kinGroupBox.Controls.Add(Me.rbtnKin8)
+        Me.kinGroupBox.Controls.Add(Me.rbtnKin7)
+        Me.kinGroupBox.Controls.Add(Me.rbtnKin6)
+        Me.kinGroupBox.Controls.Add(Me.rbtnKin4)
+        Me.kinGroupBox.Controls.Add(Me.rbtnKin3)
+        Me.kinGroupBox.Controls.Add(Me.rbtnKin2)
+        Me.kinGroupBox.Controls.Add(Me.rbtnKin1)
+        Me.kinGroupBox.Location = New System.Drawing.Point(87, 113)
+        Me.kinGroupBox.Name = "kinGroupBox"
+        Me.kinGroupBox.Size = New System.Drawing.Size(480, 82)
+        Me.kinGroupBox.TabIndex = 11
+        Me.kinGroupBox.TabStop = False
         '
-        'RadioButton9
+        'rbtnKin5
         '
-        Me.RadioButton9.AutoSize = True
-        Me.RadioButton9.Location = New System.Drawing.Point(328, 16)
-        Me.RadioButton9.Name = "RadioButton9"
-        Me.RadioButton9.Size = New System.Drawing.Size(99, 16)
-        Me.RadioButton9.TabIndex = 11
-        Me.RadioButton9.TabStop = True
-        Me.RadioButton9.Text = "ﾍﾙﾊﾟｰｽﾃｰｼｮﾝ"
-        Me.RadioButton9.UseVisualStyleBackColor = True
+        Me.rbtnKin5.AutoSize = True
+        Me.rbtnKin5.Location = New System.Drawing.Point(328, 16)
+        Me.rbtnKin5.Name = "rbtnKin5"
+        Me.rbtnKin5.Size = New System.Drawing.Size(99, 16)
+        Me.rbtnKin5.TabIndex = 11
+        Me.rbtnKin5.TabStop = True
+        Me.rbtnKin5.Text = "ﾍﾙﾊﾟｰｽﾃｰｼｮﾝ"
+        Me.rbtnKin5.UseVisualStyleBackColor = True
         '
-        'RadioButton10
+        'rbtnKin8
         '
-        Me.RadioButton10.AutoSize = True
-        Me.RadioButton10.Location = New System.Drawing.Point(328, 50)
-        Me.RadioButton10.Name = "RadioButton10"
-        Me.RadioButton10.Size = New System.Drawing.Size(95, 16)
-        Me.RadioButton10.TabIndex = 10
-        Me.RadioButton10.TabStop = True
-        Me.RadioButton10.Text = "生活支援ﾊｳｽ"
-        Me.RadioButton10.UseVisualStyleBackColor = True
+        Me.rbtnKin8.AutoSize = True
+        Me.rbtnKin8.Location = New System.Drawing.Point(328, 50)
+        Me.rbtnKin8.Name = "rbtnKin8"
+        Me.rbtnKin8.Size = New System.Drawing.Size(95, 16)
+        Me.rbtnKin8.TabIndex = 10
+        Me.rbtnKin8.TabStop = True
+        Me.rbtnKin8.Text = "生活支援ﾊｳｽ"
+        Me.rbtnKin8.UseVisualStyleBackColor = True
         '
-        'RadioButton11
+        'rbtnKin7
         '
-        Me.RadioButton11.AutoSize = True
-        Me.RadioButton11.Location = New System.Drawing.Point(165, 50)
-        Me.RadioButton11.Name = "RadioButton11"
-        Me.RadioButton11.Size = New System.Drawing.Size(124, 16)
-        Me.RadioButton11.TabIndex = 9
-        Me.RadioButton11.TabStop = True
-        Me.RadioButton11.Text = "老人介護支援ｾﾝﾀｰ"
-        Me.RadioButton11.UseVisualStyleBackColor = True
+        Me.rbtnKin7.AutoSize = True
+        Me.rbtnKin7.Location = New System.Drawing.Point(165, 50)
+        Me.rbtnKin7.Name = "rbtnKin7"
+        Me.rbtnKin7.Size = New System.Drawing.Size(124, 16)
+        Me.rbtnKin7.TabIndex = 9
+        Me.rbtnKin7.TabStop = True
+        Me.rbtnKin7.Text = "老人介護支援ｾﾝﾀｰ"
+        Me.rbtnKin7.UseVisualStyleBackColor = True
         '
-        'RadioButton12
+        'rbtnKin6
         '
-        Me.RadioButton12.AutoSize = True
-        Me.RadioButton12.Location = New System.Drawing.Point(16, 50)
-        Me.RadioButton12.Name = "RadioButton12"
-        Me.RadioButton12.Size = New System.Drawing.Size(95, 16)
-        Me.RadioButton12.TabIndex = 8
-        Me.RadioButton12.TabStop = True
-        Me.RadioButton12.Text = "居宅介護支援"
-        Me.RadioButton12.UseVisualStyleBackColor = True
+        Me.rbtnKin6.AutoSize = True
+        Me.rbtnKin6.Location = New System.Drawing.Point(16, 50)
+        Me.rbtnKin6.Name = "rbtnKin6"
+        Me.rbtnKin6.Size = New System.Drawing.Size(95, 16)
+        Me.rbtnKin6.TabIndex = 8
+        Me.rbtnKin6.TabStop = True
+        Me.rbtnKin6.Text = "居宅介護支援"
+        Me.rbtnKin6.UseVisualStyleBackColor = True
         '
-        'RadioButton5
+        'rbtnKin4
         '
-        Me.RadioButton5.AutoSize = True
-        Me.RadioButton5.Location = New System.Drawing.Point(245, 16)
-        Me.RadioButton5.Name = "RadioButton5"
-        Me.RadioButton5.Size = New System.Drawing.Size(73, 16)
-        Me.RadioButton5.TabIndex = 7
-        Me.RadioButton5.TabStop = True
-        Me.RadioButton5.Text = "ﾃﾞｲｻｰﾋﾞｽ"
-        Me.RadioButton5.UseVisualStyleBackColor = True
+        Me.rbtnKin4.AutoSize = True
+        Me.rbtnKin4.Location = New System.Drawing.Point(245, 16)
+        Me.rbtnKin4.Name = "rbtnKin4"
+        Me.rbtnKin4.Size = New System.Drawing.Size(73, 16)
+        Me.rbtnKin4.TabIndex = 7
+        Me.rbtnKin4.TabStop = True
+        Me.rbtnKin4.Text = "ﾃﾞｲｻｰﾋﾞｽ"
+        Me.rbtnKin4.UseVisualStyleBackColor = True
         '
-        'RadioButton6
+        'rbtnKin3
         '
-        Me.RadioButton6.AutoSize = True
-        Me.RadioButton6.Location = New System.Drawing.Point(165, 16)
-        Me.RadioButton6.Name = "RadioButton6"
-        Me.RadioButton6.Size = New System.Drawing.Size(71, 16)
-        Me.RadioButton6.TabIndex = 6
-        Me.RadioButton6.TabStop = True
-        Me.RadioButton6.Text = "ｼｮｰﾄｽﾃｲ"
-        Me.RadioButton6.UseVisualStyleBackColor = True
+        Me.rbtnKin3.AutoSize = True
+        Me.rbtnKin3.Location = New System.Drawing.Point(165, 16)
+        Me.rbtnKin3.Name = "rbtnKin3"
+        Me.rbtnKin3.Size = New System.Drawing.Size(71, 16)
+        Me.rbtnKin3.TabIndex = 6
+        Me.rbtnKin3.TabStop = True
+        Me.rbtnKin3.Text = "ｼｮｰﾄｽﾃｲ"
+        Me.rbtnKin3.UseVisualStyleBackColor = True
         '
-        'RadioButton7
+        'rbtnKin2
         '
-        Me.RadioButton7.AutoSize = True
-        Me.RadioButton7.Location = New System.Drawing.Point(91, 16)
-        Me.RadioButton7.Name = "RadioButton7"
-        Me.RadioButton7.Size = New System.Drawing.Size(47, 16)
-        Me.RadioButton7.TabIndex = 5
-        Me.RadioButton7.TabStop = True
-        Me.RadioButton7.Text = "事務"
-        Me.RadioButton7.UseVisualStyleBackColor = True
+        Me.rbtnKin2.AutoSize = True
+        Me.rbtnKin2.Location = New System.Drawing.Point(91, 16)
+        Me.rbtnKin2.Name = "rbtnKin2"
+        Me.rbtnKin2.Size = New System.Drawing.Size(47, 16)
+        Me.rbtnKin2.TabIndex = 5
+        Me.rbtnKin2.TabStop = True
+        Me.rbtnKin2.Text = "事務"
+        Me.rbtnKin2.UseVisualStyleBackColor = True
         '
-        'RadioButton8
+        'rbtnKin1
         '
-        Me.RadioButton8.AutoSize = True
-        Me.RadioButton8.Location = New System.Drawing.Point(16, 16)
-        Me.RadioButton8.Name = "RadioButton8"
-        Me.RadioButton8.Size = New System.Drawing.Size(47, 16)
-        Me.RadioButton8.TabIndex = 4
-        Me.RadioButton8.TabStop = True
-        Me.RadioButton8.Text = "特養"
-        Me.RadioButton8.UseVisualStyleBackColor = True
+        Me.rbtnKin1.AutoSize = True
+        Me.rbtnKin1.Location = New System.Drawing.Point(16, 16)
+        Me.rbtnKin1.Name = "rbtnKin1"
+        Me.rbtnKin1.Size = New System.Drawing.Size(47, 16)
+        Me.rbtnKin1.TabIndex = 4
+        Me.rbtnKin1.TabStop = True
+        Me.rbtnKin1.Text = "特養"
+        Me.rbtnKin1.UseVisualStyleBackColor = True
         '
-        'GroupBox2
+        'keiGroupBox
         '
-        Me.GroupBox2.Controls.Add(Me.RadioButton4)
-        Me.GroupBox2.Controls.Add(Me.RadioButton3)
-        Me.GroupBox2.Controls.Add(Me.RadioButton2)
-        Me.GroupBox2.Controls.Add(Me.RadioButton1)
-        Me.GroupBox2.Location = New System.Drawing.Point(87, 66)
-        Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(480, 40)
-        Me.GroupBox2.TabIndex = 10
-        Me.GroupBox2.TabStop = False
+        Me.keiGroupBox.Controls.Add(Me.rbtnKei4)
+        Me.keiGroupBox.Controls.Add(Me.rbtnKei3)
+        Me.keiGroupBox.Controls.Add(Me.rbtnKei2)
+        Me.keiGroupBox.Controls.Add(Me.rbtnKei1)
+        Me.keiGroupBox.Location = New System.Drawing.Point(87, 66)
+        Me.keiGroupBox.Name = "keiGroupBox"
+        Me.keiGroupBox.Size = New System.Drawing.Size(480, 40)
+        Me.keiGroupBox.TabIndex = 10
+        Me.keiGroupBox.TabStop = False
         '
-        'RadioButton4
+        'rbtnKei4
         '
-        Me.RadioButton4.AutoSize = True
-        Me.RadioButton4.Location = New System.Drawing.Point(328, 14)
-        Me.RadioButton4.Name = "RadioButton4"
-        Me.RadioButton4.Size = New System.Drawing.Size(95, 16)
-        Me.RadioButton4.TabIndex = 3
-        Me.RadioButton4.TabStop = True
-        Me.RadioButton4.Text = "常勤以外兼務"
-        Me.RadioButton4.UseVisualStyleBackColor = True
+        Me.rbtnKei4.AutoSize = True
+        Me.rbtnKei4.Location = New System.Drawing.Point(328, 14)
+        Me.rbtnKei4.Name = "rbtnKei4"
+        Me.rbtnKei4.Size = New System.Drawing.Size(95, 16)
+        Me.rbtnKei4.TabIndex = 3
+        Me.rbtnKei4.TabStop = True
+        Me.rbtnKei4.Text = "常勤以外兼務"
+        Me.rbtnKei4.UseVisualStyleBackColor = True
         '
-        'RadioButton3
+        'rbtnKei3
         '
-        Me.RadioButton3.AutoSize = True
-        Me.RadioButton3.Location = New System.Drawing.Point(211, 14)
-        Me.RadioButton3.Name = "RadioButton3"
-        Me.RadioButton3.Size = New System.Drawing.Size(95, 16)
-        Me.RadioButton3.TabIndex = 2
-        Me.RadioButton3.TabStop = True
-        Me.RadioButton3.Text = "常勤以外専従"
-        Me.RadioButton3.UseVisualStyleBackColor = True
+        Me.rbtnKei3.AutoSize = True
+        Me.rbtnKei3.Location = New System.Drawing.Point(211, 14)
+        Me.rbtnKei3.Name = "rbtnKei3"
+        Me.rbtnKei3.Size = New System.Drawing.Size(95, 16)
+        Me.rbtnKei3.TabIndex = 2
+        Me.rbtnKei3.TabStop = True
+        Me.rbtnKei3.Text = "常勤以外専従"
+        Me.rbtnKei3.UseVisualStyleBackColor = True
         '
-        'RadioButton2
+        'rbtnKei2
         '
-        Me.RadioButton2.AutoSize = True
-        Me.RadioButton2.Location = New System.Drawing.Point(114, 14)
-        Me.RadioButton2.Name = "RadioButton2"
-        Me.RadioButton2.Size = New System.Drawing.Size(71, 16)
-        Me.RadioButton2.TabIndex = 1
-        Me.RadioButton2.TabStop = True
-        Me.RadioButton2.Text = "常勤兼務"
-        Me.RadioButton2.UseVisualStyleBackColor = True
+        Me.rbtnKei2.AutoSize = True
+        Me.rbtnKei2.Location = New System.Drawing.Point(114, 14)
+        Me.rbtnKei2.Name = "rbtnKei2"
+        Me.rbtnKei2.Size = New System.Drawing.Size(71, 16)
+        Me.rbtnKei2.TabIndex = 1
+        Me.rbtnKei2.TabStop = True
+        Me.rbtnKei2.Text = "常勤兼務"
+        Me.rbtnKei2.UseVisualStyleBackColor = True
         '
-        'RadioButton1
+        'rbtnKei1
         '
-        Me.RadioButton1.AutoSize = True
-        Me.RadioButton1.Location = New System.Drawing.Point(16, 14)
-        Me.RadioButton1.Name = "RadioButton1"
-        Me.RadioButton1.Size = New System.Drawing.Size(71, 16)
-        Me.RadioButton1.TabIndex = 0
-        Me.RadioButton1.TabStop = True
-        Me.RadioButton1.Text = "常勤専従"
-        Me.RadioButton1.UseVisualStyleBackColor = True
+        Me.rbtnKei1.AutoSize = True
+        Me.rbtnKei1.Location = New System.Drawing.Point(16, 14)
+        Me.rbtnKei1.Name = "rbtnKei1"
+        Me.rbtnKei1.Size = New System.Drawing.Size(71, 16)
+        Me.rbtnKei1.TabIndex = 0
+        Me.rbtnKei1.TabStop = True
+        Me.rbtnKei1.Text = "常勤専従"
+        Me.rbtnKei1.UseVisualStyleBackColor = True
         '
         'syuLabel
         '
@@ -375,10 +375,10 @@ Partial Class 職員マスタ
         Me.Text = "Diary 職員マスタ"
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
-        Me.GroupBox3.ResumeLayout(False)
-        Me.GroupBox3.PerformLayout()
-        Me.GroupBox2.ResumeLayout(False)
-        Me.GroupBox2.PerformLayout()
+        Me.kinGroupBox.ResumeLayout(False)
+        Me.kinGroupBox.PerformLayout()
+        Me.keiGroupBox.ResumeLayout(False)
+        Me.keiGroupBox.PerformLayout()
         CType(Me.dgvNamM, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
@@ -396,20 +396,20 @@ Partial Class 職員マスタ
     Friend WithEvents btnDelete As System.Windows.Forms.Button
     Friend WithEvents btnRegist As System.Windows.Forms.Button
     Friend WithEvents memoBox As System.Windows.Forms.TextBox
-    Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
-    Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
+    Friend WithEvents kinGroupBox As System.Windows.Forms.GroupBox
+    Friend WithEvents keiGroupBox As System.Windows.Forms.GroupBox
     Friend WithEvents syuListBox As System.Windows.Forms.ListBox
-    Friend WithEvents RadioButton9 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton10 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton11 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton12 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton5 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton6 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton7 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton8 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton4 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton3 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton2 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton1 As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnKin5 As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnKin8 As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnKin7 As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnKin6 As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnKin4 As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnKin3 As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnKin2 As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnKin1 As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnKei4 As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnKei3 As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnKei2 As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnKei1 As System.Windows.Forms.RadioButton
     Friend WithEvents dgvNamM As System.Windows.Forms.DataGridView
 End Class

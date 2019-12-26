@@ -172,6 +172,27 @@ Symphony_Diary
 	<param name="sender"></param>
 	<param name="e"></param>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.職員マスタ.syuListBox_SelectedValueChanged(System.Object,System.EventArgs)">
+	<summary>
+ 職種リスト値変更時イベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.職員マスタ.btnRegist_Click(System.Object,System.EventArgs)">
+	<summary>
+ 登録ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.職員マスタ.btnDelete_Click(System.Object,System.EventArgs)">
+	<summary>
+ 削除ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
 </member><member name="P:Symphony_Diary.My.Resources.Resources.ResourceManager">
 	<summary>
   Returns the cached ResourceManager instance used by this class.
