@@ -174,7 +174,7 @@ Public Class WorkDataGridView
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub workDataGridView_EditingControlShowing(sender As Object, e As System.Windows.Forms.DataGridViewEditingControlShowingEventArgs) Handles Me.EditingControlShowing
-        Dim tb As DataGridViewTextBoxEditingControl = CType(e.Control, DataGridViewTextBoxEditingControl)
+        'Dim tb As DataGridViewTextBoxEditingControl = CType(e.Control, DataGridViewTextBoxEditingControl)
         'tb.CharacterCasing = CharacterCasing.Upper '入力される文字を大文字に
         'RemoveHandler tb.KeyPress, AddressOf dgvTextBox_KeyPress
 

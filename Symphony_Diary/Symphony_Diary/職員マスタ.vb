@@ -8,6 +8,9 @@ Public Class 職員マスタ
     '勤務
     Private kinDIc As New Dictionary(Of String, Integer) From {{"特養", 1}, {"事務", 2}, {"ｼｮｰﾄｽﾃｲ", 3}, {"ﾃﾞｲｻｰﾋﾞｽ", 4}, {"ﾍﾙﾊﾟｰｽﾃｰｼｮﾝ", 5}, {"居宅介護支援", 6}, {"老人介護支援ｾﾝﾀｰ", 7}, {"生活支援ﾊｳｽ", 8}}
 
+    '職種
+    Private syuArray() As String = {"理事長", "施設長", "副施設長", "事務局長", "部長", "課長", "係長", "主任", "管理者", "ｻｰﾋﾞｽ提供責任者", "医師", "正看護師", "准看護師", "看護職", "機能訓練士", "介護支援専門員", "生活相談員", "支援援助員", "介護職", "介護福祉士", "訪問介護員", "管理栄養士", "栄養士", "宿直"}
+
     'テキストボックスのマウスダウンイベント制御用
     Private mdFlag As Boolean = False
 
@@ -195,7 +198,6 @@ Public Class 職員マスタ
     ''' </summary>
     ''' <remarks></remarks>
     Private Sub initSyuListBox()
-        Dim syuArray() As String = {"理事長", "施設長", "副施設長", "事務局長", "部長", "課長", "係長", "主任", "管理者", "ｻｰﾋﾞｽ提供責任者", "医師", "正看護師", "准看護師", "看護職", "機能訓練士", "介護支援専門員", "生活相談員", "支援援助員", "介護職", "介護福祉士", "訪問介護員", "管理栄養士", "栄養士", "宿直"}
         syuListBox.Items.Clear()
         syuListBox.Items.AddRange(syuArray)
     End Sub

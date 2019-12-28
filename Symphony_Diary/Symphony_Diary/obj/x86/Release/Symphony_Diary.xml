@@ -451,6 +451,25 @@ Symphony_Diary
  データグリッドビュー初期設定
  </summary>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.displayDgvWork(System.String)">
+	<summary>
+ データ表示
+ </summary>
+	<param name="ym">年月(yyyy/MM)</param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.btnDisplay_Click(System.Object,System.EventArgs)">
+	<summary>
+ 表示ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.setDayCharRow(System.String)">
+	<summary>
+ 曜日行作成
+ </summary>
+	<param name="ym">年月(yyyy/MM)</param>
+	<remarks></remarks>
 </member>
 </members>
 </doc>
