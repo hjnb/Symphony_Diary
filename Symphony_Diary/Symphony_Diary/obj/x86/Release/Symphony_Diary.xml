@@ -446,9 +446,19 @@ Symphony_Diary
 	<param name="sender"></param>
 	<param name="e"></param>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.createCellColor">
+	<summary>
+ セル背景色作成
+ </summary>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.勤務画面.initDgvWork">
 	<summary>
  データグリッドビュー初期設定
+ </summary>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.clearInput">
+	<summary>
+ 入力内容クリア
  </summary>
 	<remarks></remarks>
 </member><member name="M:Symphony_Diary.勤務画面.displayDgvWork(System.String)">
@@ -469,6 +479,30 @@ Symphony_Diary
  曜日行作成
  </summary>
 	<param name="ym">年月(yyyy/MM)</param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.setHolidayColumnColor">
+	<summary>
+ 日曜日列の背景色設定
+ </summary>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.btnRowInsert_Click(System.Object,System.EventArgs)">
+	<summary>
+ 行挿入ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.btnRowDelete_Click(System.Object,System.EventArgs)">
+	<summary>
+ 行削除ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.setSeqValue">
+	<summary>
+ 行番号(seq)セット
+ </summary>
 	<remarks></remarks>
 </member>
 </members>

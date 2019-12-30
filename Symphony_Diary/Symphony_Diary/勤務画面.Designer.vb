@@ -38,7 +38,7 @@ Partial Class 勤務画面
         '
         'adBox
         '
-        Me.adBox.dateText = "28"
+        Me.adBox.dateText = "30"
         Me.adBox.Location = New System.Drawing.Point(30, 25)
         Me.adBox.Mode = 3
         Me.adBox.monthText = "12"
