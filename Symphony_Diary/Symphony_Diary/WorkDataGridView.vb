@@ -3,6 +3,8 @@
 Public Class WorkDataGridView
     Inherits DataGridView
 
+    Public canCellEnter As Boolean = False
+
     Private wordDictionary As Dictionary(Of String, String) '勤務略名dic
 
     Protected Overrides Sub InitLayout()
@@ -11,90 +13,90 @@ Public Class WorkDataGridView
         DoubleBuffered = True
     End Sub
 
-    'Protected Overrides Function ProcessDialogKey(keyData As System.Windows.Forms.Keys) As Boolean
-    '    Dim inputStr As String = If(Not IsNothing(Me.EditingControl), CType(Me.EditingControl, DataGridViewTextBoxEditingControl).Text, "") '入力文字
-    '    Dim columnName As String = Me.Columns(CurrentCell.ColumnIndex).Name '選択列名
-    '    If keyData = Keys.Enter Then
-    '        If columnName = "Unt" OrElse columnName = "Rdr" OrElse columnName = "Nam" Then
-    '            EndEdit()
-    '            Return False
-    '        ElseIf 7 <= Me.CurrentCell.ColumnIndex AndAlso Me.CurrentCell.ColumnIndex <= 37 Then 'Y1～Y31列
-    '            If inputStr = "" OrElse ("A" <= StrConv(inputStr.Substring(0, 1), VbStrConv.Narrow) AndAlso StrConv(inputStr.Substring(0, 1), vbNarrow) <= "T") Then
-    '                '入力文字が空またはアルファベット"A"～"T"の場合
-    '                Return Me.ProcessTabKey(keyData)
-    '            Else
-    '                '編集終了時に値の変換処理をする
-    '                Try
-    '                    '入力文字に対応する勤務略名を選択しているセルに設定
-    '                    CType(Me.EditingControl, DataGridViewTextBoxEditingControl).Text = wordDictionary(inputStr)
-    '                Catch ex As KeyNotFoundException
-    '                    MsgBox("正しく入力して下さい。", MsgBoxStyle.Exclamation, "Work")
-    '                    EndEdit()
-    '                    Return False
-    '                End Try
-    '            End If
-    '            Return Me.ProcessTabKey(keyData)
-    '        Else
-    '            Return Me.ProcessTabKey(keyData)
-    '        End If
-    '    ElseIf keyData = Keys.Back Then
-    '        If columnName = "Unt" OrElse columnName = "Rdr" OrElse columnName.Substring(0, 1) = "Y" Then
-    '            CurrentCell.Value = ""
-    '            BeginEdit(False)
-    '        ElseIf columnName = "Nam" Then
-    '            BeginEdit(True)
-    '        End If
-    '        Return MyBase.ProcessDialogKey(keyData)
-    '    Else
-    '        Return MyBase.ProcessDialogKey(keyData)
-    '    End If
-    'End Function
+    Protected Overrides Function ProcessDialogKey(keyData As System.Windows.Forms.Keys) As Boolean
+        Dim inputStr As String = If(Not IsNothing(Me.EditingControl), CType(Me.EditingControl, DataGridViewTextBoxEditingControl).Text, "") '入力文字
+        Dim columnName As String = Me.Columns(CurrentCell.ColumnIndex).Name '選択列名
+        If keyData = Keys.Enter Then
+            If columnName = "Kei" OrElse columnName = "Syu" OrElse columnName = "Nam" Then
+                EndEdit()
+                Return False
+            ElseIf 6 <= Me.CurrentCell.ColumnIndex AndAlso Me.CurrentCell.ColumnIndex <= 36 Then 'Y1～Y31列
+                If inputStr = "" Then
+                    '入力文字が空
+                    Return Me.ProcessTabKey(keyData)
+                Else
+                    '編集終了時に値の変換処理をする
+                    Try
+                        '入力文字に対応する勤務略名を選択しているセルに設定
+                        CType(Me.EditingControl, DataGridViewTextBoxEditingControl).Text = wordDictionary(inputStr)
+                    Catch ex As KeyNotFoundException
+                        MsgBox("正しく入力して下さい。", MsgBoxStyle.Exclamation, "Work")
+                        EndEdit()
+                        Return False
+                    End Try
+                End If
+                Return Me.ProcessTabKey(keyData)
+            Else
+                Return Me.ProcessTabKey(keyData)
+            End If
+        ElseIf keyData = Keys.Back Then
+            If columnName = "Kei" OrElse columnName = "Syu" OrElse columnName.Substring(0, 1) = "Y" Then
+                CurrentCell.Value = ""
+                BeginEdit(False)
+            ElseIf columnName = "Nam" Then
+                BeginEdit(True)
+            End If
+            Return MyBase.ProcessDialogKey(keyData)
+        Else
+            Return MyBase.ProcessDialogKey(keyData)
+        End If
+    End Function
 
-    'Protected Overrides Function ProcessDataGridViewKey(e As System.Windows.Forms.KeyEventArgs) As Boolean
-    '    Dim inputStr As String = Util.checkDBNullValue(Me.CurrentCell.Value)
-    '    If e.KeyCode = Keys.Enter Then
-    '        If Me.CurrentCell.RowIndex <= 0 OrElse 51 <= Me.CurrentCell.RowIndex Then
-    '            Return Me.ProcessTabKey(e.KeyCode)
-    '        End If
+    Protected Overrides Function ProcessDataGridViewKey(e As System.Windows.Forms.KeyEventArgs) As Boolean
+        Dim inputStr As String = Util.checkDBNullValue(Me.CurrentCell.Value)
+        If e.KeyCode = Keys.Enter Then
+            'If Me.CurrentCell.RowIndex <= 0 OrElse 51 <= Me.CurrentCell.RowIndex Then
+            '    Return Me.ProcessTabKey(e.KeyCode)
+            'End If
 
-    '        Dim columnName As String = Me.Columns(CurrentCell.ColumnIndex).Name
-    '        If columnName = "Unt" OrElse columnName = "Rdr" OrElse columnName = "Nam" Then
-    '            BeginEdit(True)
-    '            Return False
-    '        ElseIf 7 <= Me.CurrentCell.ColumnIndex AndAlso Me.CurrentCell.ColumnIndex <= 37 Then 'Y1～Y31列
-    '            If inputStr = "" OrElse ("A" <= StrConv(inputStr.Substring(0, 1), VbStrConv.Narrow) AndAlso StrConv(inputStr.Substring(0, 1), VbStrConv.Narrow) <= "T") Then
-    '                '入力文字が空またはアルファベット"A"～"T"の場合
-    '                Me.ProcessTabKey(e.KeyCode)
-    '                BeginEdit(True)
-    '                Return False
-    '            Else
-    '                '編集終了時に値の変換処理をする
-    '                Try
-    '                    '入力文字に対応する勤務略名を選択しているセルに設定
-    '                    Me.CurrentCell.Value = wordDictionary(inputStr)
-    '                Catch ex As KeyNotFoundException
-    '                    MsgBox("正しく入力して下さい。", MsgBoxStyle.Exclamation, "Work")
-    '                    BeginEdit(True)
-    '                    Return False
-    '                End Try
-    '            End If
-    '            Me.ProcessTabKey(e.KeyCode)
-    '            BeginEdit(True)
-    '            Return False
-    '        Else
-    '            Me.ProcessTabKey(e.KeyCode)
-    '            BeginEdit(True)
-    '            Return False
-    '        End If
-    '    End If
+            Dim columnName As String = Me.Columns(CurrentCell.ColumnIndex).Name
+            If columnName = "Kei" OrElse columnName = "Syu" OrElse columnName = "Nam" Then
+                BeginEdit(True)
+                Return False
+            ElseIf 6 <= Me.CurrentCell.ColumnIndex AndAlso Me.CurrentCell.ColumnIndex <= 36 Then 'Y1～Y31列
+                If inputStr = "" Then
+                    '入力文字が空
+                    Me.ProcessTabKey(e.KeyCode)
+                    BeginEdit(True)
+                    Return False
+                Else
+                    '編集終了時に値の変換処理をする
+                    Try
+                        '入力文字に対応する勤務略名を選択しているセルに設定
+                        Me.CurrentCell.Value = wordDictionary(inputStr)
+                    Catch ex As KeyNotFoundException
+                        MsgBox("正しく入力して下さい。", MsgBoxStyle.Exclamation, "Work")
+                        BeginEdit(True)
+                        Return False
+                    End Try
+                End If
+                Me.ProcessTabKey(e.KeyCode)
+                BeginEdit(True)
+                Return False
+            Else
+                Me.ProcessTabKey(e.KeyCode)
+                BeginEdit(True)
+                Return False
+            End If
+        End If
 
-    '    Dim tb As DataGridViewTextBoxEditingControl = CType(Me.EditingControl, DataGridViewTextBoxEditingControl)
-    '    If Not IsNothing(tb) AndAlso ((e.KeyCode = Keys.Left AndAlso tb.SelectionStart = 0) OrElse (e.KeyCode = Keys.Right AndAlso tb.SelectionStart = tb.TextLength)) Then
-    '        Return False
-    '    Else
-    '        Return MyBase.ProcessDataGridViewKey(e)
-    '    End If
-    'End Function
+        Dim tb As DataGridViewTextBoxEditingControl = CType(Me.EditingControl, DataGridViewTextBoxEditingControl)
+        If Not IsNothing(tb) AndAlso ((e.KeyCode = Keys.Left AndAlso tb.SelectionStart = 0) OrElse (e.KeyCode = Keys.Right AndAlso tb.SelectionStart = tb.TextLength)) Then
+            Return False
+        Else
+            Return MyBase.ProcessDataGridViewKey(e)
+        End If
+    End Function
 
     ''' <summary>
     ''' セル編集終了時イベント
@@ -113,18 +115,23 @@ Public Class WorkDataGridView
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub workDataGridView_CellEnter(sender As Object, e As System.Windows.Forms.DataGridViewCellEventArgs) Handles Me.CellEnter
-        Dim columnName As String = Me.Columns(e.ColumnIndex).Name '選択列名
+        If canCellEnter Then
+            If Me(e.ColumnIndex, e.RowIndex).GetType().Equals(GetType(DataGridViewComboBoxCell)) Then
+                Me.BeginEdit(False)
+                If Not IsNothing(Me.EditingControl) Then
+                    Dim cb As ComboBox = DirectCast(Me.EditingControl, ComboBox)
+                    cb.DroppedDown = True
+                End If
+            End If
 
-        '選択列によってIMEの設定
-        'If columnName = "Unt" Then
-        '    Me.ImeMode = Windows.Forms.ImeMode.Hiragana
-        'ElseIf columnName = "Rdr" Then
-        '    Me.ImeMode = Windows.Forms.ImeMode.Off
-        'ElseIf columnName = "Nam" Then
-        '    Me.ImeMode = Windows.Forms.ImeMode.Hiragana
-        'ElseIf columnName.Substring(0, 1) = "Y" Then
-        '    Me.ImeMode = Windows.Forms.ImeMode.Off
-        'End If
+            '選択列によってIMEの設定
+            Dim columnName As String = Me.Columns(e.ColumnIndex).Name '選択列名
+            If columnName = "Kei" OrElse columnName = "Syu" OrElse columnName = "Nam" Then
+                Me.ImeMode = Windows.Forms.ImeMode.Hiragana
+            ElseIf columnName.Substring(0, 1) = "Y" Then
+                Me.ImeMode = Windows.Forms.ImeMode.Off
+            End If
+        End If
     End Sub
 
     ''' <summary>
@@ -174,17 +181,29 @@ Public Class WorkDataGridView
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub workDataGridView_EditingControlShowing(sender As Object, e As System.Windows.Forms.DataGridViewEditingControlShowingEventArgs) Handles Me.EditingControlShowing
-        'Dim tb As DataGridViewTextBoxEditingControl = CType(e.Control, DataGridViewTextBoxEditingControl)
-        'tb.CharacterCasing = CharacterCasing.Upper '入力される文字を大文字に
-        'RemoveHandler tb.KeyPress, AddressOf dgvTextBox_KeyPress
+        '該当する列か調べる
+        Dim dgv As DataGridView = DirectCast(sender, DataGridView)
+        Dim columnName As String = dgv.CurrentCell.OwningColumn.Name
+        If columnName = "Kei" OrElse columnName = "Syu" Then
+            Dim cb As DataGridViewComboBoxEditingControl = DirectCast(e.Control, DataGridViewComboBoxEditingControl)
+            cb.IntegralHeight = False
+            cb.MaxDropDownItems = 6
+            cb.DropDownStyle = ComboBoxStyle.DropDown
+        End If
+    End Sub
 
-        'If Me.Columns(Me.CurrentCell.ColumnIndex).Name = "Rdr" Then
-        '    tb.MaxLength = 1
-        'ElseIf Me.Columns(Me.CurrentCell.ColumnIndex).Name = "Unt" Then
-        '    tb.MaxLength = 1
-        '    'イベントハンドラを削除、追加
-        '    AddHandler tb.KeyPress, AddressOf dgvTextBox_KeyPress
-        'End If
+    Private Sub WorkDataGridView_CellValidating(sender As Object, e As System.Windows.Forms.DataGridViewCellValidatingEventArgs) Handles Me.CellValidating
+        Dim dgv As DataGridView = DirectCast(sender, DataGridView)
+        Dim columnName As String = dgv.Columns(e.ColumnIndex).Name
+        If (columnName = "Kei" OrElse columnName = "Syu") AndAlso TypeOf dgv.Columns(e.ColumnIndex) Is DataGridViewComboBoxColumn Then
+            Dim cb As DataGridViewComboBoxColumn = DirectCast(dgv.Columns(e.ColumnIndex), DataGridViewComboBoxColumn)
+            'コンボボックスの項目に追加する
+            If Not cb.Items.Contains(e.FormattedValue) Then
+                cb.Items.Add(e.FormattedValue)
+            End If
+            'セルの値を設定しないと、元に戻ってしまう
+            dgv(e.ColumnIndex, e.RowIndex).Value = e.FormattedValue
+        End If
     End Sub
 
     ''' <summary>

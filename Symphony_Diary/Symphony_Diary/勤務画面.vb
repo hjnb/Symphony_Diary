@@ -4,7 +4,7 @@
     Private formType As String
 
     '入力可能行数（勤務入力部分）
-    Private Const INPUT_ROW_COUNT As Integer = 100
+    Private Const INPUT_ROW_COUNT As Integer = 200
 
     '勤務割データテーブル
     Private workDt As DataTable
@@ -13,13 +13,16 @@
     Private colorDic As Dictionary(Of String, Color)
 
     '形態
-    Private keiArray() As String = {"常勤専従", "常勤兼務", "常勤以外専従", "常勤以外兼務"}
+    Private keiArray() As String = {"", "常勤専従", "常勤兼務", "常勤以外専従", "常勤以外兼務"}
 
     '職種
-    Private syuArray() As String = {"理事長", "施設長", "副施設長", "事務局長", "部長", "課長", "係長", "主任", "管理者", "ｻｰﾋﾞｽ提供責任者", "医師", "正看護師", "准看護師", "看護職", "機能訓練士", "介護支援専門員", "生活相談員", "支援援助員", "介護職", "介護福祉士", "訪問介護員", "管理栄養士", "栄養士", "宿直"}
+    Private syuArray() As String = {"", "理事長", "施設長", "副施設長", "事務局長", "部長", "課長", "係長", "主任", "管理者", "ｻｰﾋﾞｽ提供責任者", "医師", "正看護師", "准看護師", "看護職", "機能訓練士", "介護支援専門員", "生活相談員", "支援援助員", "介護職", "介護福祉士", "訪問介護員", "管理栄養士", "栄養士", "宿直"}
 
     '曜日配列
     Private dayCharArray() As String = {"日", "月", "火", "水", "木", "金", "土"}
+
+    '勤務
+    Private workDic As New Dictionary(Of String, String) From {{"1", "日勤"}, {"2", "半勤"}, {"3", "早出"}, {"4", "遅出"}, {"5", "Ａ勤"}, {"6", "Ｂ勤"}, {"7", "振替"}, {"8", "夜勤"}, {"9", "宿直"}, {"10", "日直"}, {"11", "Ｃ勤"}, {"12", "明け"}, {"13", "特日"}, {"14", "研修"}, {"15", "深夜"}, {"16", "1/3勤"}, {"17", "1/3半"}, {"18", "日早"}, {"19", "日遅"}, {"20", "遅々"}, {"21", "半Ａ"}, {"22", "半Ｂ"}, {"23", "半夜"}, {"24", "半行"}, {"25", "公休"}, {"26", "有休"}, {"27", "欠勤"}}
 
     ''' <summary>
     ''' コンストラクタ
@@ -49,6 +52,8 @@
 
         '当月のデータ表示
         displayDgvWork(Today.ToString("yyyy/MM"))
+
+        dgvWork.canCellEnter = True
     End Sub
 
     ''' <summary>
@@ -183,7 +188,16 @@
                     .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
                 End With
             Next
+            '変更行の文字を赤に
+            For i As Integer = 2 To INPUT_ROW_COUNT Step 2
+                For j As Integer = 1 To 31
+                    dgvWork("Y" & j, i).Style.ForeColor = Color.Red
+                    dgvWork("Y" & j, i).Style.SelectionForeColor = Color.Red
+                Next
+            Next
         End With
+
+        dgvWork.setWordDictionary(workDic)
     End Sub
 
     ''' <summary>
@@ -219,6 +233,40 @@
 
         '行番号設定
         setSeqValue()
+
+        'データ取得、表示
+        Dim cnn As New ADODB.Connection
+        cnn.Open(TopForm.DB_Diary)
+        Dim rs As New ADODB.Recordset
+        Dim sql As String = "select * from KinD where Ym = '" & ym & "' and Hyo = '" & formType & "' order by Seq"
+        rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly)
+        While Not rs.EOF
+            For i As Integer = 1 To 31
+                Dim kei As String = Util.checkDBNullValue(rs.Fields("YKei").Value)
+                Dim syu As String = Util.checkDBNullValue(rs.Fields("YSyu").Value)
+                Dim nam As String = Util.checkDBNullValue(rs.Fields("Nam").Value)
+                Dim seq As Integer = rs.Fields("Seq").Value
+                Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
+                Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
+                '勤務
+                'dgvWork("Kei", seq - 1).Value = kei
+                '職種
+                'dgvWork("Syu", seq - 1).Value = syu
+                '氏名
+                dgvWork("Nam", seq - 1).Value = nam
+                '予定変更列
+                dgvWork("Type", seq - 1).Value = "予定"
+                dgvWork("Type", seq).Value = "変更"
+                '1～31
+                dgvWork("Y" & i, seq - 1).Value = yotei
+                If yotei <> henko Then
+                    dgvWork("Y" & i, seq).Value = henko
+                End If
+            Next
+            rs.MoveNext()
+        End While
+        rs.Close()
+        cnn.Close()
     End Sub
 
     ''' <summary>
