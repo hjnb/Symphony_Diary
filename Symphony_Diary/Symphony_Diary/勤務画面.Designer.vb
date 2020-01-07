@@ -29,7 +29,7 @@ Partial Class 勤務画面
         Me.btnRowDelete = New System.Windows.Forms.Button()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.Button2 = New System.Windows.Forms.Button()
-        Me.Button3 = New System.Windows.Forms.Button()
+        Me.btnPrint = New System.Windows.Forms.Button()
         Me.Button4 = New System.Windows.Forms.Button()
         Me.Button5 = New System.Windows.Forms.Button()
         Me.dgvWork = New Symphony_Diary.WorkDataGridView(Me.components)
@@ -38,14 +38,14 @@ Partial Class 勤務画面
         '
         'adBox
         '
-        Me.adBox.dateText = "30"
+        Me.adBox.dateText = "07"
         Me.adBox.Location = New System.Drawing.Point(30, 25)
         Me.adBox.Mode = 3
-        Me.adBox.monthText = "12"
+        Me.adBox.monthText = "01"
         Me.adBox.Name = "adBox"
         Me.adBox.Size = New System.Drawing.Size(130, 35)
         Me.adBox.TabIndex = 0
-        Me.adBox.yearText = "2019"
+        Me.adBox.yearText = "2020"
         '
         'btnDisplay
         '
@@ -92,14 +92,14 @@ Partial Class 勤務画面
         Me.Button2.Text = "換算"
         Me.Button2.UseVisualStyleBackColor = True
         '
-        'Button3
+        'btnPrint
         '
-        Me.Button3.Location = New System.Drawing.Point(836, 26)
-        Me.Button3.Name = "Button3"
-        Me.Button3.Size = New System.Drawing.Size(69, 33)
-        Me.Button3.TabIndex = 8
-        Me.Button3.Text = "印刷"
-        Me.Button3.UseVisualStyleBackColor = True
+        Me.btnPrint.Location = New System.Drawing.Point(836, 26)
+        Me.btnPrint.Name = "btnPrint"
+        Me.btnPrint.Size = New System.Drawing.Size(69, 33)
+        Me.btnPrint.TabIndex = 8
+        Me.btnPrint.Text = "印刷"
+        Me.btnPrint.UseVisualStyleBackColor = True
         '
         'Button4
         '
@@ -134,7 +134,7 @@ Partial Class 勤務画面
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(999, 694)
         Me.Controls.Add(Me.Button5)
-        Me.Controls.Add(Me.Button3)
+        Me.Controls.Add(Me.btnPrint)
         Me.Controls.Add(Me.Button4)
         Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.Button1)
@@ -156,7 +156,7 @@ Partial Class 勤務画面
     Friend WithEvents btnRowDelete As System.Windows.Forms.Button
     Friend WithEvents Button1 As System.Windows.Forms.Button
     Friend WithEvents Button2 As System.Windows.Forms.Button
-    Friend WithEvents Button3 As System.Windows.Forms.Button
+    Friend WithEvents btnPrint As System.Windows.Forms.Button
     Friend WithEvents Button4 As System.Windows.Forms.Button
     Friend WithEvents Button5 As System.Windows.Forms.Button
 End Class

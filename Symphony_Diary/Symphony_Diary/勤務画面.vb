@@ -356,6 +356,10 @@
             '追加した行の設定
             dgvWork("Type", selectedRowIndex).Style.BackColor = colorDic("Disable")
             dgvWork("Type", selectedRowIndex + 1).Style.BackColor = colorDic("Disable")
+            For i As Integer = 1 To 31
+                dgvWork("Y" & i, selectedRowIndex + 1).Style.ForeColor = Color.Red
+                dgvWork("Y" & i, selectedRowIndex + 1).Style.SelectionForeColor = Color.Red
+            Next
             setHolidayColumnColor()
 
             '追加された行以降のSeqの値を更新
@@ -376,7 +380,39 @@
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub btnRowDelete_Click(sender As System.Object, e As System.EventArgs) Handles btnRowDelete.Click
+        Dim selectedRowIndex As Integer = If(IsNothing(dgvWork.CurrentRow), -1, dgvWork.CurrentRow.Index) '選択行index
+        If selectedRowIndex = -1 OrElse selectedRowIndex = 0 OrElse selectedRowIndex >= INPUT_ROW_COUNT + 1 Then
+            Return
+        Else
+            '変更の行を選択してる場合は予定の行を選択しているindexとする
+            If selectedRowIndex Mod 2 = 0 Then
+                selectedRowIndex -= 1
+            End If
 
+            '行削除
+            workDt.Rows.RemoveAt(selectedRowIndex)
+            workDt.Rows.RemoveAt(selectedRowIndex)
+
+            '削除された行以降のSeqの値を更新
+            For i As Integer = selectedRowIndex To INPUT_ROW_COUNT - 3 Step 2
+                workDt.Rows(i).Item("Seq") -= 2
+            Next
+
+            '下に２行追加
+            Dim row As DataRow = workDt.NewRow()
+            row("Seq") = INPUT_ROW_COUNT
+            workDt.Rows.InsertAt(workDt.NewRow(), INPUT_ROW_COUNT - 1)
+            workDt.Rows.InsertAt(row, INPUT_ROW_COUNT - 1)
+
+            '追加した行の設定
+            dgvWork("Type", INPUT_ROW_COUNT - 1).Style.BackColor = colorDic("Disable")
+            dgvWork("Type", INPUT_ROW_COUNT).Style.BackColor = colorDic("Disable")
+            For i As Integer = 1 To 31
+                dgvWork("Y" & i, INPUT_ROW_COUNT).Style.ForeColor = Color.Red
+                dgvWork("Y" & i, INPUT_ROW_COUNT).Style.SelectionForeColor = Color.Red
+            Next
+            setHolidayColumnColor()
+        End If
     End Sub
 
     ''' <summary>
@@ -387,5 +423,15 @@
         For i As Integer = 1 To INPUT_ROW_COUNT Step 2
             workDt.Rows(i).Item("Seq") = i + 1
         Next
+    End Sub
+
+    ''' <summary>
+    ''' 印刷ボタンクリックイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub btnPrint_Click(sender As System.Object, e As System.EventArgs) Handles btnPrint.Click
+
     End Sub
 End Class
