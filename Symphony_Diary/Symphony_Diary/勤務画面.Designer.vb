@@ -38,7 +38,7 @@ Partial Class 勤務画面
         '
         'adBox
         '
-        Me.adBox.dateText = "07"
+        Me.adBox.dateText = "09"
         Me.adBox.Location = New System.Drawing.Point(30, 25)
         Me.adBox.Mode = 3
         Me.adBox.monthText = "01"
@@ -76,7 +76,7 @@ Partial Class 勤務画面
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(632, 26)
+        Me.Button1.Location = New System.Drawing.Point(684, 27)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(69, 33)
         Me.Button1.TabIndex = 5
@@ -85,7 +85,7 @@ Partial Class 勤務画面
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(700, 26)
+        Me.Button2.Location = New System.Drawing.Point(752, 27)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(69, 33)
         Me.Button2.TabIndex = 6
@@ -94,7 +94,7 @@ Partial Class 勤務画面
         '
         'btnPrint
         '
-        Me.btnPrint.Location = New System.Drawing.Point(836, 26)
+        Me.btnPrint.Location = New System.Drawing.Point(888, 27)
         Me.btnPrint.Name = "btnPrint"
         Me.btnPrint.Size = New System.Drawing.Size(69, 33)
         Me.btnPrint.TabIndex = 8
@@ -103,7 +103,7 @@ Partial Class 勤務画面
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(768, 26)
+        Me.Button4.Location = New System.Drawing.Point(820, 27)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(69, 33)
         Me.Button4.TabIndex = 7
@@ -112,7 +112,7 @@ Partial Class 勤務画面
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(904, 26)
+        Me.Button5.Location = New System.Drawing.Point(956, 27)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(69, 33)
         Me.Button5.TabIndex = 9
@@ -125,14 +125,14 @@ Partial Class 勤務画面
         Me.dgvWork.Location = New System.Drawing.Point(30, 68)
         Me.dgvWork.Name = "dgvWork"
         Me.dgvWork.RowTemplate.Height = 21
-        Me.dgvWork.Size = New System.Drawing.Size(943, 582)
+        Me.dgvWork.Size = New System.Drawing.Size(995, 667)
         Me.dgvWork.TabIndex = 2
         '
         '勤務画面
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(999, 694)
+        Me.ClientSize = New System.Drawing.Size(1072, 749)
         Me.Controls.Add(Me.Button5)
         Me.Controls.Add(Me.btnPrint)
         Me.Controls.Add(Me.Button4)

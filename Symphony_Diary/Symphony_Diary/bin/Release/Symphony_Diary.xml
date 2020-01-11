@@ -345,6 +345,67 @@ Symphony_Diary
 	<param name="sender"></param>
 	<param name="e"></param>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.#ctor(System.String,System.String,System.String[])">
+	<summary>
+ コンストラクタ
+ </summary>
+	<param name="ym">年月</param>
+	<param name="hyo">職種</param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.勤務表印刷条件_Load(System.Object,System.EventArgs)">
+	<summary>
+ loadイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.btnExecute_Click(System.Object,System.EventArgs)">
+	<summary>
+ 実行ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.loadKmkM">
+	<summary>
+ 勤務項目名マスタ読み込み
+ </summary>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.printA4(System.String,ADODB.Recordset)">
+	<summary>
+ A4印刷
+ </summary>
+	<param name="writeType">予定 or 実績 or 予定／実績</param>
+	<param name="rs">印刷データレコードセット</param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.printB4(System.String,ADODB.Recordset)">
+	<summary>
+ B4印刷
+ </summary>
+	<param name="writeType">予定 or 実績 or 予定／実績</param>
+	<param name="rs">印刷データレコードセット</param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.printB4S(System.String,ADODB.Recordset)">
+	<summary>
+ B4→A4(B4S)印刷
+ </summary>
+	<param name="writeType">予定 or 実績 or 予定／実績</param>
+	<param name="rs">印刷データレコードセット</param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.printB4S2(System.String,ADODB.Recordset)">
+	<summary>
+ B4→A4(NC)(B4S2)印刷
+ </summary>
+	<param name="writeType">予定 or 実績 or 予定／実績</param>
+	<param name="rs">印刷データレコードセット</param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.btnCancel_Click(System.Object,System.EventArgs)">
+	<summary>
+ キャンセルボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
 </member><member name="P:Symphony_Diary.My.Resources.Resources.ResourceManager">
 	<summary>
   Returns the cached ResourceManager instance used by this class.
@@ -433,7 +494,7 @@ Symphony_Diary
 	<param name="sender"></param>
 	<param name="e"></param>
 	<remarks></remarks>
-</member><member name="M:Symphony_Diary.勤務画面.#ctor(System.String)">
+</member><member name="M:Symphony_Diary.勤務画面.#ctor(System.String,System.String)">
 	<summary>
  コンストラクタ
  </summary>
@@ -503,6 +564,13 @@ Symphony_Diary
 	<summary>
  行番号(seq)セット
  </summary>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.btnPrint_Click(System.Object,System.EventArgs)">
+	<summary>
+ 印刷ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
 	<remarks></remarks>
 </member>
 </members>

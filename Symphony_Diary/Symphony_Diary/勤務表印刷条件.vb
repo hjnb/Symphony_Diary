@@ -1,0 +1,314 @@
+﻿Imports Microsoft.Office.Interop
+Imports System.Runtime.InteropServices
+
+Public Class 勤務表印刷条件
+
+    '年月
+    Private ym As String
+    '職種
+    Private hyo As String
+    '曜日配列
+    Private youbi() As String
+    '印影ファイルパス(Sign1,Sign2,Sign3)
+    Private sign1Path As String = ""
+    Private sign2Path As String = ""
+    Private sign3Path As String = ""
+    '印刷 or ﾌﾟﾚﾋﾞｭｰ
+    Private printState As Boolean
+
+    '印刷用勤務名Dic
+    Private printWorkDic As Dictionary(Of String, String)
+
+    ''' <summary>
+    ''' コンストラクタ
+    ''' </summary>
+    ''' <param name="ym">年月</param>
+    ''' <param name="hyo">職種</param>
+    ''' <remarks></remarks>
+    Public Sub New(ym As String, hyo As String, youbi() As String)
+        InitializeComponent()
+        Me.ym = ym
+        Me.hyo = hyo
+        Me.youbi = youbi
+        Me.StartPosition = FormStartPosition.CenterScreen
+        Me.FormBorderStyle = FormBorderStyle.FixedSingle
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
+        Me.KeyPreview = True
+    End Sub
+
+    Private Sub 勤務表印刷条件_KeyDown(sender As Object, e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
+        If e.KeyCode = Keys.Enter Then
+            If e.Control = False Then
+                Me.SelectNextControl(Me.ActiveControl, Not e.Shift, True, True, True)
+            End If
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' loadイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub 勤務表印刷条件_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
+        '印刷orﾌﾟﾚﾋﾞｭｰ
+        Dim state As String = Util.getIniString("System", "Printer", TopForm.iniFilePath)
+        printState = If(state = "Y", True, False)
+
+        '初期選択
+        rbtnA4.Checked = True
+        rbtnPlan.Checked = True
+
+        'iniファイルから読み込み
+        sign1Box.Text = Util.getIniString("System", "Sign1", TopForm.iniFilePath)
+        sign2Box.Text = Util.getIniString("System", "Sign2", TopForm.iniFilePath)
+        sign3Box.Text = Util.getIniString("System", "Sign3", TopForm.iniFilePath)
+    End Sub
+
+    ''' <summary>
+    ''' 実行ボタンクリックイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub btnExecute_Click(sender As System.Object, e As System.EventArgs) Handles btnExecute.Click
+        '印影ファイル存在チェック
+        If sign1Box.Text <> "" Then
+            Dim filePath As String = TopForm.sealBoxDirPath & "\" & sign1Box.Text & ".wmf"
+            If Not System.IO.File.Exists(filePath) Then
+                MsgBox(filePath & " の印影ファイルが存在しません。" & Environment.NewLine & "SealBoxフォルダにファイルを置いて下さい。", MsgBoxStyle.Exclamation)
+                Return
+            Else
+                sign1Path = filePath
+            End If
+        End If
+        If sign2Box.Text <> "" Then
+            Dim filePath As String = TopForm.sealBoxDirPath & "\" & sign2Box.Text & ".wmf"
+            If Not System.IO.File.Exists(filePath) Then
+                MsgBox(filePath & " の印影ファイルが存在しません。" & Environment.NewLine & "SealBoxフォルダにファイルを置いて下さい。", MsgBoxStyle.Exclamation)
+                Return
+            Else
+                sign2Path = filePath
+            End If
+        End If
+        If sign3Box.Text <> "" Then
+            Dim filePath As String = TopForm.sealBoxDirPath & "\" & sign3Box.Text & ".wmf"
+            If Not System.IO.File.Exists(filePath) Then
+                MsgBox(filePath & " の印影ファイルが存在しません。" & Environment.NewLine & "SealBoxフォルダにファイルを置いて下さい。", MsgBoxStyle.Exclamation)
+                Return
+            Else
+                sign3Path = filePath
+            End If
+        End If
+
+        'iniファイルのSign1,Sign2,Sign3を更新
+        Util.putIniString("System", "Sign1", sign1Box.Text, TopForm.iniFilePath)
+        Util.putIniString("System", "Sign2", sign2Box.Text, TopForm.iniFilePath)
+        Util.putIniString("System", "Sign3", sign3Box.Text, TopForm.iniFilePath)
+
+        'データ取得
+        Dim cnn As New ADODB.Connection
+        cnn.Open(TopForm.DB_Diary)
+        Dim rs As New ADODB.Recordset
+        Dim sql As String = "select * from KinD where Ym = '" & ym & "' and Hyo = '" & hyo & "' order by Seq"
+        rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockReadOnly)
+        If rs.RecordCount <= 0 Then
+            MsgBox("対象データがありません。", MsgBoxStyle.Exclamation)
+            rs.Close()
+            cnn.Close()
+            Return
+        Else
+            '印刷処理
+            'Dim type As String = If(rbtnPlan.Checked, "予定", If(rbtnResult.Checked, "実績", "予定／実績"))
+            'If rbtnA4.Checked Then
+            '    printA4(type, rs)
+            'ElseIf rbtnB4.Checked Then
+            '    printB4(type, rs)
+            'ElseIf rbtnB4S.Checked Then
+            '    printB4S(type, rs)
+            'ElseIf rbtnB4S2.Checked Then
+            '    printB4S2(type, rs)
+            'End If
+            rs.Close()
+            cnn.Close()
+            Me.Close()
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' 勤務項目名マスタ読み込み
+    ''' </summary>
+    ''' <remarks></remarks>
+    Private Sub loadKmkM()
+
+    End Sub
+
+    ''' <summary>
+    ''' A4印刷
+    ''' </summary>
+    ''' <param name="writeType">予定 or 実績 or 予定／実績</param>
+    ''' <param name="rs">印刷データレコードセット</param>
+    ''' <remarks></remarks>
+    Private Sub printA4(writeType As String, rs As ADODB.Recordset)
+        'エクセル準備
+        Dim objExcel As Excel.Application = CreateObject("Excel.Application")
+        Dim objWorkBooks As Excel.Workbooks = objExcel.Workbooks
+        Dim objWorkBook As Excel.Workbook = objWorkBooks.Open(TopForm.excelFilePath)
+        Dim oSheet As Excel.Worksheet = objWorkBook.Worksheets("勤務表A4改")
+        Dim xlShapes As Excel.Shapes = DirectCast(oSheet.Shapes, Excel.Shapes)
+        objExcel.Calculation = Excel.XlCalculation.xlCalculationManual
+        objExcel.ScreenUpdating = False
+
+        '年月
+        oSheet.Range("D3").Value = "( " & CInt(ym.Split("/")(0)) & "年 " & CInt(ym.Split("/")(1)) & "月度 )"
+        '部署?
+        oSheet.Range("J3").Value = hyo
+        '印影
+        If System.IO.File.Exists(sign1Path) Then
+            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AG"), Excel.Range)
+            xlShapes.AddPicture(sign1Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
+        End If
+        If System.IO.File.Exists(sign2Path) Then
+            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AI"), Excel.Range)
+            xlShapes.AddPicture(sign2Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
+        End If
+        If System.IO.File.Exists(sign3Path) Then
+            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AK"), Excel.Range)
+            xlShapes.AddPicture(sign3Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
+        End If
+        '曜日行設定
+        oSheet.Range("H8", "AL8").Value = youbi
+
+        '貼り付けデータ作成
+        Dim dataList As New List(Of String(,))
+        Dim dataArray(35, 36) As String
+        Dim arrayRowIndex As Integer = 0
+        While Not rs.EOF
+            If arrayRowIndex = 36 Then
+                dataList.Add(dataArray.Clone())
+                Array.Clear(dataArray, 0, dataArray.Length)
+                arrayRowIndex = 0
+            End If
+
+            '勤務形態
+            dataArray(arrayRowIndex, 0) = Util.checkDBNullValue(rs.Fields("YKei").Value)
+            '職種
+            dataArray(arrayRowIndex, 1) = Util.checkDBNullValue(rs.Fields("YSyu").Value)
+            '氏名
+            dataArray(arrayRowIndex, 2) = Util.checkDBNullValue(rs.Fields("Nam").Value)
+            '予定、変更
+            dataArray(arrayRowIndex, 5) = "予定"
+            dataArray(arrayRowIndex + 1, 5) = "変更"
+            '1～31
+            If writeType = "予定" Then
+                For i As Integer = 1 To 31
+                    dataArray(arrayRowIndex, 5 + i) = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
+                Next
+            ElseIf writeType = "実績" Then
+                For i As Integer = 1 To 31
+                    dataArray(arrayRowIndex + 1, 5 + i) = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
+                Next
+            Else '予定／実績
+                For i As Integer = 1 To 31
+                    Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
+                    Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
+                    dataArray(arrayRowIndex, 5 + i) = yotei
+                    If yotei <> henko Then
+                        dataArray(arrayRowIndex + 1, 5 + i) = henko
+                    End If
+                Next
+            End If
+
+            arrayRowIndex += 2
+            rs.MoveNext()
+        End While
+        dataList.Add(dataArray.Clone())
+
+        '印刷用に勤務名変換
+        For Each d As String(,) In dataList
+            For i As Integer = 0 To 35
+                For j As Integer = 0 To 36
+                    Dim work As String = d(i, j)
+                    If Not IsNothing(work) AndAlso printWorkDic.ContainsKey(work) Then
+                        d(i, j) = printWorkDic(work)
+                    End If
+                Next
+            Next
+        Next
+
+        '必要ページ分コピペ
+        For i As Integer = 0 To dataList.Count - 2
+            Dim xlPasteRange As Excel.Range = oSheet.Range("A" & (48 + (47 * i))) 'ペースト先
+            oSheet.Rows("1:47").copy(xlPasteRange)
+            oSheet.HPageBreaks.Add(oSheet.Range("A" & (48 + (47 * i)))) '改ページ
+        Next
+
+        'データ貼り付け
+        For i As Integer = 0 To dataList.Count - 1
+            oSheet.Range("B" & (9 + (47 * i)), "AL" & (44 + (47 * i))).Value = dataList(i)
+        Next
+
+        objExcel.Calculation = Excel.XlCalculation.xlCalculationAutomatic
+        objExcel.ScreenUpdating = True
+
+        '変更保存確認ダイアログ非表示
+        objExcel.DisplayAlerts = False
+
+        '印刷
+        If printState Then
+            oSheet.PrintOut()
+        Else
+            objExcel.Visible = True
+            oSheet.PrintPreview(1)
+        End If
+
+        ' EXCEL解放
+        objExcel.Quit()
+        Marshal.ReleaseComObject(objWorkBook)
+        Marshal.ReleaseComObject(objExcel)
+        oSheet = Nothing
+        objWorkBook = Nothing
+        objExcel = Nothing
+    End Sub
+
+    ''' <summary>
+    ''' B4印刷
+    ''' </summary>
+    ''' <param name="writeType">予定 or 実績 or 予定／実績</param>
+    ''' <param name="rs">印刷データレコードセット</param>
+    ''' <remarks></remarks>
+    Private Sub printB4(writeType As String, rs As ADODB.Recordset)
+
+    End Sub
+
+    ''' <summary>
+    ''' B4→A4(B4S)印刷
+    ''' </summary>
+    ''' <param name="writeType">予定 or 実績 or 予定／実績</param>
+    ''' <param name="rs">印刷データレコードセット</param>
+    ''' <remarks></remarks>
+    Private Sub printB4S(writeType As String, rs As ADODB.Recordset)
+
+    End Sub
+
+    ''' <summary>
+    ''' B4→A4(NC)(B4S2)印刷
+    ''' </summary>
+    ''' <param name="writeType">予定 or 実績 or 予定／実績</param>
+    ''' <param name="rs">印刷データレコードセット</param>
+    ''' <remarks></remarks>
+    Private Sub printB4S2(writeType As String, rs As ADODB.Recordset)
+
+    End Sub
+
+    ''' <summary>
+    ''' キャンセルボタンクリックイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub btnCancel_Click(sender As System.Object, e As System.EventArgs) Handles btnCancel.Click
+        Me.Close()
+    End Sub
+End Class

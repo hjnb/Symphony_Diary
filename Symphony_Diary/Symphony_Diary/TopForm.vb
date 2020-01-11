@@ -115,7 +115,7 @@
     ''' <remarks></remarks>
     Private Sub btnTok_Click(sender As System.Object, e As System.EventArgs) Handles btnTok.Click, btnJim.Click, btnSyo.Click, btnDay.Click, btnHel.Click, btnKyo.Click, btnSei.Click
         If IsNothing(workForm) OrElse workForm.IsDisposed Then
-            workForm = New 勤務画面(DirectCast(sender, Button).Text)
+            workForm = New 勤務画面(DirectCast(sender, Button).Text, adBox.getADymStr())
             workForm.Show()
         End If
     End Sub

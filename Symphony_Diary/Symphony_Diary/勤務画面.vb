@@ -3,6 +3,9 @@
     'フォームタイプ
     Private formType As String
 
+    '初期表示年月
+    Private initYm As String
+
     '入力可能行数（勤務入力部分）
     Private Const INPUT_ROW_COUNT As Integer = 200
 
@@ -29,9 +32,10 @@
     ''' </summary>
     ''' <param name="formType">フォームの種類</param>
     ''' <remarks></remarks>
-    Public Sub New(formType As String)
+    Public Sub New(formType As String, ym As String)
         InitializeComponent()
         Me.formType = formType
+        Me.initYm = ym
         Me.Text = "Diary " & formType & " 勤務表"
     End Sub
 
@@ -50,8 +54,9 @@
         'データグリッドビュー初期設定
         initDgvWork()
 
-        '当月のデータ表示
-        displayDgvWork(Today.ToString("yyyy/MM"))
+        'データ表示
+        adBox.setADStr(initYm & "/01")
+        displayDgvWork(initYm)
 
         dgvWork.canCellEnter = True
     End Sub
@@ -105,6 +110,10 @@
         For i As Integer = 1 To 31
             workDt.Columns.Add("Y" & i, GetType(String))
         Next
+        workDt.Columns.Add("Kan", GetType(String))
+        workDt.Columns.Add("Jyo", GetType(String))
+        workDt.Columns.Add("Tuki", GetType(String))
+        workDt.Columns.Add("Sou", GetType(String))
 
         '空行追加
         For i = 0 To INPUT_ROW_COUNT
@@ -182,7 +191,7 @@
             'Y1～Y31の列
             For i As Integer = 1 To 31
                 With .Columns("Y" & i)
-                    .Width = 43
+                    .Width = 47
                     .HeaderText = i.ToString()
                     .HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
                     .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
@@ -195,6 +204,42 @@
                     dgvWork("Y" & j, i).Style.SelectionForeColor = Color.Red
                 Next
             Next
+
+            '換算
+            With .Columns("Kan")
+                .Width = 35
+                .HeaderText = "換算"
+                .HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .ReadOnly = True
+            End With
+
+            '常勤換算
+            With .Columns("Jyo")
+                .Width = 70
+                .HeaderText = "常勤換算"
+                .HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .ReadOnly = True
+            End With
+
+            '月合計
+            With .Columns("Tuki")
+                .Width = 70
+                .HeaderText = "月合計"
+                .HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .ReadOnly = True
+            End With
+
+            '総勤日数
+            With .Columns("Sou")
+                .Width = 70
+                .HeaderText = "総勤日数"
+                .HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .ReadOnly = True
+            End With
         End With
 
         dgvWork.setWordDictionary(workDic)
@@ -432,6 +477,13 @@
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub btnPrint_Click(sender As System.Object, e As System.EventArgs) Handles btnPrint.Click
-
+        '印刷条件フォーム表示
+        Dim ym As String = adBox.getADymStr()
+        Dim youbi(30) As String
+        For i As Integer = 1 To 31
+            youbi(i - 1) = Util.checkDBNullValue(dgvWork("Y" & i, 0).Value)
+        Next
+        Dim printForm As New 勤務表印刷条件(ym, formType, youbi)
+        printForm.ShowDialog()
     End Sub
 End Class
