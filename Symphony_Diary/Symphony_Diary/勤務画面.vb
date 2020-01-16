@@ -6,6 +6,16 @@
     '初期表示年月
     Private initYm As String
 
+    '月の日数
+    Private daysInMonth As Integer
+
+    '常勤換算用
+    '(算出式: 4週合計時間 / 157)
+    '4週:28日間とする
+    Private Const WEEK4 As Integer = 28
+    '分母
+    Private Const KANSAN As Decimal = 157.0
+
     '入力可能行数（勤務入力部分）
     Private Const INPUT_ROW_COUNT As Integer = 200
 
@@ -26,6 +36,14 @@
 
     '勤務
     Private workDic As New Dictionary(Of String, String) From {{"1", "日勤"}, {"2", "半勤"}, {"3", "早出"}, {"4", "遅出"}, {"5", "Ａ勤"}, {"6", "Ｂ勤"}, {"7", "振替"}, {"8", "夜勤"}, {"9", "宿直"}, {"10", "日直"}, {"11", "Ｃ勤"}, {"12", "明け"}, {"13", "特日"}, {"14", "研修"}, {"15", "深夜"}, {"16", "1/3勤"}, {"17", "1/3半"}, {"18", "日早"}, {"19", "日遅"}, {"20", "遅々"}, {"21", "半Ａ"}, {"22", "半Ｂ"}, {"23", "半夜"}, {"24", "半行"}, {"25", "公休"}, {"26", "有休"}, {"27", "欠勤"}}
+
+    Private workArray() As String = {"日勤", "半勤", "早出", "遅出", "Ａ勤", "Ｂ勤", "振替", "夜勤", "宿直", "日直", "Ｃ勤", "明け", "特日", "研修", "深夜", "1/3勤", "1/3半", "日早", "日遅", "遅々", "半Ａ", "半Ｂ", "半夜", "半行"}
+
+    '勤務時間
+    Private workTimeDic As New Dictionary(Of String, String)
+
+    '短縮勤務名Dic
+    Private shortWorkDic As New Dictionary(Of String, String)
 
     ''' <summary>
     ''' コンストラクタ
@@ -59,6 +77,9 @@
         displayDgvWork(initYm)
 
         dgvWork.canCellEnter = True
+
+        '定数マスタ読み込み
+        loadConstM()
     End Sub
 
     ''' <summary>
@@ -203,6 +224,12 @@
                     dgvWork("Y" & j, i).Style.ForeColor = Color.Red
                     dgvWork("Y" & j, i).Style.SelectionForeColor = Color.Red
                 Next
+                dgvWork("Jyo", i).Style.ForeColor = Color.Red
+                dgvWork("Jyo", i).Style.SelectionForeColor = Color.Red
+                dgvWork("Tuki", i).Style.ForeColor = Color.Red
+                dgvWork("Tuki", i).Style.SelectionForeColor = Color.Red
+                dgvWork("Sou", i).Style.ForeColor = Color.Red
+                dgvWork("Sou", i).Style.SelectionForeColor = Color.Red
             Next
 
             '換算
@@ -336,7 +363,7 @@
         End If
         Dim year As Integer = CInt(ym.Split("/")(0))
         Dim month As Integer = CInt(ym.Split("/")(1))
-        Dim daysInMonth As Integer = DateTime.DaysInMonth(year, month) '月の日数
+        daysInMonth = DateTime.DaysInMonth(year, month) '月の日数
         Dim firstDay As DateTime = New DateTime(year, month, 1)
         Dim weekNumber As Integer = CInt(firstDay.DayOfWeek) '月の初日の曜日のindex
         Dim row As DataRow = workDt.Rows(0)
@@ -405,6 +432,12 @@
                 dgvWork("Y" & i, selectedRowIndex + 1).Style.ForeColor = Color.Red
                 dgvWork("Y" & i, selectedRowIndex + 1).Style.SelectionForeColor = Color.Red
             Next
+            dgvWork("Jyo", selectedRowIndex + 1).Style.ForeColor = Color.Red
+            dgvWork("Jyo", selectedRowIndex + 1).Style.SelectionForeColor = Color.Red
+            dgvWork("Tuki", selectedRowIndex + 1).Style.ForeColor = Color.Red
+            dgvWork("Tuki", selectedRowIndex + 1).Style.SelectionForeColor = Color.Red
+            dgvWork("Sou", selectedRowIndex + 1).Style.ForeColor = Color.Red
+            dgvWork("Sou", selectedRowIndex + 1).Style.SelectionForeColor = Color.Red
             setHolidayColumnColor()
 
             '追加された行以降のSeqの値を更新
@@ -456,6 +489,12 @@
                 dgvWork("Y" & i, INPUT_ROW_COUNT).Style.ForeColor = Color.Red
                 dgvWork("Y" & i, INPUT_ROW_COUNT).Style.SelectionForeColor = Color.Red
             Next
+            dgvWork("Jyo", INPUT_ROW_COUNT).Style.ForeColor = Color.Red
+            dgvWork("Jyo", INPUT_ROW_COUNT).Style.SelectionForeColor = Color.Red
+            dgvWork("Tuki", INPUT_ROW_COUNT).Style.ForeColor = Color.Red
+            dgvWork("Tuki", INPUT_ROW_COUNT).Style.SelectionForeColor = Color.Red
+            dgvWork("Sou", INPUT_ROW_COUNT).Style.ForeColor = Color.Red
+            dgvWork("Sou", INPUT_ROW_COUNT).Style.SelectionForeColor = Color.Red
             setHolidayColumnColor()
         End If
     End Sub
@@ -468,6 +507,173 @@
         For i As Integer = 1 To INPUT_ROW_COUNT Step 2
             workDt.Rows(i).Item("Seq") = i + 1
         Next
+    End Sub
+
+    ''' <summary>
+    ''' 勤務項目名マスタ読み込み
+    ''' </summary>
+    ''' <remarks></remarks>
+    Private Sub loadKmkM()
+        Dim cnn As New ADODB.Connection
+        cnn.Open(TopForm.DB_Diary)
+        Dim rs As New ADODB.Recordset
+        Dim sql As String = "select Ent, Prt from KmkM where Kin = '" & formType & "'"
+        rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly)
+        While Not rs.EOF
+            Dim ent As String = Util.checkDBNullValue(rs.Fields("Ent").Value)
+            Dim prt As String = Util.checkDBNullValue(rs.Fields("Prt").Value)
+            If Not shortWorkDic.ContainsKey(prt) Then
+                shortWorkDic.Add(prt, ent)
+            End If
+            rs.MoveNext()
+        End While
+        rs.Close()
+        cnn.Close()
+    End Sub
+
+    ''' <summary>
+    ''' 定数マスタ読み込み
+    ''' </summary>
+    ''' <remarks></remarks>
+    Private Sub loadConstM()
+        Dim hyoNum As String = ""
+        If formType = "特養" Then
+            hyoNum = "1"
+        ElseIf formType = "事務" Then
+            hyoNum = "2"
+        ElseIf formType = "ｼｮｰﾄｽﾃｲ" Then
+            hyoNum = "3"
+        ElseIf formType = "ﾃﾞｲｻｰﾋﾞｽ" Then
+            hyoNum = "4"
+        ElseIf formType = "ﾍﾙﾊﾟｰｽﾃｰｼｮﾝ" Then
+            hyoNum = "5"
+        ElseIf formType = "居宅介護支援" Then
+            hyoNum = "6"
+        ElseIf formType = "老人介護支援ｾﾝﾀｰ" Then
+            hyoNum = "7"
+        ElseIf formType = "生活支援ﾊｳｽ" Then
+            hyoNum = "8"
+        End If
+
+        Dim cnn As New ADODB.Connection
+        cnn.Open(TopForm.DB_Diary)
+        Dim sql As String = "select * from ConstM"
+        Dim rs As New ADODB.Recordset
+        rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly)
+        While Not rs.EOF
+            For i As Integer = 1 To 24
+                workTimeDic.Add(workArray(i - 1), rs.Fields("J" & i & hyoNum).Value)
+            Next
+            rs.MoveNext()
+        End While
+        rs.Close()
+        cnn.Close()
+    End Sub
+
+    ''' <summary>
+    ''' 月合計算出
+    ''' </summary>
+    ''' <param name="rowY">予定行</param>
+    ''' <param name="rowH">変更行</param>
+    ''' <remarks></remarks>
+    Private Sub calcWorkTime(rowY As DataGridViewRow, rowH As DataGridViewRow)
+        Dim totalY As Decimal = 0.0
+        Dim totalH As Decimal = 0.0
+        For i As Integer = 1 To WEEK4
+            '予定
+            Dim workY As String = Util.checkDBNullValue(rowY.Cells("Y" & i).Value)
+            totalY += convWorkTime(workY)
+            '変更
+            Dim workH As String = Util.checkDBNullValue(rowH.Cells("Y" & i).Value)
+            workH = If(workH = "", workY, workH)
+            totalH += convWorkTime(workH)
+        Next
+        '月合計
+        '予定
+        If totalY = 0.0 Then
+            rowY.Cells("Tuki").Value = ""
+        Else
+            rowY.Cells("Tuki").Value = totalY
+        End If
+        '変更
+        If totalH = 0.0 Then
+            rowH.Cells("Tuki").Value = ""
+        Else
+            rowH.Cells("Tuki").Value = If(totalY <> totalH, totalH, "")
+        End If
+        '常勤換算後の人数
+        '予定
+        Dim kansanY As String = (Math.Floor((totalY / KANSAN) * 100) / 100).ToString("0.00")
+        If kansanY = "0.00" Then
+            rowY.Cells("Jyo").Value = ""
+        Else
+            rowY.Cells("Jyo").Value = kansanY
+        End If
+        '変更
+        Dim kansanH As String = (Math.Floor((totalH / KANSAN) * 100) / 100).ToString("0.00")
+        If kansanH = "0.00" Then
+            rowH.Cells("Jyo").Value = ""
+        Else
+            rowH.Cells("Jyo").Value = If(kansanY <> kansanH, kansanH, "")
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' 勤務時間に変換
+    ''' </summary>
+    ''' <param name="work">勤務名</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Private Function convWorkTime(work As String) As Decimal
+        Dim result As Decimal
+        If System.Text.RegularExpressions.Regex.IsMatch(work, "^\d+(\.\d)?$") Then
+            '数値の場合はそのまま
+            result = CDec(work)
+        Else
+            '数値以外
+            work = If(shortWorkDic.ContainsKey(work), shortWorkDic(work), work)
+            work = If(work = "有休", "日勤", work)
+            work = If(workTimeDic.ContainsKey(work), workTimeDic(work), "0")
+            result = CDec(work)
+        End If
+        Return result
+    End Function
+
+    ''' <summary>
+    ''' 登録ボタンクリックイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub btnRegist_Click(sender As System.Object, e As System.EventArgs) Handles btnRegist.Click
+
+    End Sub
+
+    ''' <summary>
+    ''' 換算ボタンクリックイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub btnConv_Click(sender As System.Object, e As System.EventArgs) Handles btnConv.Click
+        For i As Integer = 1 To dgvWork.Rows.Count - 1 Step 2
+            Dim nam As String = Util.checkDBNullValue(dgvWork("Nam", i).Value)
+            If nam = "" Then
+                Continue For
+            Else
+                calcWorkTime(dgvWork.Rows(i), dgvWork.Rows(i + 1))
+            End If
+        Next
+    End Sub
+
+    ''' <summary>
+    ''' 削除ボタンクリックイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub btnDelete_Click(sender As System.Object, e As System.EventArgs) Handles btnDelete.Click
+
     End Sub
 
     ''' <summary>
@@ -485,5 +691,15 @@
         Next
         Dim printForm As New 勤務表印刷条件(ym, formType, youbi)
         printForm.ShowDialog()
+    End Sub
+
+    ''' <summary>
+    ''' 個人別ボタンクリックイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub btnPersonal_Click(sender As System.Object, e As System.EventArgs) Handles btnPersonal.Click
+
     End Sub
 End Class

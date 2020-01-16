@@ -16,8 +16,13 @@ Public Class 勤務表印刷条件
     '印刷 or ﾌﾟﾚﾋﾞｭｰ
     Private printState As Boolean
 
+    Private workArray() As String = {"日勤", "半勤", "早出", "遅出", "Ａ勤", "Ｂ勤", "振替", "夜勤", "宿直", "日直", "Ｃ勤", "明け", "特日", "研修", "深夜", "1/3勤", "1/3半", "日早", "日遅", "遅々", "半Ａ", "半Ｂ", "半夜", "半行"}
+
+    '勤務時間
+    Private workTimeDic As New Dictionary(Of String, String)
+
     '印刷用勤務名Dic
-    Private printWorkDic As Dictionary(Of String, String)
+    Private printWorkDic As New Dictionary(Of String, String)
 
     ''' <summary>
     ''' コンストラクタ
@@ -64,6 +69,12 @@ Public Class 勤務表印刷条件
         sign1Box.Text = Util.getIniString("System", "Sign1", TopForm.iniFilePath)
         sign2Box.Text = Util.getIniString("System", "Sign2", TopForm.iniFilePath)
         sign3Box.Text = Util.getIniString("System", "Sign3", TopForm.iniFilePath)
+
+        '定数マスタ読み込み
+        loadConstM()
+
+        '印刷用勤務名読込
+        loadKmkM()
     End Sub
 
     ''' <summary>
@@ -120,16 +131,16 @@ Public Class 勤務表印刷条件
             Return
         Else
             '印刷処理
-            'Dim type As String = If(rbtnPlan.Checked, "予定", If(rbtnResult.Checked, "実績", "予定／実績"))
-            'If rbtnA4.Checked Then
-            '    printA4(type, rs)
-            'ElseIf rbtnB4.Checked Then
-            '    printB4(type, rs)
-            'ElseIf rbtnB4S.Checked Then
-            '    printB4S(type, rs)
-            'ElseIf rbtnB4S2.Checked Then
-            '    printB4S2(type, rs)
-            'End If
+            Dim type As String = If(rbtnPlan.Checked, "予定", If(rbtnResult.Checked, "実績", "予定／実績"))
+            If rbtnA4.Checked Then
+                printA4(type, rs)
+            ElseIf rbtnB4.Checked Then
+                printB4(type, rs)
+            ElseIf rbtnB4S.Checked Then
+                printB4S(type, rs)
+            ElseIf rbtnB4S2.Checked Then
+                printB4S2(type, rs)
+            End If
             rs.Close()
             cnn.Close()
             Me.Close()
@@ -141,7 +152,60 @@ Public Class 勤務表印刷条件
     ''' </summary>
     ''' <remarks></remarks>
     Private Sub loadKmkM()
+        Dim cnn As New ADODB.Connection
+        cnn.Open(TopForm.DB_Diary)
+        Dim rs As New ADODB.Recordset
+        Dim sql As String = "select Ent, Prt from KmkM where Kin = '" & hyo & "'"
+        rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly)
+        While Not rs.EOF
+            Dim ent As String = Util.checkDBNullValue(rs.Fields("Ent").Value)
+            Dim prt As String = Util.checkDBNullValue(rs.Fields("Prt").Value)
+            If Not printWorkDic.ContainsKey(ent) Then
+                printWorkDic.Add(ent, prt)
+            End If
+            rs.MoveNext()
+        End While
+        rs.Close()
+        cnn.Close()
+    End Sub
 
+    ''' <summary>
+    ''' 定数マスタ読み込み
+    ''' </summary>
+    ''' <remarks></remarks>
+    Private Sub loadConstM()
+        Dim hyoNum As String = ""
+        If hyo = "特養" Then
+            hyoNum = "1"
+        ElseIf hyo = "事務" Then
+            hyoNum = "2"
+        ElseIf hyo = "ｼｮｰﾄｽﾃｲ" Then
+            hyoNum = "3"
+        ElseIf hyo = "ﾃﾞｲｻｰﾋﾞｽ" Then
+            hyoNum = "4"
+        ElseIf hyo = "ﾍﾙﾊﾟｰｽﾃｰｼｮﾝ" Then
+            hyoNum = "5"
+        ElseIf hyo = "居宅介護支援" Then
+            hyoNum = "6"
+        ElseIf hyo = "老人介護支援ｾﾝﾀｰ" Then
+            hyoNum = "7"
+        ElseIf hyo = "生活支援ﾊｳｽ" Then
+            hyoNum = "8"
+        End If
+
+        Dim cnn As New ADODB.Connection
+        cnn.Open(TopForm.DB_Diary)
+        Dim sql As String = "select * from ConstM"
+        Dim rs As New ADODB.Recordset
+        rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly)
+        While Not rs.EOF
+            For i As Integer = 1 To 24
+                workTimeDic.Add(workArray(i - 1), rs.Fields("J" & i & hyoNum).Value)
+            Next
+            rs.MoveNext()
+        End While
+        rs.Close()
+        cnn.Close()
     End Sub
 
     ''' <summary>
@@ -279,7 +343,67 @@ Public Class 勤務表印刷条件
     ''' <param name="rs">印刷データレコードセット</param>
     ''' <remarks></remarks>
     Private Sub printB4(writeType As String, rs As ADODB.Recordset)
+        'エクセル準備
+        Dim objExcel As Excel.Application = CreateObject("Excel.Application")
+        Dim objWorkBooks As Excel.Workbooks = objExcel.Workbooks
+        Dim objWorkBook As Excel.Workbook = objWorkBooks.Open(TopForm.excelFilePath)
+        Dim oSheet As Excel.Worksheet = objWorkBook.Worksheets("勤務表B4改")
+        Dim xlShapes As Excel.Shapes = DirectCast(oSheet.Shapes, Excel.Shapes)
+        objExcel.Calculation = Excel.XlCalculation.xlCalculationManual
+        objExcel.ScreenUpdating = False
 
+        '年月
+        oSheet.Range("C3").Value = "( " & CInt(ym.Split("/")(0)) & "年 " & CInt(ym.Split("/")(1)) & "月度 )"
+        '部署?
+        oSheet.Range("G3").Value = hyo
+        '印影
+        If System.IO.File.Exists(sign1Path) Then
+            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AD"), Excel.Range)
+            xlShapes.AddPicture(sign1Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
+        End If
+        If System.IO.File.Exists(sign2Path) Then
+            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AF"), Excel.Range)
+            xlShapes.AddPicture(sign2Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
+        End If
+        If System.IO.File.Exists(sign3Path) Then
+            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AH"), Excel.Range)
+            xlShapes.AddPicture(sign3Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
+        End If
+        '曜日行設定
+        oSheet.Range("H8", "AL8").Value = youbi
+        '左下の勤務時間の表示
+        '定数マスタからとってくるかんじで
+        '
+        '
+        '
+
+
+
+
+
+
+
+        objExcel.Calculation = Excel.XlCalculation.xlCalculationAutomatic
+        objExcel.ScreenUpdating = True
+
+        '変更保存確認ダイアログ非表示
+        objExcel.DisplayAlerts = False
+
+        '印刷
+        If printState Then
+            oSheet.PrintOut()
+        Else
+            objExcel.Visible = True
+            oSheet.PrintPreview(1)
+        End If
+
+        ' EXCEL解放
+        objExcel.Quit()
+        Marshal.ReleaseComObject(objWorkBook)
+        Marshal.ReleaseComObject(objExcel)
+        oSheet = Nothing
+        objWorkBook = Nothing
+        objExcel = Nothing
     End Sub
 
     ''' <summary>

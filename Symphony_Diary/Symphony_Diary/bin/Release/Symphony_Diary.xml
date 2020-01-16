@@ -371,6 +371,11 @@ Symphony_Diary
  勤務項目名マスタ読み込み
  </summary>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.loadConstM">
+	<summary>
+ 定数マスタ読み込み
+ </summary>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.勤務表印刷条件.printA4(System.String,ADODB.Recordset)">
 	<summary>
  A4印刷
@@ -565,9 +570,61 @@ Symphony_Diary
  行番号(seq)セット
  </summary>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.loadKmkM">
+	<summary>
+ 勤務項目名マスタ読み込み
+ </summary>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.loadConstM">
+	<summary>
+ 定数マスタ読み込み
+ </summary>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.calcWorkTime(System.Windows.Forms.DataGridViewRow,System.Windows.Forms.DataGridViewRow)">
+	<summary>
+ 月合計算出
+ </summary>
+	<param name="rowY">予定行</param>
+	<param name="rowH">変更行</param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.convWorkTime(System.String)">
+	<summary>
+ 勤務時間に変換
+ </summary>
+	<param name="work">勤務名</param>
+	<returns></returns>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.btnRegist_Click(System.Object,System.EventArgs)">
+	<summary>
+ 登録ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.btnConv_Click(System.Object,System.EventArgs)">
+	<summary>
+ 換算ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.btnDelete_Click(System.Object,System.EventArgs)">
+	<summary>
+ 削除ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.勤務画面.btnPrint_Click(System.Object,System.EventArgs)">
 	<summary>
  印刷ボタンクリックイベント
+ </summary>
+	<param name="sender"></param>
+	<param name="e"></param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.btnPersonal_Click(System.Object,System.EventArgs)">
+	<summary>
+ 個人別ボタンクリックイベント
  </summary>
 	<param name="sender"></param>
 	<param name="e"></param>

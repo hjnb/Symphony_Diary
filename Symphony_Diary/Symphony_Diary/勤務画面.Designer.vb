@@ -27,18 +27,18 @@ Partial Class 勤務画面
         Me.btnDisplay = New System.Windows.Forms.Button()
         Me.btnRowInsert = New System.Windows.Forms.Button()
         Me.btnRowDelete = New System.Windows.Forms.Button()
-        Me.Button1 = New System.Windows.Forms.Button()
-        Me.Button2 = New System.Windows.Forms.Button()
+        Me.btnRegist = New System.Windows.Forms.Button()
+        Me.btnConv = New System.Windows.Forms.Button()
         Me.btnPrint = New System.Windows.Forms.Button()
-        Me.Button4 = New System.Windows.Forms.Button()
-        Me.Button5 = New System.Windows.Forms.Button()
+        Me.btnDelete = New System.Windows.Forms.Button()
+        Me.btnPersonal = New System.Windows.Forms.Button()
         Me.dgvWork = New Symphony_Diary.WorkDataGridView(Me.components)
         CType(Me.dgvWork, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'adBox
         '
-        Me.adBox.dateText = "09"
+        Me.adBox.dateText = "15"
         Me.adBox.Location = New System.Drawing.Point(30, 25)
         Me.adBox.Mode = 3
         Me.adBox.monthText = "01"
@@ -74,23 +74,23 @@ Partial Class 勤務画面
         Me.btnRowDelete.Text = "行削除"
         Me.btnRowDelete.UseVisualStyleBackColor = True
         '
-        'Button1
+        'btnRegist
         '
-        Me.Button1.Location = New System.Drawing.Point(684, 27)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(69, 33)
-        Me.Button1.TabIndex = 5
-        Me.Button1.Text = "登録"
-        Me.Button1.UseVisualStyleBackColor = True
+        Me.btnRegist.Location = New System.Drawing.Point(684, 27)
+        Me.btnRegist.Name = "btnRegist"
+        Me.btnRegist.Size = New System.Drawing.Size(69, 33)
+        Me.btnRegist.TabIndex = 5
+        Me.btnRegist.Text = "登録"
+        Me.btnRegist.UseVisualStyleBackColor = True
         '
-        'Button2
+        'btnConv
         '
-        Me.Button2.Location = New System.Drawing.Point(752, 27)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(69, 33)
-        Me.Button2.TabIndex = 6
-        Me.Button2.Text = "換算"
-        Me.Button2.UseVisualStyleBackColor = True
+        Me.btnConv.Location = New System.Drawing.Point(752, 27)
+        Me.btnConv.Name = "btnConv"
+        Me.btnConv.Size = New System.Drawing.Size(69, 33)
+        Me.btnConv.TabIndex = 6
+        Me.btnConv.Text = "換算"
+        Me.btnConv.UseVisualStyleBackColor = True
         '
         'btnPrint
         '
@@ -101,23 +101,23 @@ Partial Class 勤務画面
         Me.btnPrint.Text = "印刷"
         Me.btnPrint.UseVisualStyleBackColor = True
         '
-        'Button4
+        'btnDelete
         '
-        Me.Button4.Location = New System.Drawing.Point(820, 27)
-        Me.Button4.Name = "Button4"
-        Me.Button4.Size = New System.Drawing.Size(69, 33)
-        Me.Button4.TabIndex = 7
-        Me.Button4.Text = "削除"
-        Me.Button4.UseVisualStyleBackColor = True
+        Me.btnDelete.Location = New System.Drawing.Point(820, 27)
+        Me.btnDelete.Name = "btnDelete"
+        Me.btnDelete.Size = New System.Drawing.Size(69, 33)
+        Me.btnDelete.TabIndex = 7
+        Me.btnDelete.Text = "削除"
+        Me.btnDelete.UseVisualStyleBackColor = True
         '
-        'Button5
+        'btnPersonal
         '
-        Me.Button5.Location = New System.Drawing.Point(956, 27)
-        Me.Button5.Name = "Button5"
-        Me.Button5.Size = New System.Drawing.Size(69, 33)
-        Me.Button5.TabIndex = 9
-        Me.Button5.Text = "個人別"
-        Me.Button5.UseVisualStyleBackColor = True
+        Me.btnPersonal.Location = New System.Drawing.Point(956, 27)
+        Me.btnPersonal.Name = "btnPersonal"
+        Me.btnPersonal.Size = New System.Drawing.Size(69, 33)
+        Me.btnPersonal.TabIndex = 9
+        Me.btnPersonal.Text = "個人別"
+        Me.btnPersonal.UseVisualStyleBackColor = True
         '
         'dgvWork
         '
@@ -133,11 +133,11 @@ Partial Class 勤務画面
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1072, 749)
-        Me.Controls.Add(Me.Button5)
+        Me.Controls.Add(Me.btnPersonal)
         Me.Controls.Add(Me.btnPrint)
-        Me.Controls.Add(Me.Button4)
-        Me.Controls.Add(Me.Button2)
-        Me.Controls.Add(Me.Button1)
+        Me.Controls.Add(Me.btnDelete)
+        Me.Controls.Add(Me.btnConv)
+        Me.Controls.Add(Me.btnRegist)
         Me.Controls.Add(Me.btnRowDelete)
         Me.Controls.Add(Me.btnRowInsert)
         Me.Controls.Add(Me.dgvWork)
@@ -154,9 +154,9 @@ Partial Class 勤務画面
     Friend WithEvents dgvWork As Symphony_Diary.WorkDataGridView
     Friend WithEvents btnRowInsert As System.Windows.Forms.Button
     Friend WithEvents btnRowDelete As System.Windows.Forms.Button
-    Friend WithEvents Button1 As System.Windows.Forms.Button
-    Friend WithEvents Button2 As System.Windows.Forms.Button
+    Friend WithEvents btnRegist As System.Windows.Forms.Button
+    Friend WithEvents btnConv As System.Windows.Forms.Button
     Friend WithEvents btnPrint As System.Windows.Forms.Button
-    Friend WithEvents Button4 As System.Windows.Forms.Button
-    Friend WithEvents Button5 As System.Windows.Forms.Button
+    Friend WithEvents btnDelete As System.Windows.Forms.Button
+    Friend WithEvents btnPersonal As System.Windows.Forms.Button
 End Class
