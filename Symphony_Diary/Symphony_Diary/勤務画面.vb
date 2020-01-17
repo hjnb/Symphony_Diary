@@ -1,4 +1,7 @@
-﻿Public Class 勤務画面
+﻿Imports Microsoft.Office.Interop
+Imports System.Runtime.InteropServices
+
+Public Class 勤務画面
 
     'フォームタイプ
     Private formType As String
@@ -18,6 +21,9 @@
 
     '入力可能行数（勤務入力部分）
     Private Const INPUT_ROW_COUNT As Integer = 200
+
+    '印刷 or ﾌﾟﾚﾋﾞｭｰ
+    Private printState As Boolean
 
     '勤務割データテーブル
     Private workDt As DataTable
@@ -65,6 +71,10 @@
     ''' <remarks></remarks>
     Private Sub 勤務画面_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
         Me.WindowState = FormWindowState.Maximized
+
+        '印刷orﾌﾟﾚﾋﾞｭｰ
+        Dim state As String = Util.getIniString("System", "Printer", TopForm.iniFilePath)
+        printState = If(state = "Y", True, False)
 
         'セル背景色作成
         createCellColor()
@@ -700,6 +710,116 @@
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub btnPersonal_Click(sender As System.Object, e As System.EventArgs) Handles btnPersonal.Click
+        '管理者パスワードフォーム表示
+        Dim passForm As Form = New passwordForm(TopForm.iniFilePath, 1)
+        If passForm.ShowDialog() <> Windows.Forms.DialogResult.OK Then
+            Return
+        End If
+
+        '勤務データ取得
+        Dim ym As String = adBox.getADymStr() '選択年月
+        Dim cnn As New ADODB.Connection
+        cnn.Open(TopForm.DB_Diary)
+        Dim rs As New ADODB.Recordset
+        Dim sql As String = "select * from KinD where Ym = '" & ym & "' and Hyo = '" & formType & "' order by Seq"
+        rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockReadOnly)
+        Dim personCount As Integer = rs.RecordCount '人数
+        If personCount <= 0 Then
+            MsgBox("該当がありません。", MsgBoxStyle.Exclamation)
+            rs.Close()
+            cnn.Close()
+            Return
+        End If
+
+        '貼り付け用データ作成
+        Dim year As Integer = CInt(ym.Split("/")(0))
+        Dim month As Integer = CInt(ym.Split("/")(1))
+        Dim daysInMonth As Integer = DateTime.DaysInMonth(year, month) '月の日数
+        Dim firstDay As DateTime = New DateTime(year, month, 1)
+        Dim weekNumber As Integer = CInt(firstDay.DayOfWeek) '初日の曜日のindex
+        Dim namList As New List(Of String)
+        Dim dataList As New List(Of String(,))
+        Dim dataDic As New Dictionary(Of String, String(,))
+        While Not rs.EOF
+            Dim yVal, hVal As String
+            Dim numIndex As Integer = weekNumber
+            Dim workData(17, 6) As String
+            For i As Integer = 1 To daysInMonth
+                workData((numIndex \ 7) * 3, numIndex Mod 7) = i '日にち
+                yVal = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
+                hVal = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
+                workData((numIndex \ 7) * 3 + 1, numIndex Mod 7) = yVal '予定
+                If yVal <> hVal Then
+                    workData((numIndex \ 7) * 3 + 2, numIndex Mod 7) = hVal '変更
+                End If
+                numIndex += 1
+            Next
+            Dim nam As String = Util.checkDBNullValue(rs.Fields("Nam").Value)
+            namList.Add(nam)
+            dataList.Add(workData.Clone())
+            rs.MoveNext()
+        End While
+        rs.Close()
+        cnn.Close()
+
+        'エクセル準備
+        Dim objExcel As Excel.Application = CreateObject("Excel.Application")
+        Dim objWorkBooks As Excel.Workbooks = objExcel.Workbooks
+        Dim objWorkBook As Excel.Workbook = objWorkBooks.Open(TopForm.excelFilePath)
+        Dim oSheet As Excel.Worksheet = objWorkBook.Worksheets("ｶﾚﾝﾀﾞｰ改")
+        objExcel.Calculation = Excel.XlCalculation.xlCalculationManual
+        objExcel.ScreenUpdating = False
+
+        '年月
+        oSheet.Range("C1").Value = year & "年" & month & "月"
+        oSheet.Range("C31").Value = year & "年" & month & "月"
+
+        '人数分の枠準備
+        Dim forCount As Integer
+        For forCount = 1 To ((personCount - 1) \ 2)
+            'コピペ処理
+            Dim xlPasteRange As Excel.Range = oSheet.Range("A" & ((forCount * 53) + 1)) 'ペースト先
+            oSheet.Rows("1:53").copy(xlPasteRange)
+        Next
+
+        'データ貼り付け
+        Dim count As Integer = 1
+        For i As Integer = 0 To namList.Count - 1
+            Dim nam As String = namList(i) '氏名
+            Dim workData(,) As String = dataList(i) '勤務データ
+            If (count Mod 2) = 1 Then
+                'ページ上部
+                oSheet.Range("E" & (53 * (count \ 2) + 1)).Value = nam
+                oSheet.Range("B" & (53 * (count \ 2) + 4), "H" & (53 * (count \ 2) + 21)).Value = workData
+            Else
+                'ページ下部
+                oSheet.Range("E" & (53 * ((count - 1) \ 2) + 31)).Value = nam
+                oSheet.Range("B" & (53 * ((count - 1) \ 2) + 34), "H" & (53 * ((count - 1) \ 2) + 51)).Value = workData
+            End If
+            count += 1
+        Next
+
+        objExcel.Calculation = Excel.XlCalculation.xlCalculationAutomatic
+        objExcel.ScreenUpdating = True
+
+        '変更保存確認ダイアログ非表示
+        objExcel.DisplayAlerts = False
+
+        '印刷
+        If printState Then
+            oSheet.PrintOut()
+        Else
+            objExcel.Visible = True
+            oSheet.PrintPreview(1)
+        End If
+
+        ' EXCEL解放
+        objExcel.Quit()
+        Marshal.ReleaseComObject(objWorkBook)
+        Marshal.ReleaseComObject(objExcel)
+        oSheet = Nothing
+        objWorkBook = Nothing
+        objExcel = Nothing
 
     End Sub
 End Class
