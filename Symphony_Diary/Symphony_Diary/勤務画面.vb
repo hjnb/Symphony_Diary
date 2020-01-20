@@ -581,12 +581,13 @@ Public Class 勤務画面
     End Sub
 
     ''' <summary>
-    ''' 月合計算出
+    ''' 換算処理(常勤換算後人数、月合計、総勤日数)
     ''' </summary>
     ''' <param name="rowY">予定行</param>
     ''' <param name="rowH">変更行</param>
     ''' <remarks></remarks>
     Private Sub calcWorkTime(rowY As DataGridViewRow, rowH As DataGridViewRow)
+        '月合計
         Dim totalY As Decimal = 0.0
         Dim totalH As Decimal = 0.0
         For i As Integer = 1 To WEEK4
@@ -598,7 +599,6 @@ Public Class 勤務画面
             workH = If(workH = "", workY, workH)
             totalH += convWorkTime(workH)
         Next
-        '月合計
         '予定
         If totalY = 0.0 Then
             rowY.Cells("Tuki").Value = ""
@@ -611,6 +611,7 @@ Public Class 勤務画面
         Else
             rowH.Cells("Tuki").Value = If(totalY <> totalH, totalH, "")
         End If
+
         '常勤換算後の人数
         '予定
         Dim kansanY As String = (Math.Floor((totalY / KANSAN) * 100) / 100).ToString("0.00")
@@ -625,6 +626,31 @@ Public Class 勤務画面
             rowH.Cells("Jyo").Value = ""
         Else
             rowH.Cells("Jyo").Value = If(kansanY <> kansanH, kansanH, "")
+        End If
+
+        '総勤日数
+        Dim totalWorkY As Integer = 0
+        Dim totalWorkH As Integer = 0
+        For i As Integer = 1 To 31
+            '予定
+            Dim workY As String = Util.checkDBNullValue(rowY.Cells("Y" & i).Value)
+            totalWorkY = If(isWorked(workY), totalWorkY + 1, totalWorkY)
+            '変更
+            Dim workH As String = Util.checkDBNullValue(rowH.Cells("Y" & i).Value)
+            workH = If(workH = "", workY, workH)
+            totalWorkH = If(isWorked(workH), totalWorkH + 1, totalWorkH)
+        Next
+        If totalWorkY = 0 Then
+            rowY.Cells("Sou").Value = ""
+        Else
+            rowY.Cells("Sou").Value = totalWorkY
+        End If
+        If totalWorkH = 0 Then
+            rowH.Cells("Sou").Value = ""
+        Else
+            If totalWorkY <> totalWorkH Then
+                rowH.Cells("Sou").Value = totalWorkH
+            End If
         End If
     End Sub
 
@@ -647,6 +673,27 @@ Public Class 勤務画面
             result = CDec(work)
         End If
         Return result
+    End Function
+
+    ''' <summary>
+    ''' 勤務日数に該当するか
+    ''' </summary>
+    ''' <param name="work">勤務名</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Private Function isWorked(work As String) As Boolean
+        If System.Text.RegularExpressions.Regex.IsMatch(work, "^\d+(\.\d)?$") Then
+            '数値の場合、該当
+            Return True
+        Else
+            '数値以外の場合、ConstMに勤務がある、且つ、公休有休欠勤以外は該当
+            work = If(shortWorkDic.ContainsKey(work), shortWorkDic(work), work)
+            If workTimeDic.ContainsKey(work) AndAlso work <> "公休" AndAlso work <> "有休" AndAlso work <> "欠勤" Then
+                Return True
+            Else
+                Return False
+            End If
+        End If
     End Function
 
     ''' <summary>

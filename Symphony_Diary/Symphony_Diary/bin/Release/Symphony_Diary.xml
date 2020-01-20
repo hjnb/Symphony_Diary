@@ -582,7 +582,7 @@ Symphony_Diary
 	<remarks></remarks>
 </member><member name="M:Symphony_Diary.勤務画面.calcWorkTime(System.Windows.Forms.DataGridViewRow,System.Windows.Forms.DataGridViewRow)">
 	<summary>
- 月合計算出
+ 換算処理(常勤換算後人数、月合計、総勤日数)
  </summary>
 	<param name="rowY">予定行</param>
 	<param name="rowH">変更行</param>
@@ -590,6 +590,13 @@ Symphony_Diary
 </member><member name="M:Symphony_Diary.勤務画面.convWorkTime(System.String)">
 	<summary>
  勤務時間に変換
+ </summary>
+	<param name="work">勤務名</param>
+	<returns></returns>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.isWorked(System.String)">
+	<summary>
+ 勤務日数に該当するか
  </summary>
 	<param name="work">勤務名</param>
 	<returns></returns>
