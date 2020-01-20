@@ -41,6 +41,7 @@ Partial Class TopForm
         Me.btnKinM = New System.Windows.Forms.Button()
         Me.btnDB = New System.Windows.Forms.Button()
         Me.adBox = New ADBox.adBox()
+        Me.saveCSVFileDialog = New System.Windows.Forms.SaveFileDialog()
         Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -215,14 +216,14 @@ Partial Class TopForm
         '
         'adBox
         '
-        Me.adBox.dateText = "25"
+        Me.adBox.dateText = "20"
         Me.adBox.Location = New System.Drawing.Point(167, 24)
         Me.adBox.Mode = 3
-        Me.adBox.monthText = "12"
+        Me.adBox.monthText = "01"
         Me.adBox.Name = "adBox"
         Me.adBox.Size = New System.Drawing.Size(130, 35)
         Me.adBox.TabIndex = 0
-        Me.adBox.yearText = "2019"
+        Me.adBox.yearText = "2020"
         '
         'TopForm
         '
@@ -271,5 +272,6 @@ Partial Class TopForm
     Friend WithEvents btnKinM As System.Windows.Forms.Button
     Friend WithEvents btnDB As System.Windows.Forms.Button
     Friend WithEvents adBox As ADBox.adBox
+    Friend WithEvents saveCSVFileDialog As System.Windows.Forms.SaveFileDialog
 
 End Class

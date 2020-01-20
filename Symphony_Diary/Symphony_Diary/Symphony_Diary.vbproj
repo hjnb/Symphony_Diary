@@ -149,18 +149,6 @@
     <Compile Include="職員マスタ.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ＣＳＶ書出し.Designer.vb">
-      <DependentUpon>ＣＳＶ書出し.vb</DependentUpon>
-    </Compile>
-    <Compile Include="ＣＳＶ書出し.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ＣＳＶ読込み.Designer.vb">
-      <DependentUpon>ＣＳＶ読込み.vb</DependentUpon>
-    </Compile>
-    <Compile Include="ＣＳＶ読込み.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="ＤＢ整理.Designer.vb">
       <DependentUpon>ＤＢ整理.vb</DependentUpon>
     </Compile>

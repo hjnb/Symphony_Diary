@@ -431,6 +431,11 @@ Symphony_Diary
 	<param name="sender"></param>
 	<param name="e"></param>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.TopForm.createDictionary">
+	<summary>
+ 勤務対応dic作成
+ </summary>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.TopForm.initPrintState">
 	<summary>
  印刷ラジオボタン初期値設定
@@ -499,6 +504,17 @@ Symphony_Diary
 	<param name="sender"></param>
 	<param name="e"></param>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.TopForm.writeWorkData(ADODB.Recordset,System.Text.StringBuilder)">
+	<summary>
+ レコードセットのデータを整形してStringBuilderに追加
+ </summary>
+	<param name="rs">追加するレコードセット</param>
+	<param name="sb">追加されるStringBuilder</param>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.TopForm.EncloseDoubleQuotes(System.String)">
+	<summary>
+ 文字列をダブルクォートで囲む
+ </summary>
 </member><member name="M:Symphony_Diary.勤務画面.#ctor(System.String,System.String)">
 	<summary>
  コンストラクタ
