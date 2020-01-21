@@ -51,6 +51,9 @@ Public Class 勤務画面
     '短縮勤務名Dic
     Private shortWorkDic As New Dictionary(Of String, String)
 
+    'ラベル表示用
+    Private labelList As New List(Of String)
+
     ''' <summary>
     ''' コンストラクタ
     ''' </summary>
@@ -88,6 +91,9 @@ Public Class 勤務画面
 
         dgvWork.canCellEnter = True
 
+        '勤務項目名マスタ読み込み
+        loadKmkM()
+
         '定数マスタ読み込み
         loadConstM()
     End Sub
@@ -104,6 +110,65 @@ Public Class 勤務画面
         colorDic.Add("Disable", Color.FromKnownColor(KnownColor.Control))
         '日曜 or 祝日
         colorDic.Add("Holiday", Color.FromArgb(255, 200, 200))
+    End Sub
+
+    ''' <summary>
+    ''' ラベル作成
+    ''' </summary>
+    ''' <remarks></remarks>
+    Private Sub createLabel()
+        '定数マスタに0以外の数値が登録されている勤務のラベルを作成
+
+        'デフォルト表示　0：ｸﾘｱ、25：公休、26：有休、27：欠勤
+        Dim zeroLabel As New Label()
+        zeroLabel.ForeColor = System.Drawing.Color.Blue
+        zeroLabel.Location = New System.Drawing.Point(7, 10)
+        zeroLabel.Name = "label0"
+        zeroLabel.Size = New System.Drawing.Size(44, 12)
+        zeroLabel.TabIndex = 0
+        zeroLabel.Text = "0 ： ｸﾘｱ"
+        labelPanel.Controls.Add(zeroLabel)
+        Dim label25 As New Label()
+        label25.ForeColor = System.Drawing.Color.Blue
+        label25.Location = New System.Drawing.Point(722, 33)
+        label25.Name = "label25"
+        label25.Size = New System.Drawing.Size(55, 12)
+        label25.TabIndex = 25
+        label25.Text = "25 ： 公休"
+        labelPanel.Controls.Add(label25)
+        Dim label26 As New Label()
+        label26.ForeColor = System.Drawing.Color.Blue
+        label26.Location = New System.Drawing.Point(787, 33)
+        label26.Name = "label26"
+        label26.Size = New System.Drawing.Size(55, 12)
+        label26.TabIndex = 26
+        label26.Text = "26 ： 有休"
+        labelPanel.Controls.Add(label26)
+        Dim label27 As New Label()
+        label27.ForeColor = System.Drawing.Color.Blue
+        label27.Location = New System.Drawing.Point(852, 33)
+        label27.Name = "label27"
+        label27.Size = New System.Drawing.Size(55, 12)
+        label27.TabIndex = 27
+        label27.Text = "27 ： 欠勤"
+        labelPanel.Controls.Add(label27)
+
+        '定数マスタ読み込み時に作成したラベルリストで作成
+        For i As Integer = 1 To labelList.Count
+            Dim workLabel As New Label()
+            workLabel.TextAlign = ContentAlignment.MiddleLeft
+            workLabel.ForeColor = System.Drawing.Color.Blue
+            workLabel.Name = "workLabel" & i
+            workLabel.Size = New System.Drawing.Size(65, 12)
+            workLabel.TabIndex = i * 10
+            workLabel.Text = labelList(i - 1)
+            If i <= 13 Then
+                workLabel.Location = New System.Drawing.Point(7 + (65 * i), 10)
+            Else
+                workLabel.Location = New System.Drawing.Point(7 + (65 * (i - 13)), 33)
+            End If
+            labelPanel.Controls.Add(workLabel)
+        Next
     End Sub
 
     ''' <summary>
@@ -572,12 +637,19 @@ Public Class 勤務画面
         rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly)
         While Not rs.EOF
             For i As Integer = 1 To 24
-                workTimeDic.Add(workArray(i - 1), rs.Fields("J" & i & hyoNum).Value)
+                Dim time As String = rs.Fields("J" & i & hyoNum).Value.ToString()
+                workTimeDic.Add(workArray(i - 1), time)
+                If time <> "0" Then
+                    labelList.Add(i & " ： " & workArray(i - 1))
+                End If
             Next
             rs.MoveNext()
         End While
         rs.Close()
         cnn.Close()
+
+        'ラベル作成
+        createLabel()
     End Sub
 
     ''' <summary>

@@ -533,6 +533,11 @@ Symphony_Diary
  セル背景色作成
  </summary>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.createLabel">
+	<summary>
+ ラベル作成
+ </summary>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.勤務画面.initDgvWork">
 	<summary>
  データグリッドビュー初期設定

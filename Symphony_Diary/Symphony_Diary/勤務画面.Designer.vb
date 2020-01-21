@@ -32,13 +32,14 @@ Partial Class 勤務画面
         Me.btnPrint = New System.Windows.Forms.Button()
         Me.btnDelete = New System.Windows.Forms.Button()
         Me.btnPersonal = New System.Windows.Forms.Button()
+        Me.labelPanel = New System.Windows.Forms.Panel()
         Me.dgvWork = New Symphony_Diary.WorkDataGridView(Me.components)
         CType(Me.dgvWork, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'adBox
         '
-        Me.adBox.dateText = "15"
+        Me.adBox.dateText = "20"
         Me.adBox.Location = New System.Drawing.Point(30, 25)
         Me.adBox.Mode = 3
         Me.adBox.monthText = "01"
@@ -119,6 +120,13 @@ Partial Class 勤務画面
         Me.btnPersonal.Text = "個人別"
         Me.btnPersonal.UseVisualStyleBackColor = True
         '
+        'labelPanel
+        '
+        Me.labelPanel.Location = New System.Drawing.Point(68, 741)
+        Me.labelPanel.Name = "labelPanel"
+        Me.labelPanel.Size = New System.Drawing.Size(957, 71)
+        Me.labelPanel.TabIndex = 10
+        '
         'dgvWork
         '
         Me.dgvWork.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
@@ -132,7 +140,8 @@ Partial Class 勤務画面
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1072, 749)
+        Me.ClientSize = New System.Drawing.Size(1072, 817)
+        Me.Controls.Add(Me.labelPanel)
         Me.Controls.Add(Me.btnPersonal)
         Me.Controls.Add(Me.btnPrint)
         Me.Controls.Add(Me.btnDelete)
@@ -159,4 +168,5 @@ Partial Class 勤務画面
     Friend WithEvents btnPrint As System.Windows.Forms.Button
     Friend WithEvents btnDelete As System.Windows.Forms.Button
     Friend WithEvents btnPersonal As System.Windows.Forms.Button
+    Friend WithEvents labelPanel As System.Windows.Forms.Panel
 End Class
