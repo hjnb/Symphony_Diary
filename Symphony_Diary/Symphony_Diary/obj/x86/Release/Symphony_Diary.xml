@@ -497,6 +497,13 @@ Symphony_Diary
 	<param name="sender"></param>
 	<param name="e"></param>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.TopForm.readCsvFile(System.String)">
+	<summary>
+ CSVファイル読み込み
+ </summary>
+	<param name="csvFilePath">csvファイルパス</param>
+	<returns>結果リスト</returns>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.TopForm.btnDB_Click(System.Object,System.EventArgs)">
 	<summary>
  ＤＢ整理ボタンクリックイベント

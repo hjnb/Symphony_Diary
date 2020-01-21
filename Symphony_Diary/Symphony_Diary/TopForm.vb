@@ -250,8 +250,88 @@
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub btnReadCSV_Click(sender As System.Object, e As System.EventArgs) Handles btnReadCSV.Click
-        
+        'workで作成された勤務割CSVの読み込みという前提で
+
+        'csvファイル選択
+        Dim csvFilePath As String = ""
+        Dim ofd As New OpenFileDialog()
+        ofd.FileName = ""
+        ofd.InitialDirectory = ""
+        ofd.Filter = "CSVファイル(*.csv)|"
+        ofd.FilterIndex = 1
+        ofd.Title = "ファイルを選択してください"
+        ofd.RestoreDirectory = True
+        If ofd.ShowDialog() = DialogResult.OK Then
+            csvFilePath = ofd.FileName
+        Else
+            Return
+        End If
+
+        '選択ファイルの拡張子を確認
+        Dim ext As String = csvFilePath.Substring(csvFilePath.LastIndexOf(".") + 1)
+        ext = ext.ToLower()
+        If Not ext = "csv" Then
+            MsgBox("CSVファイルを選択して下さい。", MsgBoxStyle.Exclamation)
+            Return
+        End If
+
+        'ファイル読み込み
+        Dim dataList As List(Of String()) = readCsvFile(csvFilePath)
+
+        'データベースに登録
+        Dim cnn As New ADODB.Connection
+        cnn.Open(DB_Diary)
+        Dim rs As New ADODB.Recordset
+        rs.Open("KinD", cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockOptimistic)
+        For Each arr As String() In dataList
+
+        Next
+        rs.Close()
+        cnn.Close()
+
+        MsgBox("CSV読込が終了しました。", MsgBoxStyle.Information)
     End Sub
+
+    ''' <summary>
+    ''' CSVファイル読み込み
+    ''' </summary>
+    ''' <param name="csvFilePath">csvファイルパス</param>
+    ''' <returns>結果リスト</returns>
+    ''' <remarks></remarks>
+    Private Function readCsvFile(csvFilePath As String) As List(Of String())
+        'Shift JISで読込
+        Dim swText As New FileIO.TextFieldParser(csvFilePath, System.Text.Encoding.GetEncoding(932))
+
+        'フィールドが文字で区切られている設定を行います。
+        '（初期値がDelimited）
+        swText.TextFieldType = FileIO.FieldType.Delimited
+
+        '区切り文字を「,（カンマ）」に設定します。
+        swText.Delimiters = New String() {","}
+
+        'フィールドを"で囲み、改行文字、区切り文字を含めることが 'できるかを設定します。
+        '（初期値がtrue）
+        swText.HasFieldsEnclosedInQuotes = True
+
+        'フィールドの前後からスペースを削除する設定を行います。
+        '（初期値がtrue）
+        swText.TrimWhiteSpace = True
+
+        '結果格納用
+        Dim resultList As New List(Of String())
+
+        While Not swText.EndOfData
+            'CSVファイルのフィールドを読み込みます。
+            Dim fields As String() = swText.ReadFields()
+            '配列に追加します。
+            resultList.Add(fields)
+        End While
+
+        'ファイルを解放します。
+        swText.Close()
+
+        Return resultList
+    End Function
 
     ''' <summary>
     ''' ＤＢ整理ボタンクリックイベント

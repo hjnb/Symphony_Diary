@@ -216,7 +216,7 @@ Partial Class TopForm
         '
         'adBox
         '
-        Me.adBox.dateText = "20"
+        Me.adBox.dateText = "21"
         Me.adBox.Location = New System.Drawing.Point(167, 24)
         Me.adBox.Mode = 3
         Me.adBox.monthText = "01"
