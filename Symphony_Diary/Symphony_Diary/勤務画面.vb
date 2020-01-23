@@ -22,6 +22,9 @@ Public Class 勤務画面
     '入力可能行数（勤務入力部分）
     Private Const INPUT_ROW_COUNT As Integer = 160
 
+    '職種別集計部分
+    Private Const CALCULATE_ROW_COUNT As Integer = 8
+
     '印刷 or ﾌﾟﾚﾋﾞｭｰ
     Private printState As Boolean
 
@@ -212,7 +215,12 @@ Public Class 勤務画面
         workDt.Columns.Add("Sou", GetType(String))
 
         '空行追加
+        '曜日行と勤務入力行部分
         For i = 0 To INPUT_ROW_COUNT
+            workDt.Rows.Add(workDt.NewRow())
+        Next
+        '集計部分
+        For i = 1 To CALCULATE_ROW_COUNT
             workDt.Rows.Add(workDt.NewRow())
         Next
 
@@ -294,7 +302,7 @@ Public Class 勤務画面
                 End With
             Next
             '変更行の文字を赤に
-            For i As Integer = 2 To INPUT_ROW_COUNT Step 2
+            For i As Integer = 2 To INPUT_ROW_COUNT + CALCULATE_ROW_COUNT Step 2
                 For j As Integer = 1 To 31
                     dgvWork("Y" & j, i).Style.ForeColor = Color.Red
                     dgvWork("Y" & j, i).Style.SelectionForeColor = Color.Red
@@ -377,6 +385,8 @@ Public Class 勤務画面
         setDayCharRow(ym)
         '日曜日列の背景色設定
         setHolidayColumnColor()
+        '集計行の背景色設定
+        setCalculateRowBackColor()
 
         '行番号設定
         setSeqValue()
@@ -473,6 +483,19 @@ Public Class 勤務画面
         For Each row As DataGridViewRow In dgvWork.Rows
             For Each index As String In targetIndex
                 row.Cells("Y" & index).Style.BackColor = colorDic("Holiday")
+            Next
+        Next
+    End Sub
+
+    ''' <summary>
+    ''' 集計行の背景色設定
+    ''' </summary>
+    ''' <remarks></remarks>
+    Private Sub setCalculateRowBackColor()
+        For i As Integer = INPUT_ROW_COUNT + 1 To INPUT_ROW_COUNT + CALCULATE_ROW_COUNT
+            For Each cell As DataGridViewCell In dgvWork.Rows(i).Cells
+                cell.Style.BackColor = colorDic("Disable")
+                cell.ReadOnly = True
             Next
         Next
     End Sub
@@ -790,7 +813,8 @@ Public Class 勤務画面
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub btnConv_Click(sender As System.Object, e As System.EventArgs) Handles btnConv.Click
-        For i As Integer = 1 To dgvWork.Rows.Count - 1 Step 2
+        '勤務入力行部分の換算
+        For i As Integer = 1 To INPUT_ROW_COUNT Step 2
             Dim nam As String = Util.checkDBNullValue(dgvWork("Nam", i).Value)
             If nam = "" Then
                 Continue For
@@ -798,6 +822,20 @@ Public Class 勤務画面
                 calcWorkTime(dgvWork.Rows(i), dgvWork.Rows(i + 1))
             End If
         Next
+        '集計行部分
+        '文字表示
+        'とりあえず仮で
+        dgvWork.Rows(161).Cells("Nam").Value = "看護師"
+        dgvWork.Rows(163).Cells("Nam").Value = "介護士　介護職"
+        dgvWork.Rows(165).Cells("Nam").Value = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
+        dgvWork.Rows(167).Cells("Nam").Value = "計"
+        '集計処理
+        '
+        '
+        '
+
+
+
     End Sub
 
     ''' <summary>

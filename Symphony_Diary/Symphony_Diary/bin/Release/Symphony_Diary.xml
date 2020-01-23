@@ -586,6 +586,11 @@ Symphony_Diary
  日曜日列の背景色設定
  </summary>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.setCalculateRowBackColor">
+	<summary>
+ 集計行の背景色設定
+ </summary>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.勤務画面.btnRowInsert_Click(System.Object,System.EventArgs)">
 	<summary>
  行挿入ボタンクリックイベント
