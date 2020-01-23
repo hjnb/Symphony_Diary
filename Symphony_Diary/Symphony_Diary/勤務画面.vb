@@ -20,7 +20,7 @@ Public Class 勤務画面
     Private Const KANSAN As Decimal = 157.0
 
     '入力可能行数（勤務入力部分）
-    Private Const INPUT_ROW_COUNT As Integer = 200
+    Private Const INPUT_ROW_COUNT As Integer = 160
 
     '印刷 or ﾌﾟﾚﾋﾞｭｰ
     Private printState As Boolean
@@ -807,7 +807,35 @@ Public Class 勤務画面
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub btnDelete_Click(sender As System.Object, e As System.EventArgs) Handles btnDelete.Click
+        '対象年月
+        Dim ym As String = adBox.getADymStr()
 
+        'データ存在チェック
+        Dim cnn As New ADODB.Connection
+        cnn.Open(TopForm.DB_Diary)
+        Dim rs As New ADODB.Recordset
+        Dim sql As String = "select * from KinD where Ym = '" & ym & "' and Hyo = '" & formType & "' order by Seq"
+        rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockOptimistic)
+        If rs.RecordCount <= 0 Then
+            MsgBox("登録されていません。", MsgBoxStyle.Exclamation)
+            rs.Close()
+            cnn.Close()
+            Return
+        End If
+        rs.Close()
+
+        '削除
+        Dim result As DialogResult = MessageBox.Show("削除してよろしいですか？", "削除", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        If result = Windows.Forms.DialogResult.Yes Then
+            Dim cmd As New ADODB.Command()
+            cmd.ActiveConnection = cnn
+            cmd.CommandText = "delete from KinD where Ym = '" & ym & "' and Hyo = '" & formType & "'"
+            cmd.Execute()
+            cnn.Close()
+            MsgBox("削除しました。", MsgBoxStyle.Information)
+        Else
+            cnn.Close()
+        End If
     End Sub
 
     ''' <summary>
