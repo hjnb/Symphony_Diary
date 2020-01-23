@@ -5,16 +5,27 @@ Public Class 勤務表印刷条件
 
     '年月
     Private ym As String
+
     '職種
     Private hyo As String
+
     '曜日配列
     Private youbi() As String
+
     '印影ファイルパス(Sign1,Sign2,Sign3)
     Private sign1Path As String = ""
     Private sign2Path As String = ""
     Private sign3Path As String = ""
+
     '印刷 or ﾌﾟﾚﾋﾞｭｰ
     Private printState As Boolean
+
+    '常勤換算用
+    '(算出式: 4週合計時間 / 157)
+    '4週:28日間とする
+    Private Const WEEK4 As Integer = 28
+    '分母
+    Private Const KANSAN As Decimal = 157.0
 
     Private workArray() As String = {"日勤", "半勤", "早出", "遅出", "Ａ勤", "Ｂ勤", "振替", "夜勤", "宿直", "日直", "Ｃ勤", "明け", "特日", "研修", "深夜", "1/3勤", "1/3半", "日早", "日遅", "遅々", "半Ａ", "半Ｂ", "半夜", "半行"}
 
@@ -23,6 +34,9 @@ Public Class 勤務表印刷条件
 
     '印刷用勤務名Dic
     Private printWorkDic As New Dictionary(Of String, String)
+
+    '短縮勤務名Dic
+    Private shortWorkDic As New Dictionary(Of String, String)
 
     ''' <summary>
     ''' コンストラクタ
@@ -163,6 +177,9 @@ Public Class 勤務表印刷条件
             If Not printWorkDic.ContainsKey(ent) Then
                 printWorkDic.Add(ent, prt)
             End If
+            If Not shortWorkDic.ContainsKey(prt) Then
+                shortWorkDic.Add(prt, ent)
+            End If
             rs.MoveNext()
         End While
         rs.Close()
@@ -209,41 +226,33 @@ Public Class 勤務表印刷条件
     End Sub
 
     ''' <summary>
+    ''' 勤務時間に変換
+    ''' </summary>
+    ''' <param name="work">勤務名</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Private Function convWorkTime(work As String) As Decimal
+        Dim result As Decimal
+        If System.Text.RegularExpressions.Regex.IsMatch(work, "^\d+(\.\d)?$") Then
+            '数値の場合はそのまま
+            result = CDec(work)
+        Else
+            '数値以外
+            work = If(shortWorkDic.ContainsKey(work), shortWorkDic(work), work)
+            work = If(work = "有休", "日勤", work)
+            work = If(workTimeDic.ContainsKey(work), workTimeDic(work), "0")
+            result = CDec(work)
+        End If
+        Return result
+    End Function
+
+    ''' <summary>
     ''' A4印刷
     ''' </summary>
     ''' <param name="writeType">予定 or 実績 or 予定／実績</param>
     ''' <param name="rs">印刷データレコードセット</param>
     ''' <remarks></remarks>
     Private Sub printA4(writeType As String, rs As ADODB.Recordset)
-        'エクセル準備
-        Dim objExcel As Excel.Application = CreateObject("Excel.Application")
-        Dim objWorkBooks As Excel.Workbooks = objExcel.Workbooks
-        Dim objWorkBook As Excel.Workbook = objWorkBooks.Open(TopForm.excelFilePath)
-        Dim oSheet As Excel.Worksheet = objWorkBook.Worksheets("勤務表A4改")
-        Dim xlShapes As Excel.Shapes = DirectCast(oSheet.Shapes, Excel.Shapes)
-        objExcel.Calculation = Excel.XlCalculation.xlCalculationManual
-        objExcel.ScreenUpdating = False
-
-        '年月
-        oSheet.Range("D3").Value = "( " & CInt(ym.Split("/")(0)) & "年 " & CInt(ym.Split("/")(1)) & "月度 )"
-        '部署?
-        oSheet.Range("J3").Value = hyo
-        '印影
-        If System.IO.File.Exists(sign1Path) Then
-            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AG"), Excel.Range)
-            xlShapes.AddPicture(sign1Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
-        End If
-        If System.IO.File.Exists(sign2Path) Then
-            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AI"), Excel.Range)
-            xlShapes.AddPicture(sign2Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
-        End If
-        If System.IO.File.Exists(sign3Path) Then
-            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AK"), Excel.Range)
-            xlShapes.AddPicture(sign3Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
-        End If
-        '曜日行設定
-        oSheet.Range("H8", "AL8").Value = youbi
-
         '貼り付けデータ作成
         Dim dataList As New List(Of String(,))
         Dim dataArray(35, 36) As String
@@ -301,6 +310,35 @@ Public Class 勤務表印刷条件
             Next
         Next
 
+        'エクセル準備
+        Dim objExcel As Excel.Application = CreateObject("Excel.Application")
+        Dim objWorkBooks As Excel.Workbooks = objExcel.Workbooks
+        Dim objWorkBook As Excel.Workbook = objWorkBooks.Open(TopForm.excelFilePath)
+        Dim oSheet As Excel.Worksheet = objWorkBook.Worksheets("勤務表A4改")
+        Dim xlShapes As Excel.Shapes = DirectCast(oSheet.Shapes, Excel.Shapes)
+        objExcel.Calculation = Excel.XlCalculation.xlCalculationManual
+        objExcel.ScreenUpdating = False
+
+        '年月
+        oSheet.Range("D3").Value = "( " & CInt(ym.Split("/")(0)) & "年 " & CInt(ym.Split("/")(1)) & "月度 )"
+        '部署?
+        oSheet.Range("J3").Value = hyo
+        '印影
+        If System.IO.File.Exists(sign1Path) Then
+            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AG"), Excel.Range)
+            xlShapes.AddPicture(sign1Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
+        End If
+        If System.IO.File.Exists(sign2Path) Then
+            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AI"), Excel.Range)
+            xlShapes.AddPicture(sign2Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
+        End If
+        If System.IO.File.Exists(sign3Path) Then
+            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AK"), Excel.Range)
+            xlShapes.AddPicture(sign3Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
+        End If
+        '曜日行設定
+        oSheet.Range("H8", "AL8").Value = youbi
+
         '必要ページ分コピペ
         For i As Integer = 0 To dataList.Count - 2
             Dim xlPasteRange As Excel.Range = oSheet.Range("A" & (48 + (47 * i))) 'ペースト先
@@ -343,6 +381,100 @@ Public Class 勤務表印刷条件
     ''' <param name="rs">印刷データレコードセット</param>
     ''' <remarks></remarks>
     Private Sub printB4(writeType As String, rs As ADODB.Recordset)
+        '貼り付けデータ作成
+        Dim dataList As New List(Of String(,))
+        Dim dataArray(53, 38) As String
+        Dim arrayRowIndex As Integer = 0
+        While Not rs.EOF
+            If arrayRowIndex = 34 Then
+                dataList.Add(dataArray.Clone())
+                Array.Clear(dataArray, 0, dataArray.Length)
+                arrayRowIndex = 0
+            End If
+
+            '勤務形態
+            dataArray(arrayRowIndex, 0) = Util.checkDBNullValue(rs.Fields("YKei").Value)
+            '職種
+            dataArray(arrayRowIndex, 1) = Util.checkDBNullValue(rs.Fields("YSyu").Value)
+            '氏名
+            dataArray(arrayRowIndex, 2) = Util.checkDBNullValue(rs.Fields("Nam").Value)
+            '予定、変更
+            dataArray(arrayRowIndex, 5) = "予定"
+            dataArray(arrayRowIndex + 1, 5) = "変更"
+            '1～31
+            If writeType = "予定" Then
+                For i As Integer = 1 To 31
+                    dataArray(arrayRowIndex, 5 + i) = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
+                Next
+            ElseIf writeType = "実績" Then
+                For i As Integer = 1 To 31
+                    dataArray(arrayRowIndex + 1, 5 + i) = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
+                Next
+            Else '予定／実績
+                For i As Integer = 1 To 31
+                    Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
+                    Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
+                    dataArray(arrayRowIndex, 5 + i) = yotei
+                    If yotei <> henko Then
+                        dataArray(arrayRowIndex + 1, 5 + i) = henko
+                    End If
+                Next
+            End If
+
+            '月合計(予定行のみ)
+            Dim totalY As Decimal = 0.0
+            Dim totalH As Decimal = 0.0
+            For i As Integer = 1 To WEEK4
+                Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
+                Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
+                totalY += convWorkTime(yotei)
+                henko = If(henko = "", yotei, henko)
+                totalH += convWorkTime(henko)
+            Next
+            If totalY = 0.0 Then
+                dataArray(arrayRowIndex, 38) = ""
+            Else
+                dataArray(arrayRowIndex, 38) = totalY.ToString()
+            End If
+
+            '常勤換算後の人数
+            '予定
+            Dim kansanY As String = (Math.Floor((totalY / KANSAN) * 100) / 100).ToString("0.00")
+            If kansanY = "0.00" Then
+                dataArray(arrayRowIndex, 37) = ""
+            Else
+                dataArray(arrayRowIndex, 37) = kansanY
+            End If
+            '変更
+            Dim kansanH As String = (Math.Floor((totalH / KANSAN) * 100) / 100).ToString("0.00")
+            If kansanH = "0.00" Then
+                dataArray(arrayRowIndex + 1, 37) = ""
+            Else
+                dataArray(arrayRowIndex + 1, 37) = If(kansanY <> kansanH, kansanH, "")
+            End If
+
+            arrayRowIndex += 2
+            rs.MoveNext()
+        End While
+        dataList.Add(dataArray.Clone())
+
+        '印刷用に勤務名変換
+        For Each d As String(,) In dataList
+            For i As Integer = 0 To 33
+                For j As Integer = 6 To 36
+                    Dim work As String = d(i, j)
+                    If Not IsNothing(work) AndAlso printWorkDic.ContainsKey(work) Then
+                        d(i, j) = printWorkDic(work)
+                    End If
+                Next
+            Next
+        Next
+
+        '月の日数
+        Dim year As Integer = CInt(ym.Split("/")(0))
+        Dim month As Integer = CInt(ym.Split("/")(1))
+        Dim daysInMonth As Integer = DateTime.DaysInMonth(year, month)
+
         'エクセル準備
         Dim objExcel As Excel.Application = CreateObject("Excel.Application")
         Dim objWorkBooks As Excel.Workbooks = objExcel.Workbooks
@@ -369,6 +501,8 @@ Public Class 勤務表印刷条件
             Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AH"), Excel.Range)
             xlShapes.AddPicture(sign3Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
         End If
+        '日数
+        oSheet.Range("AL4").Value = daysInMonth
         '曜日行設定
         oSheet.Range("H8", "AL8").Value = youbi
         '左下の勤務時間の表示
@@ -377,11 +511,17 @@ Public Class 勤務表印刷条件
         '
         '
 
+        '必要ページ分コピペ
+        For i As Integer = 0 To dataList.Count - 2
+            Dim xlPasteRange As Excel.Range = oSheet.Range("A" & (66 + (65 * i))) 'ペースト先
+            oSheet.Rows("1:65").copy(xlPasteRange)
+            oSheet.HPageBreaks.Add(oSheet.Range("A" & (66 + (65 * i)))) '改ページ
+        Next
 
-
-
-
-
+        'データ貼り付け
+        For i As Integer = 0 To dataList.Count - 1
+            oSheet.Range("B" & (9 + (65 * i)), "AN" & (62 + (65 * i))).Value = dataList(i)
+        Next
 
         objExcel.Calculation = Excel.XlCalculation.xlCalculationAutomatic
         objExcel.ScreenUpdating = True

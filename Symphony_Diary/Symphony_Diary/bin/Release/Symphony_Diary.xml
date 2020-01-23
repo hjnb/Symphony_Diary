@@ -376,6 +376,13 @@ Symphony_Diary
  定数マスタ読み込み
  </summary>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.convWorkTime(System.String)">
+	<summary>
+ 勤務時間に変換
+ </summary>
+	<param name="work">勤務名</param>
+	<returns></returns>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.勤務表印刷条件.printA4(System.String,ADODB.Recordset)">
 	<summary>
  A4印刷
