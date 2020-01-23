@@ -382,6 +382,7 @@ Public Class 勤務画面
         setSeqValue()
 
         'データ取得、表示
+        Dim seqCount As Integer = 2
         Dim cnn As New ADODB.Connection
         cnn.Open(TopForm.DB_Diary)
         Dim rs As New ADODB.Recordset
@@ -392,7 +393,7 @@ Public Class 勤務画面
                 Dim kei As String = Util.checkDBNullValue(rs.Fields("YKei").Value)
                 Dim syu As String = Util.checkDBNullValue(rs.Fields("YSyu").Value)
                 Dim nam As String = Util.checkDBNullValue(rs.Fields("Nam").Value)
-                Dim seq As Integer = rs.Fields("Seq").Value
+                Dim seq As Integer = seqCount
                 Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
                 Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
                 '勤務
@@ -410,6 +411,10 @@ Public Class 勤務画面
                     dgvWork("Y" & i, seq).Value = henko
                 End If
             Next
+            seqCount += 2
+            If seqCount >= INPUT_ROW_COUNT Then
+                Exit While
+            End If
             rs.MoveNext()
         End While
         rs.Close()

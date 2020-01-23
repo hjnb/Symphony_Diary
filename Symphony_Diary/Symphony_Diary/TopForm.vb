@@ -251,6 +251,7 @@
     ''' <remarks></remarks>
     Private Sub btnReadCSV_Click(sender As System.Object, e As System.EventArgs) Handles btnReadCSV.Click
         'workで作成された勤務割CSVの読み込みという前提で
+        '仕様として特養のデータは既存データ削除せず追加しか行わない
 
         'csvファイル選択
         Dim csvFilePath As String = ""
@@ -279,13 +280,56 @@
         Dim dataList As List(Of String()) = readCsvFile(csvFilePath)
 
         'データベースに登録
+        Dim copyHyoSet As New HashSet(Of String)
+        Dim exclusionHyoSet As New HashSet(Of String)
+        Dim addFlg As Boolean = False
         Dim cnn As New ADODB.Connection
         cnn.Open(DB_Diary)
         Dim rs As New ADODB.Recordset
         rs.Open("KinD", cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockOptimistic)
         For Each arr As String() In dataList
+            Dim ym As String = arr(1) 'Ym
+            Dim hyo As String = arr(2) 'Hyo
+            Dim key As String = ym & hyo
+            If exclusionHyoSet.Contains(key) Then
+                Continue For
+            ElseIf Not (copyHyoSet.Contains(key) OrElse exclusionHyoSet.Contains(key)) Then
+                Dim result As DialogResult = MessageBox.Show(key & " コピーしますか？", "コピー確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                If result = Windows.Forms.DialogResult.Yes Then
+                    copyHyoSet.Add(key)
+                    If hyo <> "特養" Then
+                        '既存データ削除
+                        deleteHyoData(hyo, ym)
+                    End If
+                Else
+                    exclusionHyoSet.Add(key)
+                    Continue For
+                End If
+            End If
 
+            addFlg = True
+            rs.AddNew()
+            rs.Fields("Seq").Value = arr(0)
+            rs.Fields("Ym").Value = arr(1)
+            rs.Fields("Hyo").Value = arr(2)
+            rs.Fields("Id").Value = arr(3)
+            rs.Fields("Nam").Value = arr(4)
+            rs.Fields("YKei").Value = arr(5)
+            rs.Fields("YSyu").Value = arr(6)
+            For i As Integer = 1 To 31
+                rs.Fields("Yotei" & i).Value = arr((6 + i))
+            Next
+            rs.Fields("Yflg").Value = arr(38)
+            rs.Fields("HKei").Value = arr(39)
+            rs.Fields("HSyu").Value = arr(40)
+            For i As Integer = 1 To 31
+                rs.Fields("Henko" & i).Value = arr((40 + i))
+            Next
+            rs.Fields("Hflg").Value = arr(72)
         Next
+        If addFlg Then
+            rs.Update()
+        End If
         rs.Close()
         cnn.Close()
 
@@ -323,15 +367,32 @@
         While Not swText.EndOfData
             'CSVファイルのフィールドを読み込みます。
             Dim fields As String() = swText.ReadFields()
-            '配列に追加します。
-            resultList.Add(fields)
+            If fields(0) <> "表示順" AndAlso fields.Length = 73 Then
+                resultList.Add(fields)
+            End If
         End While
 
-        'ファイルを解放します。
+        'ファイルを解放
         swText.Close()
 
         Return resultList
     End Function
+
+    ''' <summary>
+    ''' 対象年月のHyoデータ削除
+    ''' </summary>
+    ''' <param name="hyo"></param>
+    ''' <param name="ym">年月(yyyy/MM)</param>
+    ''' <remarks></remarks>
+    Private Sub deleteHyoData(hyo As String, ym As String)
+        Dim cnn As New ADODB.Connection()
+        cnn.Open(DB_Diary)
+        Dim cmd As New ADODB.Command()
+        cmd.ActiveConnection = cnn
+        cmd.CommandText = "delete from KinD where Hyo = '" & hyo & "' and Ym = '" & ym & "'"
+        cmd.Execute()
+        cnn.Close()
+    End Sub
 
     ''' <summary>
     ''' ＤＢ整理ボタンクリックイベント

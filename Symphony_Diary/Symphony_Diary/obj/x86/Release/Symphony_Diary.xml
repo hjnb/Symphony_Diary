@@ -504,6 +504,13 @@ Symphony_Diary
 	<param name="csvFilePath">csvファイルパス</param>
 	<returns>結果リスト</returns>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.TopForm.deleteHyoData(System.String,System.String)">
+	<summary>
+ 対象年月のHyoデータ削除
+ </summary>
+	<param name="hyo"></param>
+	<param name="ym">年月(yyyy/MM)</param>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.TopForm.btnDB_Click(System.Object,System.EventArgs)">
 	<summary>
  ＤＢ整理ボタンクリックイベント
