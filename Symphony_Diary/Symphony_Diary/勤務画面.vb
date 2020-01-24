@@ -687,6 +687,8 @@ Public Class 勤務画面
     ''' <param name="rowH">変更行</param>
     ''' <remarks></remarks>
     Private Sub calcWorkTime(rowY As DataGridViewRow, rowH As DataGridViewRow)
+        '勤務形態
+        Dim kei As String = Util.checkDBNullValue(rowY.Cells("Kei").Value)
         '月合計
         Dim totalY As Decimal = 0.0
         Dim totalH As Decimal = 0.0
@@ -718,14 +720,22 @@ Public Class 勤務画面
         If kansanY = "0.00" Then
             rowY.Cells("Jyo").Value = ""
         Else
-            rowY.Cells("Jyo").Value = kansanY
+            If kei = "常勤専従" Then
+                rowY.Cells("Jyo").Value = "1.00"
+            Else
+                rowY.Cells("Jyo").Value = kansanY
+            End If
         End If
         '変更
         Dim kansanH As String = (Math.Floor((totalH / KANSAN) * 100) / 100).ToString("0.00")
         If kansanH = "0.00" Then
             rowH.Cells("Jyo").Value = ""
         Else
-            rowH.Cells("Jyo").Value = If(kansanY <> kansanH, kansanH, "")
+            If kei = "常勤専従" Then
+                rowH.Cells("Jyo").Value = ""
+            Else
+                rowH.Cells("Jyo").Value = If(kansanY <> kansanH, kansanH, "")
+            End If
         End If
 
         '総勤日数
