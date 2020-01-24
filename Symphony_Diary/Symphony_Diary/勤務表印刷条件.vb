@@ -27,6 +27,9 @@ Public Class 勤務表印刷条件
     '分母
     Private Const KANSAN As Decimal = 157.0
 
+    '週平均就労時間
+    Private WEEKRY_AVERAGE_TIME As Decimal = 39.25
+
     Private workArray() As String = {"日勤", "半勤", "早出", "遅出", "Ａ勤", "Ｂ勤", "振替", "夜勤", "宿直", "日直", "Ｃ勤", "明け", "特日", "研修", "深夜", "1/3勤", "1/3半", "日早", "日遅", "遅々", "半Ａ", "半Ｂ", "半夜", "半行"}
 
     '勤務時間
@@ -385,6 +388,7 @@ Public Class 勤務表印刷条件
         Dim dataList As New List(Of String(,))
         Dim dataArray(53, 38) As String
         Dim arrayRowIndex As Integer = 0
+
         While Not rs.EOF
             If arrayRowIndex = 34 Then
                 dataList.Add(dataArray.Clone())
@@ -393,7 +397,8 @@ Public Class 勤務表印刷条件
             End If
 
             '勤務形態
-            dataArray(arrayRowIndex, 0) = Util.checkDBNullValue(rs.Fields("YKei").Value)
+            Dim kei As String = Util.checkDBNullValue(rs.Fields("YKei").Value)
+            dataArray(arrayRowIndex, 0) = kei
             '職種
             dataArray(arrayRowIndex, 1) = Util.checkDBNullValue(rs.Fields("YSyu").Value)
             '氏名
@@ -404,11 +409,13 @@ Public Class 勤務表印刷条件
             '1～31
             If writeType = "予定" Then
                 For i As Integer = 1 To 31
-                    dataArray(arrayRowIndex, 5 + i) = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
+                    Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
+                    dataArray(arrayRowIndex, 5 + i) = yotei
                 Next
             ElseIf writeType = "実績" Then
                 For i As Integer = 1 To 31
-                    dataArray(arrayRowIndex + 1, 5 + i) = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
+                    Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
+                    dataArray(arrayRowIndex + 1, 5 + i) = henko
                 Next
             Else '予定／実績
                 For i As Integer = 1 To 31
@@ -443,14 +450,22 @@ Public Class 勤務表印刷条件
             If kansanY = "0.00" Then
                 dataArray(arrayRowIndex, 37) = ""
             Else
-                dataArray(arrayRowIndex, 37) = kansanY
+                If kei = "常勤専従" Then
+                    dataArray(arrayRowIndex, 37) = "1.00"
+                Else
+                    dataArray(arrayRowIndex, 37) = kansanY
+                End If
             End If
             '変更
             Dim kansanH As String = (Math.Floor((totalH / KANSAN) * 100) / 100).ToString("0.00")
             If kansanH = "0.00" Then
                 dataArray(arrayRowIndex + 1, 37) = ""
             Else
-                dataArray(arrayRowIndex + 1, 37) = If(kansanY <> kansanH, kansanH, "")
+                If kei = "常勤専従" Then
+                    dataArray(arrayRowIndex + 1, 37) = ""
+                Else
+                    dataArray(arrayRowIndex + 1, 37) = If(kansanY <> kansanH, kansanH, "")
+                End If
             End If
 
             arrayRowIndex += 2
@@ -467,6 +482,42 @@ Public Class 勤務表印刷条件
                         d(i, j) = printWorkDic(work)
                     End If
                 Next
+            Next
+        Next
+
+        '左下の勤務時間の表示、定数マスタから取得
+        Dim timeList As New List(Of String)
+        Dim count As Integer = 1
+        For Each kvp As KeyValuePair(Of String, String) In workTimeDic
+            If count >= 16 Then
+                Exit For
+            End If
+            Dim work As String = kvp.Key
+            Dim time As String = kvp.Value
+            If time <> "0" Then
+                timeList.Add(work & " " & time)
+            End If
+            count += 1
+        Next
+
+        '固定文字列設定
+        For Each d As String(,) In dataList
+            d(34, 0) = "看護師"
+            d(36, 0) = "介護士　介護職"
+            d(38, 0) = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
+            d(40, 0) = "計"
+            d(42, 5) = "日勤"
+            d(44, 5) = "早遅特"
+            d(46, 5) = "半"
+            d(48, 5) = "直１２"
+            d(50, 5) = "ＡＢＣ"
+            d(52, 5) = "夜宿明"
+            '左下勤務名 時間
+            For i As Integer = 0 To timeList.Count - 1
+                If i >= 12 Then
+                    Exit For
+                End If
+                d(42 + i, 0) = timeList(i)
             Next
         Next
 
@@ -501,15 +552,12 @@ Public Class 勤務表印刷条件
             Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AH"), Excel.Range)
             xlShapes.AddPicture(sign3Path, False, True, cell.Left + 6, cell.Top + 3, 30, 30)
         End If
+        '週平均就労時間
+        oSheet.Range("AN3").Value = WEEKRY_AVERAGE_TIME
         '日数
         oSheet.Range("AL4").Value = daysInMonth
         '曜日行設定
         oSheet.Range("H8", "AL8").Value = youbi
-        '左下の勤務時間の表示
-        '定数マスタからとってくるかんじで
-        '
-        '
-        '
 
         '必要ページ分コピペ
         For i As Integer = 0 To dataList.Count - 2
