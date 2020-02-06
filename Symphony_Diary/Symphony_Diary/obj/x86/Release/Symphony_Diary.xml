@@ -383,6 +383,27 @@ Symphony_Diary
 	<param name="work">勤務名</param>
 	<returns></returns>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.canCountWork(System.String)">
+	<summary>
+ 勤務としてカウントするか判定
+ </summary>
+	<param name="work">勤務名</param>
+	<returns></returns>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.convSyu(System.String)">
+	<summary>
+ 職種カウント用変換
+ </summary>
+	<param name="syu">職種</param>
+	<returns></returns>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務表印刷条件.convWork(System.String)">
+	<summary>
+ 勤務カウント用変換
+ </summary>
+	<param name="work">勤務名</param>
+	<returns></returns>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.勤務表印刷条件.printA4(System.String,ADODB.Recordset)">
 	<summary>
  A4印刷

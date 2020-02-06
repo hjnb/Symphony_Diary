@@ -250,6 +250,72 @@ Public Class 勤務表印刷条件
     End Function
 
     ''' <summary>
+    ''' 勤務としてカウントするか判定
+    ''' </summary>
+    ''' <param name="work">勤務名</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Private Function canCountWork(work As String) As Boolean
+        Dim result As Boolean = False
+        Dim convWork As String = If(shortWorkDic.ContainsKey(work), shortWorkDic(work), work)
+        If workTimeDic.ContainsKey(convWork) Then
+            Return True
+        Else
+            If convWork = "有休" Then
+                Return True
+            Else
+                Return False
+            End If
+        End If
+    End Function
+
+    ''' <summary>
+    ''' 職種カウント用変換
+    ''' </summary>
+    ''' <param name="syu">職種</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Private Function convSyu(syu As String) As String
+        If syu = "介護士" OrElse syu = "介護職" Then
+            Return "介護士　介護職"
+        ElseIf syu = "介護士ﾊﾟｰﾄ" OrElse syu = "介護職ﾊﾟｰﾄ" Then
+            Return "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
+        Else
+            Return syu
+        End If
+    End Function
+
+    ''' <summary>
+    ''' 勤務カウント用変換
+    ''' </summary>
+    ''' <param name="work">勤務名</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Private Function convWork(work As String) As String
+        If work = "日勤" Then
+            Return "日勤"
+        ElseIf work = "早出" OrElse work = "遅出" OrElse work = "特日" Then
+            Return "早遅特"
+        ElseIf work = "半Ａ" OrElse work = "半Ｂ" Then
+            Return "半"
+        ElseIf work = "Ａ勤" OrElse work = "Ｂ勤" OrElse work = "Ｃ勤" Then
+            Return "ＡＢＣ"
+        ElseIf work = "深夜" OrElse work = "宿直" OrElse work = "明け" Then
+            Return "夜宿明"
+        Else
+            Return ""
+        End If
+    End Function
+
+    Private Function convNumber(num As Integer) As String
+        If num = 0 Then
+            Return ""
+        Else
+            Return num.ToString()
+        End If
+    End Function
+
+    ''' <summary>
     ''' A4印刷
     ''' </summary>
     ''' <param name="writeType">予定 or 実績 or 予定／実績</param>
@@ -384,11 +450,22 @@ Public Class 勤務表印刷条件
     ''' <param name="rs">印刷データレコードセット</param>
     ''' <remarks></remarks>
     Private Sub printB4(writeType As String, rs As ADODB.Recordset)
+        '集計用準備
+        Dim calcSyuDic As New Dictionary(Of String, Integer(,))
+        For Each nam As String In {"看護師", "介護士　介護職", "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ", "計", "日勤", "早遅特", "半", "直１２", "ＡＢＣ", "夜宿明"}
+            Dim arr(1, 27) As Integer
+            For i As Integer = 0 To 1
+                For j As Integer = 0 To 27
+                    arr(i, j) = 0
+                Next
+            Next
+            calcSyuDic.Add(nam, arr.Clone())
+        Next
+
         '貼り付けデータ作成
         Dim dataList As New List(Of String(,))
         Dim dataArray(53, 38) As String
         Dim arrayRowIndex As Integer = 0
-
         While Not rs.EOF
             If arrayRowIndex = 34 Then
                 dataList.Add(dataArray.Clone())
@@ -400,7 +477,8 @@ Public Class 勤務表印刷条件
             Dim kei As String = Util.checkDBNullValue(rs.Fields("YKei").Value)
             dataArray(arrayRowIndex, 0) = kei
             '職種
-            dataArray(arrayRowIndex, 1) = Util.checkDBNullValue(rs.Fields("YSyu").Value)
+            Dim syu As String = Util.checkDBNullValue(rs.Fields("YSyu").Value)
+            dataArray(arrayRowIndex, 1) = syu
             '氏名
             dataArray(arrayRowIndex, 2) = Util.checkDBNullValue(rs.Fields("Nam").Value)
             '予定、変更
@@ -411,11 +489,31 @@ Public Class 勤務表印刷条件
                 For i As Integer = 1 To 31
                     Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
                     dataArray(arrayRowIndex, 5 + i) = yotei
+                    '集計(職種)
+                    If i <= 28 AndAlso canCountWork(yotei) Then
+                        Dim cSyu As String = convSyu(syu) '対応する職種に変換
+                        If calcSyuDic.ContainsKey(cSyu) Then
+                            calcSyuDic(cSyu)(0, i - 1) += 1
+                            calcSyuDic("計")(0, i - 1) += 1
+                        End If
+                    End If
+                    '集計（勤務）
+                    
                 Next
             ElseIf writeType = "実績" Then
                 For i As Integer = 1 To 31
                     Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
                     dataArray(arrayRowIndex + 1, 5 + i) = henko
+                    '集計(職種)
+                    If i <= 28 AndAlso canCountWork(henko) Then
+                        Dim cSyu As String = convSyu(syu) '対応する職種に変換
+                        If calcSyuDic.ContainsKey(cSyu) Then
+                            calcSyuDic(cSyu)(1, i - 1) += 1
+                            calcSyuDic("計")(1, i - 1) += 1
+                        End If
+                    End If
+                    '集計（勤務）
+
                 Next
             Else '予定／実績
                 For i As Integer = 1 To 31
@@ -425,6 +523,23 @@ Public Class 勤務表印刷条件
                     If yotei <> henko Then
                         dataArray(arrayRowIndex + 1, 5 + i) = henko
                     End If
+                    '集計(職種)
+                    If i <= 28 AndAlso canCountWork(yotei) Then
+                        Dim cSyu As String = convSyu(syu) '対応する職種に変換
+                        If calcSyuDic.ContainsKey(cSyu) Then
+                            calcSyuDic(cSyu)(0, i - 1) += 1
+                            calcSyuDic("計")(0, i - 1) += 1
+                        End If
+                    End If
+                    If i <= 28 AndAlso canCountWork(henko) Then
+                        Dim cSyu As String = convSyu(syu) '対応する職種に変換
+                        If calcSyuDic.ContainsKey(cSyu) Then
+                            calcSyuDic(cSyu)(1, i - 1) += 1
+                            calcSyuDic("計")(1, i - 1) += 1
+                        End If
+                    End If
+                    '集計（勤務）
+
                 Next
             End If
 
@@ -521,6 +636,38 @@ Public Class 勤務表印刷条件
             Next
         Next
 
+        '集計データ作成
+        Dim lastData(,) As String = dataList(dataList.Count - 1)
+        For i As Integer = 0 To 27
+            '看護師
+            Dim y1 As String = convNumber(calcSyuDic("看護師")(0, i))
+            Dim h1 As String = convNumber(calcSyuDic("看護師")(1, i))
+            lastData(34, 6 + i) = y1
+            lastData(35, 6 + i) = If(y1 = h1, "", h1)
+            '介護士　介護職
+            Dim y2 As String = convNumber(calcSyuDic("介護士　介護職")(0, i))
+            Dim h2 As String = convNumber(calcSyuDic("介護士　介護職")(1, i))
+            lastData(36, 6 + i) = y2
+            lastData(37, 6 + i) = If(y2 = h2, "", h2)
+            '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
+            Dim y3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, i))
+            Dim h3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, i))
+            lastData(38, 6 + i) = y3
+            lastData(39, 6 + i) = If(y3 = h3, "", h3)
+            '計
+            Dim y4 As String = convNumber(calcSyuDic("計")(0, i))
+            Dim h4 As String = convNumber(calcSyuDic("計")(1, i))
+            lastData(40, 6 + i) = y4
+            lastData(41, 6 + i) = If(y4 = h4, "", h4)
+
+            '日勤
+            '早遅特
+            '半
+            '直１２
+            'ＡＢＣ
+            '夜宿明
+        Next
+
         '月の日数
         Dim year As Integer = CInt(ym.Split("/")(0))
         Dim month As Integer = CInt(ym.Split("/")(1))
@@ -569,6 +716,9 @@ Public Class 勤務表印刷条件
         'データ貼り付け
         For i As Integer = 0 To dataList.Count - 1
             oSheet.Range("B" & (9 + (65 * i)), "AN" & (62 + (65 * i))).Value = dataList(i)
+            If i = dataList.Count - 1 Then
+                '集計データ貼り付け
+            End If
         Next
 
         objExcel.Calculation = Excel.XlCalculation.xlCalculationAutomatic
