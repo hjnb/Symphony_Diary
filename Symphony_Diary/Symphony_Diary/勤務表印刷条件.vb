@@ -292,6 +292,7 @@ Public Class 勤務表印刷条件
     ''' <returns></returns>
     ''' <remarks></remarks>
     Private Function convWork(work As String) As String
+        work = If(shortWorkDic.ContainsKey(work), shortWorkDic(work), work)
         If work = "日勤" Then
             Return "日勤"
         ElseIf work = "早出" OrElse work = "遅出" OrElse work = "特日" Then
@@ -300,7 +301,7 @@ Public Class 勤務表印刷条件
             Return "半"
         ElseIf work = "Ａ勤" OrElse work = "Ｂ勤" OrElse work = "Ｃ勤" Then
             Return "ＡＢＣ"
-        ElseIf work = "深夜" OrElse work = "宿直" OrElse work = "明け" Then
+        ElseIf work = "深夜" OrElse work = "夜勤" OrElse work = "宿直" OrElse work = "明け" Then
             Return "夜宿明"
         Else
             Return ""
@@ -498,7 +499,12 @@ Public Class 勤務表印刷条件
                         End If
                     End If
                     '集計（勤務）
-                    
+                    If i <= 28 Then
+                        Dim cWork As String = convWork(yotei) '対応する集計用勤務名に変換
+                        If calcSyuDic.ContainsKey(cWork) Then
+                            calcSyuDic(cWork)(0, i - 1) += 1
+                        End If
+                    End If
                 Next
             ElseIf writeType = "実績" Then
                 For i As Integer = 1 To 31
@@ -513,7 +519,12 @@ Public Class 勤務表印刷条件
                         End If
                     End If
                     '集計（勤務）
-
+                    If i <= 28 Then
+                        Dim cWork As String = convWork(henko) '対応する集計用勤務名に変換
+                        If calcSyuDic.ContainsKey(cWork) Then
+                            calcSyuDic(cWork)(1, i - 1) += 1
+                        End If
+                    End If
                 Next
             Else '予定／実績
                 For i As Integer = 1 To 31
@@ -539,7 +550,16 @@ Public Class 勤務表印刷条件
                         End If
                     End If
                     '集計（勤務）
-
+                    If i <= 28 Then
+                        Dim cWorkY As String = convWork(yotei) '対応する集計用勤務名に変換
+                        If calcSyuDic.ContainsKey(cWorkY) Then
+                            calcSyuDic(cWorkY)(0, i - 1) += 1
+                        End If
+                        Dim cWorkH As String = convWork(henko) '対応する集計用勤務名に変換
+                        If calcSyuDic.ContainsKey(cWorkH) Then
+                            calcSyuDic(cWorkH)(1, i - 1) += 1
+                        End If
+                    End If
                 Next
             End If
 
@@ -636,7 +656,7 @@ Public Class 勤務表印刷条件
             Next
         Next
 
-        '集計データ作成
+        '貼り付けデータに集計データを代入
         Dim lastData(,) As String = dataList(dataList.Count - 1)
         For i As Integer = 0 To 27
             '看護師
@@ -661,11 +681,35 @@ Public Class 勤務表印刷条件
             lastData(41, 6 + i) = If(y4 = h4, "", h4)
 
             '日勤
+            Dim y5 As String = convNumber(calcSyuDic("日勤")(0, i))
+            Dim h5 As String = convNumber(calcSyuDic("日勤")(1, i))
+            lastData(42, 6 + i) = y5
+            lastData(43, 6 + i) = If(y5 = h5, "", h5)
             '早遅特
+            Dim y6 As String = convNumber(calcSyuDic("早遅特")(0, i))
+            Dim h6 As String = convNumber(calcSyuDic("早遅特")(1, i))
+            lastData(44, 6 + i) = y6
+            lastData(45, 6 + i) = If(y6 = h6, "", h6)
             '半
+            Dim y7 As String = convNumber(calcSyuDic("半")(0, i))
+            Dim h7 As String = convNumber(calcSyuDic("半")(1, i))
+            lastData(46, 6 + i) = y7
+            lastData(47, 6 + i) = If(y7 = h7, "", h7)
             '直１２
+            Dim y8 As String = convNumber(calcSyuDic("直１２")(0, i))
+            Dim h8 As String = convNumber(calcSyuDic("直１２")(1, i))
+            lastData(48, 6 + i) = y8
+            lastData(49, 6 + i) = If(y8 = h8, "", h8)
             'ＡＢＣ
+            Dim y9 As String = convNumber(calcSyuDic("ＡＢＣ")(0, i))
+            Dim h9 As String = convNumber(calcSyuDic("ＡＢＣ")(1, i))
+            lastData(50, 6 + i) = y9
+            lastData(51, 6 + i) = If(y9 = h9, "", h9)
             '夜宿明
+            Dim y10 As String = convNumber(calcSyuDic("夜宿明")(0, i))
+            Dim h10 As String = convNumber(calcSyuDic("夜宿明")(1, i))
+            lastData(52, 6 + i) = y10
+            lastData(53, 6 + i) = If(y10 = h10, "", h10)
         Next
 
         '月の日数
@@ -716,9 +760,6 @@ Public Class 勤務表印刷条件
         'データ貼り付け
         For i As Integer = 0 To dataList.Count - 1
             oSheet.Range("B" & (9 + (65 * i)), "AN" & (62 + (65 * i))).Value = dataList(i)
-            If i = dataList.Count - 1 Then
-                '集計データ貼り付け
-            End If
         Next
 
         objExcel.Calculation = Excel.XlCalculation.xlCalculationAutomatic
