@@ -38,7 +38,7 @@ Public Class 勤務画面
     Private keiArray() As String = {"", "常勤専従", "常勤兼務", "常勤以外専従", "常勤以外兼務"}
 
     '職種
-    Private syuArray() As String = {"", "理事長", "施設長", "副施設長", "事務局長", "部長", "課長", "係長", "主任", "管理者", "ｻｰﾋﾞｽ提供責任者", "医師", "正看護師", "准看護師", "看護職", "機能訓練士", "介護支援専門員", "生活相談員", "支援援助員", "介護職", "介護福祉士", "訪問介護員", "管理栄養士", "栄養士", "宿直"}
+    Private syuArray() As String = {"", "理事長", "施設長", "副施設長", "事務局長", "部長", "課長", "係長", "主任", "管理者", "ｻｰﾋﾞｽ提供責任者", "医師", "正看護師", "准看護師", "看護職", "機能訓練士", "介護支援専門員", "生活相談員", "支援援助員", "介護職", "介護福祉士", "訪問介護員", "管理栄養士", "栄養士", "宿直", "介護職ﾊﾟｰﾄ"}
 
     '曜日配列
     Private dayCharArray() As String = {"日", "月", "火", "水", "木", "金", "土"}
@@ -407,9 +407,9 @@ Public Class 勤務画面
                 Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
                 Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
                 '勤務
-                'dgvWork("Kei", seq - 1).Value = kei
+                dgvWork("Kei", seq - 1).Value = kei
                 '職種
-                'dgvWork("Syu", seq - 1).Value = syu
+                dgvWork("Syu", seq - 1).Value = syu
                 '氏名
                 dgvWork("Nam", seq - 1).Value = nam
                 '予定変更列
@@ -807,6 +807,50 @@ Public Class 勤務画面
     End Function
 
     ''' <summary>
+    ''' 勤務としてカウントするか判定
+    ''' </summary>
+    ''' <param name="work">勤務名</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Private Function canCountWork(work As String) As Boolean
+        Dim result As Boolean = False
+        Dim convWork As String = If(shortWorkDic.ContainsKey(work), shortWorkDic(work), work)
+        If workTimeDic.ContainsKey(convWork) Then
+            Return True
+        Else
+            If convWork = "有休" Then
+                Return True
+            Else
+                Return False
+            End If
+        End If
+    End Function
+
+    ''' <summary>
+    ''' 職種カウント用変換
+    ''' </summary>
+    ''' <param name="syu">職種</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Private Function convSyu(syu As String) As String
+        If syu = "介護士" OrElse syu = "介護職" Then
+            Return "介護士　介護職"
+        ElseIf syu = "介護士ﾊﾟｰﾄ" OrElse syu = "介護職ﾊﾟｰﾄ" Then
+            Return "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
+        Else
+            Return syu
+        End If
+    End Function
+
+    Private Function convNumber(num As Integer) As String
+        If num = 0 Then
+            Return ""
+        Else
+            Return num.ToString()
+        End If
+    End Function
+
+    ''' <summary>
     ''' 登録ボタンクリックイベント
     ''' </summary>
     ''' <param name="sender"></param>
@@ -832,20 +876,72 @@ Public Class 勤務画面
                 calcWorkTime(dgvWork.Rows(i), dgvWork.Rows(i + 1))
             End If
         Next
+
         '集計行部分
         '文字表示
         'とりあえず仮で
+        '
+        '
         dgvWork.Rows(161).Cells("Nam").Value = "看護師"
         dgvWork.Rows(163).Cells("Nam").Value = "介護士　介護職"
         dgvWork.Rows(165).Cells("Nam").Value = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
         dgvWork.Rows(167).Cells("Nam").Value = "計"
+
         '集計処理
-        '
-        '
-        '
-
-
-
+        Dim calcSyuDic As New Dictionary(Of String, Integer(,))
+        For Each nam As String In {"看護師", "介護士　介護職", "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ", "計"}
+            Dim arr(1, 27) As Integer
+            For i As Integer = 0 To 1
+                For j As Integer = 0 To 27
+                    arr(i, j) = 0
+                Next
+            Next
+            calcSyuDic.Add(nam, arr.Clone())
+        Next
+        For i As Integer = 1 To INPUT_ROW_COUNT Step 2
+            For j As Integer = 1 To 28
+                '対応する職種に変換
+                Dim syu As String = convSyu(Util.checkDBNullValue(dgvWork("Syu", i).Value))
+                '予定勤務
+                Dim workY As String = Util.checkDBNullValue(dgvWork("Y" & j, i).Value)
+                workY = If(shortWorkDic.ContainsKey(workY), shortWorkDic(workY), workY)
+                If canCountWork(workY) AndAlso calcSyuDic.ContainsKey(syu) Then
+                    calcSyuDic(syu)(0, j - 1) += 1
+                    calcSyuDic("計")(0, j - 1) += 1
+                End If
+                '変更勤務
+                Dim workH As String = Util.checkDBNullValue(dgvWork("Y" & j, i + 1).Value)
+                workH = If(workH = "", workY, workH)
+                workH = If(shortWorkDic.ContainsKey(workH), shortWorkDic(workH), workH)
+                If canCountWork(workH) AndAlso calcSyuDic.ContainsKey(syu) Then
+                    calcSyuDic(syu)(1, j - 1) += 1
+                    calcSyuDic("計")(1, j - 1) += 1
+                End If
+            Next
+        Next
+        '集計結果表示
+        For i As Integer = 1 To 28
+            '看護師
+            Dim y1 As String = convNumber(calcSyuDic("看護師")(0, i - 1))
+            Dim h1 As String = convNumber(calcSyuDic("看護師")(1, i - 1))
+            dgvWork("Y" & i, 161).Value = y1
+            dgvWork("Y" & i, 162).Value = If(h1 = y1, "", h1)
+            '介護士　介護職
+            Dim y2 As String = convNumber(calcSyuDic("介護士　介護職")(0, i - 1))
+            Dim h2 As String = convNumber(calcSyuDic("介護士　介護職")(1, i - 1))
+            dgvWork("Y" & i, 163).Value = y2
+            dgvWork("Y" & i, 164).Value = If(h2 = y2, "", h2)
+            '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
+            Dim y3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, i - 1))
+            Dim h3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, i - 1))
+            dgvWork("Y" & i, 165).Value = y3
+            dgvWork("Y" & i, 166).Value = If(h3 = y3, "", h3)
+            '計
+            Dim y4 As String = convNumber(calcSyuDic("計")(0, i - 1))
+            Dim h4 As String = convNumber(calcSyuDic("計")(1, i - 1))
+            dgvWork("Y" & i, 167).Value = y4
+            dgvWork("Y" & i, 168).Value = If(h4 = y4, "", h4)
+        Next
     End Sub
 
     ''' <summary>

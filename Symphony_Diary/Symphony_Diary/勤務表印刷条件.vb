@@ -293,13 +293,13 @@ Public Class 勤務表印刷条件
     ''' <remarks></remarks>
     Private Function convWork(work As String) As String
         work = If(shortWorkDic.ContainsKey(work), shortWorkDic(work), work)
-        If work = "日勤" Then
+        If work = "日勤" OrElse work = "有休" Then
             Return "日勤"
-        ElseIf work = "早出" OrElse work = "遅出" OrElse work = "特日" Then
+        ElseIf work = "早出" OrElse work = "日早" OrElse work = "遅出" OrElse work = "遅々" OrElse work = "日遅" OrElse work = "特日" Then
             Return "早遅特"
-        ElseIf work = "半Ａ" OrElse work = "半Ｂ" Then
+        ElseIf work = "半Ａ" OrElse work = "半Ｂ" OrElse work = "半勤" OrElse work = "半夜" OrElse work = "半行" Then
             Return "半"
-        ElseIf work = "Ａ勤" OrElse work = "Ｂ勤" OrElse work = "Ｃ勤" Then
+        ElseIf work = "Ａ勤" OrElse work = "Ｂ勤" OrElse work = "Ｃ勤" OrElse work = "研修" Then
             Return "ＡＢＣ"
         ElseIf work = "深夜" OrElse work = "夜勤" OrElse work = "宿直" OrElse work = "明け" Then
             Return "夜宿明"

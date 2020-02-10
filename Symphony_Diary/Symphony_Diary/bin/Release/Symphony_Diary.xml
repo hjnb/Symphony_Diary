@@ -669,6 +669,20 @@ Symphony_Diary
 	<param name="work">勤務名</param>
 	<returns></returns>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.canCountWork(System.String)">
+	<summary>
+ 勤務としてカウントするか判定
+ </summary>
+	<param name="work">勤務名</param>
+	<returns></returns>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.convSyu(System.String)">
+	<summary>
+ 職種カウント用変換
+ </summary>
+	<param name="syu">職種</param>
+	<returns></returns>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.勤務画面.btnRegist_Click(System.Object,System.EventArgs)">
 	<summary>
  登録ボタンクリックイベント
