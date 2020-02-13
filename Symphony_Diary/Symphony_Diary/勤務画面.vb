@@ -717,8 +717,9 @@ Public Class 勤務画面
         '常勤換算後の人数
         '予定
         Dim kansanY As String = (Math.Floor((totalY / KANSAN) * 100) / 100).ToString("0.00")
+        kansanY = If(CDec(kansanY) > 1.0, "1.00", kansanY)
         If kansanY = "0.00" Then
-            rowY.Cells("Jyo").Value = ""
+            rowY.Cells("Jyo").Value = kansanY
         Else
             If kei = "常勤専従" Then
                 rowY.Cells("Jyo").Value = "1.00"
@@ -728,13 +729,14 @@ Public Class 勤務画面
         End If
         '変更
         Dim kansanH As String = (Math.Floor((totalH / KANSAN) * 100) / 100).ToString("0.00")
+        kansanH = If(CDec(kansanH) > 1.0, "1.00", kansanH)
         If kansanH = "0.00" Then
-            rowH.Cells("Jyo").Value = ""
+            rowH.Cells("Jyo").Value = kansanH
         Else
             If kei = "常勤専従" Then
-                rowH.Cells("Jyo").Value = ""
+                rowH.Cells("Jyo").Value = "1.00"
             Else
-                rowH.Cells("Jyo").Value = If(kansanY <> kansanH, kansanH, "")
+                rowH.Cells("Jyo").Value = kansanH
             End If
         End If
 
@@ -842,11 +844,19 @@ Public Class 勤務画面
         End If
     End Function
 
-    Private Function convNumber(num As Integer) As String
+    Private Overloads Function convNumber(num As Integer) As String
         If num = 0 Then
             Return ""
         Else
             Return num.ToString()
+        End If
+    End Function
+
+    Private Overloads Function convNumber(num As Decimal) As String
+        If num = 0.0 Then
+            Return ""
+        Else
+            Return num.ToString("0.00")
         End If
     End Function
 
@@ -889,6 +899,7 @@ Public Class 勤務画面
 
         '集計処理
         Dim calcSyuDic As New Dictionary(Of String, Integer(,))
+        Dim calcJyoDic As New Dictionary(Of String, Decimal(,))
         For Each nam As String In {"看護師", "介護士　介護職", "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ", "計"}
             Dim arr(1, 27) As Integer
             For i As Integer = 0 To 1
@@ -897,11 +908,17 @@ Public Class 勤務画面
                 Next
             Next
             calcSyuDic.Add(nam, arr.Clone())
+            Dim arr2(1, 0) As Decimal
+            For i As Integer = 0 To 1
+                arr2(i, 0) = 0.0
+            Next
+            calcJyoDic.Add(nam, arr2)
         Next
         For i As Integer = 1 To INPUT_ROW_COUNT Step 2
+            '対応する職種に変換
+            Dim syu As String = convSyu(Util.checkDBNullValue(dgvWork("Syu", i).Value))
+            '勤務部分
             For j As Integer = 1 To 28
-                '対応する職種に変換
-                Dim syu As String = convSyu(Util.checkDBNullValue(dgvWork("Syu", i).Value))
                 '予定勤務
                 Dim workY As String = Util.checkDBNullValue(dgvWork("Y" & j, i).Value)
                 workY = If(shortWorkDic.ContainsKey(workY), shortWorkDic(workY), workY)
@@ -918,6 +935,18 @@ Public Class 勤務画面
                     calcSyuDic("計")(1, j - 1) += 1
                 End If
             Next
+            '常勤換算
+            Dim jyoY As String = Util.checkDBNullValue(dgvWork("Jyo", i).Value)
+            If System.Text.RegularExpressions.Regex.IsMatch(jyoY, "^\d+(\.\d+)?$") AndAlso calcJyoDic.ContainsKey(syu) Then
+                calcJyoDic(syu)(0, 0) += CDec(jyoY)
+                calcJyoDic("計")(0, 0) += CDec(jyoY)
+            End If
+            Dim jyoH As String = Util.checkDBNullValue(dgvWork("Jyo", i + 1).Value)
+            jyoH = If(jyoH = "", jyoY, jyoH)
+            If System.Text.RegularExpressions.Regex.IsMatch(jyoH, "^\d+(\.\d+)?$") AndAlso calcJyoDic.ContainsKey(syu) Then
+                calcJyoDic(syu)(1, 0) += CDec(jyoH)
+                calcJyoDic("計")(1, 0) += CDec(jyoH)
+            End If
         Next
         '集計結果表示
         For i As Integer = 1 To 28
@@ -942,6 +971,27 @@ Public Class 勤務画面
             dgvWork("Y" & i, 167).Value = y4
             dgvWork("Y" & i, 168).Value = If(h4 = y4, "", h4)
         Next
+        '常勤換算部分
+        '看護師
+        Dim jy1 As String = convNumber(calcJyoDic("看護師")(0, 0))
+        Dim jh1 As String = convNumber(calcJyoDic("看護師")(1, 0))
+        dgvWork("Jyo", 161).Value = jy1
+        dgvWork("Jyo", 162).Value = If(jh1 = jy1, "", jh1)
+        '介護士　介護職
+        Dim jy2 As String = convNumber(calcJyoDic("介護士　介護職")(0, 0))
+        Dim jh2 As String = convNumber(calcJyoDic("介護士　介護職")(1, 0))
+        dgvWork("Jyo", 163).Value = jy2
+        dgvWork("Jyo", 164).Value = If(jh2 = jy2, "", jh2)
+        '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
+        Dim jy3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, 0))
+        Dim jh3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, 0))
+        dgvWork("Jyo", 165).Value = jy3
+        dgvWork("Jyo", 166).Value = If(jh3 = jy3, "", jh3)
+        '計
+        Dim jy4 As String = convNumber(calcJyoDic("計")(0, 0))
+        Dim jh4 As String = convNumber(calcJyoDic("計")(1, 0))
+        dgvWork("Jyo", 167).Value = jy4
+        dgvWork("Jyo", 168).Value = If(jh4 = jy4, "", jh4)
     End Sub
 
     ''' <summary>
@@ -1117,5 +1167,22 @@ Public Class 勤務画面
         objWorkBook = Nothing
         objExcel = Nothing
 
+    End Sub
+
+    Private Sub dgvWork_CellFormatting(sender As Object, e As System.Windows.Forms.DataGridViewCellFormattingEventArgs) Handles dgvWork.CellFormatting
+        If e.RowIndex > 0 AndAlso dgvWork.Columns(e.ColumnIndex).Name = "Jyo" Then
+            If e.RowIndex Mod 2 = 1 Then
+                '予定行
+                If e.Value = "0.00" Then
+                    e.Value = ""
+                End If
+            Else
+                '変更行
+                If e.Value = "0.00" OrElse e.Value = Util.checkDBNullValue(dgvWork("Jyo", e.RowIndex - 1).Value) Then
+                    e.Value = ""
+                End If
+            End If
+            e.FormattingApplied = True
+        End If
     End Sub
 End Class
