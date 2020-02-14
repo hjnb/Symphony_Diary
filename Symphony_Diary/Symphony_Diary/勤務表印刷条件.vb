@@ -815,7 +815,353 @@ Public Class 勤務表印刷条件
     ''' <param name="rs">印刷データレコードセット</param>
     ''' <remarks></remarks>
     Private Sub printB4S(writeType As String, rs As ADODB.Recordset)
+        '集計用準備
+        Dim calcSyuDic As New Dictionary(Of String, Integer(,))
+        Dim calcJyoDic As New Dictionary(Of String, Decimal(,))
+        For Each nam As String In {"看護師", "介護士　介護職", "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ", "計", "日勤", "早遅特", "半", "直１２", "ＡＢＣ", "夜宿明"}
+            Dim arr(1, 27) As Integer
+            For i As Integer = 0 To 1
+                For j As Integer = 0 To 27
+                    arr(i, j) = 0
+                Next
+            Next
+            calcSyuDic.Add(nam, arr.Clone())
+            Dim arr2(1, 0) As Decimal
+            For i As Integer = 0 To 1
+                arr2(i, 0) = 0.0
+            Next
+            calcJyoDic.Add(nam, arr2)
+        Next
 
+        '貼り付けデータ作成
+        Dim dataList As New List(Of String(,))
+        Dim dataArray(53, 38) As String
+        Dim arrayRowIndex As Integer = 0
+        While Not rs.EOF
+            If arrayRowIndex = 34 Then
+                dataList.Add(dataArray.Clone())
+                Array.Clear(dataArray, 0, dataArray.Length)
+                arrayRowIndex = 0
+            End If
+
+            '勤務形態
+            Dim kei As String = Util.checkDBNullValue(rs.Fields("YKei").Value)
+            dataArray(arrayRowIndex, 0) = kei
+            '職種
+            Dim syu As String = Util.checkDBNullValue(rs.Fields("YSyu").Value)
+            dataArray(arrayRowIndex, 1) = syu
+            '氏名
+            dataArray(arrayRowIndex, 2) = Util.checkDBNullValue(rs.Fields("Nam").Value)
+            '予定、変更
+            dataArray(arrayRowIndex, 5) = "予定"
+            dataArray(arrayRowIndex + 1, 5) = "変更"
+            '1～31
+            For i As Integer = 1 To 31
+                Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
+                Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
+                If writeType = "予定／実績" Then
+                    henko = If(yotei = henko, "", henko)
+                End If
+                dataArray(arrayRowIndex, 5 + i) = yotei
+                dataArray(arrayRowIndex + 1, 5 + i) = henko
+                '集計(職種)
+                If i <= 28 AndAlso canCountWork(yotei) Then
+                    Dim cSyu As String = convSyu(syu) '対応する職種に変換
+                    If calcSyuDic.ContainsKey(cSyu) Then
+                        calcSyuDic(cSyu)(0, i - 1) += 1
+                        calcSyuDic("計")(0, i - 1) += 1
+                    End If
+                End If
+                If i <= 28 AndAlso canCountWork(henko) Then
+                    Dim cSyu As String = convSyu(syu) '対応する職種に変換
+                    If calcSyuDic.ContainsKey(cSyu) Then
+                        calcSyuDic(cSyu)(1, i - 1) += 1
+                        calcSyuDic("計")(1, i - 1) += 1
+                    End If
+                End If
+                '集計（勤務）
+                If i <= 28 Then
+                    Dim cWorkY As String = convWork(yotei) '対応する集計用勤務名に変換
+                    If calcSyuDic.ContainsKey(cWorkY) Then
+                        calcSyuDic(cWorkY)(0, i - 1) += 1
+                    End If
+                    Dim cWorkH As String = convWork(henko) '対応する集計用勤務名に変換
+                    If calcSyuDic.ContainsKey(cWorkH) Then
+                        calcSyuDic(cWorkH)(1, i - 1) += 1
+                    End If
+                End If
+            Next
+
+            '月合計(予定行のみ)
+            Dim totalY As Decimal = 0.0
+            Dim totalH As Decimal = 0.0
+            For i As Integer = 1 To WEEK4
+                Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
+                Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
+                totalY += convWorkTime(yotei)
+                henko = If(henko = "", yotei, henko)
+                totalH += convWorkTime(henko)
+            Next
+            If totalY = 0.0 Then
+                dataArray(arrayRowIndex, 38) = ""
+            Else
+                dataArray(arrayRowIndex, 38) = totalY.ToString()
+            End If
+
+            '常勤換算後の人数
+            '予定
+            Dim kansanY As String = (Math.Floor((totalY / KANSAN) * 100) / 100).ToString("0.00")
+            kansanY = If(CDec(kansanY) > 1.0, "1.00", kansanY)
+            kansanY = If(kei = "常勤専従", "1.00", kansanY)
+            If kansanY = "0.00" Then
+                dataArray(arrayRowIndex, 37) = ""
+            Else
+                dataArray(arrayRowIndex, 37) = kansanY
+            End If
+            '変更
+            Dim kansanH As String = (Math.Floor((totalH / KANSAN) * 100) / 100).ToString("0.00")
+            kansanH = If(CDec(kansanH) > 1.0, "1.00", kansanH)
+            kansanH = If(kei = "常勤専従", "1.00", kansanH)
+            If kansanH = "0.00" Then
+                dataArray(arrayRowIndex + 1, 37) = ""
+            Else
+                dataArray(arrayRowIndex + 1, 37) = If(kansanY <> kansanH, kansanH, "")
+            End If
+            '集計用
+            Dim calcSyu As String = convSyu(syu) '対応する職種に変換
+            Dim jyoY As String = kansanY
+            If System.Text.RegularExpressions.Regex.IsMatch(jyoY, "^\d+(\.\d+)?$") AndAlso calcJyoDic.ContainsKey(calcSyu) Then
+                calcJyoDic(calcSyu)(0, 0) += CDec(jyoY)
+                calcJyoDic("計")(0, 0) += CDec(jyoY)
+            End If
+            Dim jyoH As String = kansanH
+            If System.Text.RegularExpressions.Regex.IsMatch(jyoH, "^\d+(\.\d+)?$") AndAlso calcJyoDic.ContainsKey(calcSyu) Then
+                calcJyoDic(calcSyu)(1, 0) += CDec(jyoH)
+                calcJyoDic("計")(1, 0) += CDec(jyoH)
+            End If
+
+            arrayRowIndex += 2
+            rs.MoveNext()
+        End While
+        dataList.Add(dataArray.Clone())
+
+        '印刷用に勤務名変換
+        For Each d As String(,) In dataList
+            For i As Integer = 0 To 33
+                For j As Integer = 6 To 36
+                    Dim work As String = d(i, j)
+                    If Not IsNothing(work) AndAlso printWorkDic.ContainsKey(work) Then
+                        d(i, j) = printWorkDic(work)
+                    End If
+                Next
+            Next
+        Next
+
+        '左下の勤務時間の表示、定数マスタから取得
+        Dim timeList As New List(Of String)
+        Dim count As Integer = 1
+        For Each kvp As KeyValuePair(Of String, String) In workTimeDic
+            If count >= 16 Then
+                Exit For
+            End If
+            Dim work As String = kvp.Key
+            Dim time As String = kvp.Value
+            If time <> "0" Then
+                timeList.Add(work & " " & time)
+            End If
+            count += 1
+        Next
+
+        '固定文字列設定
+        For Each d As String(,) In dataList
+            d(34, 0) = "看護師"
+            d(36, 0) = "介護士　介護職"
+            d(38, 0) = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
+            d(40, 0) = "計"
+            d(42, 5) = "日勤"
+            d(44, 5) = "早遅特"
+            d(46, 5) = "半"
+            d(48, 5) = "直１２"
+            d(50, 5) = "ＡＢＣ"
+            d(52, 5) = "夜宿明"
+            '左下勤務名 時間
+            For i As Integer = 0 To timeList.Count - 1
+                If i >= 12 Then
+                    Exit For
+                End If
+                d(42 + i, 0) = timeList(i)
+            Next
+        Next
+
+        '貼り付けデータに集計データを代入
+        Dim lastData(,) As String = dataList(dataList.Count - 1)
+        For i As Integer = 0 To 27
+            '看護師
+            Dim y1 As String = convNumber(calcSyuDic("看護師")(0, i))
+            Dim h1 As String = convNumber(calcSyuDic("看護師")(1, i))
+            lastData(34, 6 + i) = y1
+            lastData(35, 6 + i) = If(y1 = h1, "", h1)
+            '介護士　介護職
+            Dim y2 As String = convNumber(calcSyuDic("介護士　介護職")(0, i))
+            Dim h2 As String = convNumber(calcSyuDic("介護士　介護職")(1, i))
+            lastData(36, 6 + i) = y2
+            lastData(37, 6 + i) = If(y2 = h2, "", h2)
+            '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
+            Dim y3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, i))
+            Dim h3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, i))
+            lastData(38, 6 + i) = y3
+            lastData(39, 6 + i) = If(y3 = h3, "", h3)
+            '計
+            Dim y4 As String = convNumber(calcSyuDic("計")(0, i))
+            Dim h4 As String = convNumber(calcSyuDic("計")(1, i))
+            lastData(40, 6 + i) = y4
+            lastData(41, 6 + i) = If(y4 = h4, "", h4)
+
+            '日勤
+            Dim y5 As String = convNumber(calcSyuDic("日勤")(0, i))
+            Dim h5 As String = convNumber(calcSyuDic("日勤")(1, i))
+            lastData(42, 6 + i) = y5
+            lastData(43, 6 + i) = If(y5 = h5, "", h5)
+            '早遅特
+            Dim y6 As String = convNumber(calcSyuDic("早遅特")(0, i))
+            Dim h6 As String = convNumber(calcSyuDic("早遅特")(1, i))
+            lastData(44, 6 + i) = y6
+            lastData(45, 6 + i) = If(y6 = h6, "", h6)
+            '半
+            Dim y7 As String = convNumber(calcSyuDic("半")(0, i))
+            Dim h7 As String = convNumber(calcSyuDic("半")(1, i))
+            lastData(46, 6 + i) = y7
+            lastData(47, 6 + i) = If(y7 = h7, "", h7)
+            '直１２
+            Dim y8 As String = convNumber(calcSyuDic("直１２")(0, i))
+            Dim h8 As String = convNumber(calcSyuDic("直１２")(1, i))
+            lastData(48, 6 + i) = y8
+            lastData(49, 6 + i) = If(y8 = h8, "", h8)
+            'ＡＢＣ
+            Dim y9 As String = convNumber(calcSyuDic("ＡＢＣ")(0, i))
+            Dim h9 As String = convNumber(calcSyuDic("ＡＢＣ")(1, i))
+            lastData(50, 6 + i) = y9
+            lastData(51, 6 + i) = If(y9 = h9, "", h9)
+            '夜宿明
+            Dim y10 As String = convNumber(calcSyuDic("夜宿明")(0, i))
+            Dim h10 As String = convNumber(calcSyuDic("夜宿明")(1, i))
+            lastData(52, 6 + i) = y10
+            lastData(53, 6 + i) = If(y10 = h10, "", h10)
+        Next
+        '常勤換算集計
+        '看護師
+        Dim jy1 As String = convNumber(calcJyoDic("看護師")(0, 0))
+        Dim jh1 As String = convNumber(calcJyoDic("看護師")(1, 0))
+        lastData(34, 37) = jy1
+        lastData(35, 37) = If(jy1 = jh1, "", jh1)
+        '介護士　介護職
+        Dim jy2 As String = convNumber(calcJyoDic("介護士　介護職")(0, 0))
+        Dim jh2 As String = convNumber(calcJyoDic("介護士　介護職")(1, 0))
+        lastData(36, 37) = jy2
+        lastData(37, 37) = If(jy2 = jh2, "", jh2)
+        '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
+        Dim jy3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, 0))
+        Dim jh3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, 0))
+        lastData(38, 37) = jy3
+        lastData(39, 37) = If(jy3 = jh3, "", jh3)
+        '計
+        Dim jy4 As String = convNumber(calcJyoDic("計")(0, 0))
+        Dim jh4 As String = convNumber(calcJyoDic("計")(1, 0))
+        lastData(40, 37) = jy4
+        lastData(41, 37) = If(jy4 = jh4, "", jh4)
+
+        'writeType:予定、実績の場合はそれぞれ不必要のデータ削除
+        If writeType = "予定" Then
+            '変更データを空白に
+            For Each d As String(,) In dataList
+                For i As Integer = 1 To 53 Step 2
+                    For j As Integer = 6 To 38
+                        d(i, j) = ""
+                    Next
+                Next
+            Next
+        ElseIf writeType = "実績" Then
+            '予定データを空白に
+            For Each d As String(,) In dataList
+                For i As Integer = 0 To 52 Step 2
+                    For j As Integer = 6 To 38
+                        d(i, j) = ""
+                    Next
+                Next
+            Next
+        End If
+
+        '月の日数
+        Dim year As Integer = CInt(ym.Split("/")(0))
+        Dim month As Integer = CInt(ym.Split("/")(1))
+        Dim daysInMonth As Integer = DateTime.DaysInMonth(year, month)
+
+        'エクセル準備
+        Dim objExcel As Excel.Application = CreateObject("Excel.Application")
+        Dim objWorkBooks As Excel.Workbooks = objExcel.Workbooks
+        Dim objWorkBook As Excel.Workbook = objWorkBooks.Open(TopForm.excelFilePath)
+        Dim oSheet As Excel.Worksheet = objWorkBook.Worksheets("勤務表B4S改")
+        Dim xlShapes As Excel.Shapes = DirectCast(oSheet.Shapes, Excel.Shapes)
+        objExcel.Calculation = Excel.XlCalculation.xlCalculationManual
+        objExcel.ScreenUpdating = False
+
+        '年月
+        oSheet.Range("C3").Value = "( " & CInt(ym.Split("/")(0)) & "年 " & CInt(ym.Split("/")(1)) & "月度 )"
+        '部署?
+        oSheet.Range("G3").Value = hyo
+        '印影
+        If System.IO.File.Exists(sign1Path) Then
+            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AD"), Excel.Range)
+            xlShapes.AddPicture(sign1Path, False, True, cell.Left + 6, cell.Top + 3, 27, 27)
+        End If
+        If System.IO.File.Exists(sign2Path) Then
+            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AF"), Excel.Range)
+            xlShapes.AddPicture(sign2Path, False, True, cell.Left + 6, cell.Top + 3, 27, 27)
+        End If
+        If System.IO.File.Exists(sign3Path) Then
+            Dim cell As Excel.Range = DirectCast(oSheet.Cells(3, "AH"), Excel.Range)
+            xlShapes.AddPicture(sign3Path, False, True, cell.Left + 6, cell.Top + 3, 27, 27)
+        End If
+        '週平均就労時間
+        oSheet.Range("AN3").Value = WEEKRY_AVERAGE_TIME
+        '日数
+        oSheet.Range("AL4").Value = daysInMonth
+        '曜日行設定
+        oSheet.Range("H8", "AL8").Value = youbi
+
+        '必要ページ分コピペ
+        For i As Integer = 0 To dataList.Count - 2
+            Dim xlPasteRange As Excel.Range = oSheet.Range("A" & (64 + (63 * i))) 'ペースト先
+            oSheet.Rows("1:63").copy(xlPasteRange)
+            oSheet.HPageBreaks.Add(oSheet.Range("A" & (64 + (63 * i)))) '改ページ
+        Next
+
+        'データ貼り付け
+        For i As Integer = 0 To dataList.Count - 1
+            oSheet.Range("B" & (9 + (63 * i)), "AN" & (62 + (63 * i))).Value = dataList(i)
+        Next
+
+        objExcel.Calculation = Excel.XlCalculation.xlCalculationAutomatic
+        objExcel.ScreenUpdating = True
+
+        '変更保存確認ダイアログ非表示
+        objExcel.DisplayAlerts = False
+
+        '印刷
+        If printState Then
+            oSheet.PrintOut()
+        Else
+            objExcel.Visible = True
+            oSheet.PrintPreview(1)
+        End If
+
+        ' EXCEL解放
+        objExcel.Quit()
+        Marshal.ReleaseComObject(objWorkBook)
+        Marshal.ReleaseComObject(objExcel)
+        oSheet = Nothing
+        objWorkBook = Nothing
+        objExcel = Nothing
     End Sub
 
     ''' <summary>
