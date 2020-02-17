@@ -14,13 +14,24 @@ Public Class WorkDataGridView
     End Sub
 
     Protected Overrides Function ProcessDialogKey(keyData As System.Windows.Forms.Keys) As Boolean
-        Dim inputStr As String = If(Not IsNothing(Me.EditingControl), CType(Me.EditingControl, DataGridViewTextBoxEditingControl).Text, "") '入力文字
         Dim columnName As String = Me.Columns(CurrentCell.ColumnIndex).Name '選択列名
         If keyData = Keys.Enter Then
-            If columnName = "Kei" OrElse columnName = "Syu" OrElse columnName = "Nam" Then
+            If (columnName = "Kei" OrElse columnName = "Syu") AndAlso Not IsNothing(Me.EditingControl) Then
+                Dim cb As DataGridViewComboBoxColumn = DirectCast(Me.Columns(CurrentCell.ColumnIndex), DataGridViewComboBoxColumn)
+                Dim inputStr As String = DirectCast(Me.EditingControl, DataGridViewComboBoxEditingControl).Text '入力文字
+                'コンボボックス項目に追加
+                If Not cb.Items.Contains(inputStr) Then
+                    cb.Items.Add(inputStr)
+                End If
+                Me(CurrentCell.ColumnIndex, CurrentCell.RowIndex).Value = inputStr
+
+                EndEdit()
+                Return False
+            ElseIf columnName = "Nam" Then
                 EndEdit()
                 Return False
             ElseIf 6 <= Me.CurrentCell.ColumnIndex AndAlso Me.CurrentCell.ColumnIndex <= 36 Then 'Y1～Y31列
+                Dim inputStr As String = If(Not IsNothing(Me.EditingControl), CType(Me.EditingControl, DataGridViewTextBoxEditingControl).Text, "") '入力文字
                 If inputStr = "" Then
                     '入力文字が空
                     Return Me.ProcessTabKey(keyData)
@@ -90,23 +101,18 @@ Public Class WorkDataGridView
             End If
         End If
 
-        Dim tb As DataGridViewTextBoxEditingControl = CType(Me.EditingControl, DataGridViewTextBoxEditingControl)
-        If Not IsNothing(tb) AndAlso ((e.KeyCode = Keys.Left AndAlso tb.SelectionStart = 0) OrElse (e.KeyCode = Keys.Right AndAlso tb.SelectionStart = tb.TextLength)) Then
-            Return False
+        If TypeOf Me.EditingControl Is DataGridViewTextBoxEditingControl Then
+            Dim tb = DirectCast(Me.EditingControl, DataGridViewTextBoxEditingControl)
+            If Not IsNothing(tb) AndAlso ((e.KeyCode = Keys.Left AndAlso tb.SelectionStart = 0) OrElse (e.KeyCode = Keys.Right AndAlso tb.SelectionStart = tb.TextLength)) Then
+                Return False
+            Else
+                Return MyBase.ProcessDataGridViewKey(e)
+            End If
         Else
             Return MyBase.ProcessDataGridViewKey(e)
         End If
+        
     End Function
-
-    ''' <summary>
-    ''' セル編集終了時イベント
-    ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    ''' <remarks></remarks>
-    Private Sub workDataGridView_CellEndEdit(sender As Object, e As System.Windows.Forms.DataGridViewCellEventArgs) Handles Me.CellEndEdit
-        Dim inputStr As String = If(IsDBNull(Me(e.ColumnIndex, e.RowIndex).Value), "", Me(e.ColumnIndex, e.RowIndex).Value)
-    End Sub
 
     ''' <summary>
     ''' セルエンターイベント
@@ -120,7 +126,7 @@ Public Class WorkDataGridView
                 Me.BeginEdit(False)
                 If Not IsNothing(Me.EditingControl) Then
                     Dim cb As ComboBox = DirectCast(Me.EditingControl, ComboBox)
-                    cb.DroppedDown = True
+                    'cb.DroppedDown = True
                 End If
             End If
 
@@ -203,28 +209,6 @@ Public Class WorkDataGridView
             End If
             'セルの値を設定しないと、元に戻ってしまう
             dgv(e.ColumnIndex, e.RowIndex).Value = e.FormattedValue
-        End If
-    End Sub
-
-    ''' <summary>
-    ''' セル編集用keyPress処理
-    ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    ''' <remarks></remarks>
-    Private Sub dgvTextBox_KeyPress(sender As Object, e As System.Windows.Forms.KeyPressEventArgs)
-        Dim text As String = CType(sender, DataGridViewTextBoxEditingControl).Text
-        Dim lengthByte As Integer = Encoding.GetEncoding("Shift_JIS").GetByteCount(text)
-        Dim limitLengthByte As Integer = 4
-
-        If lengthByte >= limitLengthByte Then '設定されているバイト数以上の時
-            If e.KeyChar = ChrW(Keys.Back) Then
-                'Backspaceは入力可能
-                e.Handled = False
-            Else
-                '入力できなくする
-                e.Handled = True
-            End If
         End If
     End Sub
 

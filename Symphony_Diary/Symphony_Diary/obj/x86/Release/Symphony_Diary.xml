@@ -6,14 +6,7 @@ Symphony_Diary
 </name>
 </assembly>
 <members>
-<member name="M:Symphony_Diary.WorkDataGridView.workDataGridView_CellEndEdit(System.Object,System.Windows.Forms.DataGridViewCellEventArgs)">
-	<summary>
- セル編集終了時イベント
- </summary>
-	<param name="sender"></param>
-	<param name="e"></param>
-	<remarks></remarks>
-</member><member name="M:Symphony_Diary.WorkDataGridView.workDataGridView_CellEnter(System.Object,System.Windows.Forms.DataGridViewCellEventArgs)">
+<member name="M:Symphony_Diary.WorkDataGridView.workDataGridView_CellEnter(System.Object,System.Windows.Forms.DataGridViewCellEventArgs)">
 	<summary>
  セルエンターイベント
  </summary>
@@ -37,13 +30,6 @@ Symphony_Diary
 </member><member name="M:Symphony_Diary.WorkDataGridView.workDataGridView_EditingControlShowing(System.Object,System.Windows.Forms.DataGridViewEditingControlShowingEventArgs)">
 	<summary>
  セル編集時に表示されるテキストボックスイベント
- </summary>
-	<param name="sender"></param>
-	<param name="e"></param>
-	<remarks></remarks>
-</member><member name="M:Symphony_Diary.WorkDataGridView.dgvTextBox_KeyPress(System.Object,System.Windows.Forms.KeyPressEventArgs)">
-	<summary>
- セル編集用keyPress処理
  </summary>
 	<param name="sender"></param>
 	<param name="e"></param>
@@ -603,6 +589,13 @@ Symphony_Diary
 	<param name="sender"></param>
 	<param name="e"></param>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.addComboBoxItem(System.String,System.String)">
+	<summary>
+ コンボボックスへ追加
+ </summary>
+	<param name="item">追加文字列</param>
+	<param name="columnName">列名</param>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.勤務画面.setDayCharRow(System.String)">
 	<summary>
  曜日行作成
@@ -681,6 +674,13 @@ Symphony_Diary
  職種カウント用変換
  </summary>
 	<param name="syu">職種</param>
+	<returns></returns>
+	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.existsWorkStr(System.Windows.Forms.DataGridViewRow)">
+	<summary>
+ 対象行に勤務の入力があるかチェック
+ </summary>
+	<param name="row">dgv行</param>
 	<returns></returns>
 	<remarks></remarks>
 </member><member name="M:Symphony_Diary.勤務画面.btnRegist_Click(System.Object,System.EventArgs)">

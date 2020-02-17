@@ -407,8 +407,10 @@ Public Class 勤務画面
                 Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
                 Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
                 '勤務
+                addComboBoxItem(kei, "Kei")
                 dgvWork("Kei", seq - 1).Value = kei
                 '職種
+                addComboBoxItem(syu, "Syu")
                 dgvWork("Syu", seq - 1).Value = syu
                 '氏名
                 dgvWork("Nam", seq - 1).Value = nam
@@ -440,6 +442,20 @@ Public Class 勤務画面
     Private Sub btnDisplay_Click(sender As System.Object, e As System.EventArgs) Handles btnDisplay.Click
         Dim ym As String = adBox.getADymStr()
         displayDgvWork(ym)
+    End Sub
+
+    ''' <summary>
+    ''' コンボボックスへ追加
+    ''' </summary>
+    ''' <param name="item">追加文字列</param>
+    ''' <param name="columnName">列名</param>
+    ''' <remarks></remarks>
+    Private Sub addComboBoxItem(item As String, columnName As String)
+        Dim cb As DataGridViewComboBoxColumn = DirectCast(dgvWork.Columns(columnName), DataGridViewComboBoxColumn)
+        '存在しない場合追加
+        If Not cb.Items.Contains(item) Then
+            cb.Items.Add(item)
+        End If
     End Sub
 
     ''' <summary>
@@ -861,13 +877,97 @@ Public Class 勤務画面
     End Function
 
     ''' <summary>
+    ''' 対象行に勤務の入力があるかチェック
+    ''' </summary>
+    ''' <param name="row">dgv行</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Private Function existsWorkStr(row As DataGridViewRow) As Boolean
+        For i As Integer = 1 To 31
+            If Util.checkDBNullValue(row.Cells("Y" & i).Value) <> "" Then
+                Return True
+            End If
+        Next
+        Return False
+    End Function
+
+    ''' <summary>
     ''' 登録ボタンクリックイベント
     ''' </summary>
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub btnRegist_Click(sender As System.Object, e As System.EventArgs) Handles btnRegist.Click
+        '入力チェック(氏名未入力行は登録不可)
+        For i As Integer = 1 To INPUT_ROW_COUNT Step 2
+            Dim yKei As String = Util.checkDBNullValue(dgvWork("Kei", i).Value)
+            Dim ySyu As String = Util.checkDBNullValue(dgvWork("Syu", i).Value)
+            Dim hKei As String = Util.checkDBNullValue(dgvWork("Kei", i + 1).Value)
+            Dim hSyu As String = Util.checkDBNullValue(dgvWork("Syu", i + 1).Value)
+            Dim nam As String = Util.checkDBNullValue(dgvWork("Nam", i).Value)
+            Dim inputFlg As Boolean = False
+            If yKei <> "" OrElse ySyu <> "" OrElse hKei <> "" OrElse hSyu <> "" OrElse existsWorkStr(dgvWork.Rows(i)) OrElse existsWorkStr(dgvWork.Rows(i + 1)) Then
+                inputFlg = True
+            End If
+            If inputFlg AndAlso nam = "" Then
+                MsgBox("氏名の無い行に入力しています。", MsgBoxStyle.Exclamation)
+                Return
+            End If
+        Next
 
+        '対象年月
+        Dim ym As String = adBox.getADymStr()
+
+        '既存データ削除
+        Dim cnn As New ADODB.Connection
+        cnn.Open(TopForm.DB_Diary)
+        Dim cmd As New ADODB.Command()
+        cmd.ActiveConnection = cnn
+        cmd.CommandText = "delete from KinD where Ym = '" & ym & "' and Hyo = '" & formType & "'"
+        cmd.Execute()
+
+        '登録
+        Dim seqCount As Integer = 2
+        Dim rs As New ADODB.Recordset
+        rs.Open("KinD", cnn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockOptimistic)
+        For i As Integer = 1 To INPUT_ROW_COUNT Step 2
+            Dim nam As String = Util.checkDBNullValue(dgvWork("Nam", i).Value)
+            If nam = "" Then
+                Continue For
+            End If
+            rs.AddNew()
+            rs.Fields("Seq").Value = seqCount
+            rs.Fields("Ym").Value = ym
+            rs.Fields("Hyo").Value = formType
+            rs.Fields("Id").Value = 0
+            rs.Fields("Nam").Value = nam
+            Dim yKei As String = Util.checkDBNullValue(dgvWork("Kei", i).Value)
+            Dim hKei As String = Util.checkDBNullValue(dgvWork("Kei", i + 1).Value)
+            hKei = If(hKei = "", yKei, hKei)
+            Dim ySyu As String = Util.checkDBNullValue(dgvWork("Syu", i).Value)
+            Dim hSyu As String = Util.checkDBNullValue(dgvWork("Syu", i + 1).Value)
+            hSyu = If(hSyu = "", ySyu, hSyu)
+            rs.Fields("YKei").Value = yKei
+            rs.Fields("YSyu").Value = ySyu
+            rs.Fields("HKei").Value = hKei
+            rs.Fields("HSyu").Value = hSyu
+            For j As Integer = 1 To 31
+                Dim yotei As String = Util.checkDBNullValue(dgvWork("Y" & j, i).Value)
+                Dim henko As String = Util.checkDBNullValue(dgvWork("Y" & j, i + 1).Value)
+                henko = If(henko = "", yotei, henko)
+                rs.Fields("Yotei" & j).Value = yotei
+                rs.Fields("Henko" & j).Value = henko
+            Next
+            rs.Fields("Yflg").Value = ""
+            rs.Fields("Hflg").Value = ""
+
+            seqCount += 2
+        Next
+        rs.Update()
+        rs.Close()
+        cnn.Close()
+
+        MsgBox("登録しました。", MsgBoxStyle.Information)
     End Sub
 
     ''' <summary>
@@ -888,14 +988,14 @@ Public Class 勤務画面
         Next
 
         '集計行部分
-        '文字表示
-        'とりあえず仮で
-        '
-        '
-        dgvWork.Rows(161).Cells("Nam").Value = "看護師"
-        dgvWork.Rows(163).Cells("Nam").Value = "介護士　介護職"
-        dgvWork.Rows(165).Cells("Nam").Value = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
-        dgvWork.Rows(167).Cells("Nam").Value = "計"
+        addComboBoxItem("看護師", "Syu")
+        addComboBoxItem("介護士　介護職", "Syu")
+        addComboBoxItem("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ", "Syu")
+        addComboBoxItem("計", "Syu")
+        dgvWork.Rows(161).Cells("Syu").Value = "看護師"
+        dgvWork.Rows(163).Cells("Syu").Value = "介護士　介護職"
+        dgvWork.Rows(165).Cells("Syu").Value = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
+        dgvWork.Rows(167).Cells("Syu").Value = "計"
 
         '集計処理
         Dim calcSyuDic As New Dictionary(Of String, Integer(,))
