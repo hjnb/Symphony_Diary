@@ -392,12 +392,36 @@ Public Class 勤務画面
         setSeqValue()
 
         'データ取得、表示
-        Dim seqCount As Integer = 2
         Dim cnn As New ADODB.Connection
         cnn.Open(TopForm.DB_Diary)
         Dim rs As New ADODB.Recordset
         Dim sql As String = "select * from KinD where Ym = '" & ym & "' and Hyo = '" & formType & "' order by Seq"
-        rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly)
+        rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockReadOnly)
+        If rs.RecordCount <= 0 Then
+            rs.Close()
+            '職員マスタに登録されている人を初期表示
+            sql = "select * from NamM where Kin = '" & formType & "' order by Id"
+            rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockReadOnly)
+            Dim rowIndex As Integer = 1
+            While Not rs.EOF
+                Dim kei As String = Util.checkDBNullValue(rs.Fields("Kei").Value)
+                addComboBoxItem(kei, "Kei")
+                Dim syu As String = Util.checkDBNullValue(rs.Fields("Syu").Value)
+                addComboBoxItem(syu, "Syu")
+                Dim nam As String = Util.checkDBNullValue(rs.Fields("Nam").Value)
+
+                dgvWork("Kei", rowIndex).Value = kei
+                dgvWork("Syu", rowIndex).Value = syu
+                dgvWork("Nam", rowIndex).Value = nam
+
+                rowIndex += 2
+                rs.MoveNext()
+            End While
+            rs.Close()
+            cnn.Close()
+            Return
+        End If
+        Dim seqCount As Integer = 2
         While Not rs.EOF
             For i As Integer = 1 To 31
                 Dim kei As String = Util.checkDBNullValue(rs.Fields("YKei").Value)
