@@ -1332,6 +1332,10 @@ Public Class 勤務画面
                 For Each cell As DataGridViewCell In dgvWork.Rows(e.RowIndex).Cells
                     cell.Style.BackColor = bc
                 Next
+                If bc = colorDic("Default") Then
+                    setHolidayColumnColor()
+                    dgvWork("Type", e.RowIndex).Style.BackColor = colorDic("Disable")
+                End If
             End If
         End If
     End Sub
