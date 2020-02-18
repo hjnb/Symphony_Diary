@@ -195,6 +195,7 @@ Public Class TopForm
                     End If
                 End If
             End If
+
             workForm = New 勤務画面(txt, ym)
             workForm.Show()
         End If

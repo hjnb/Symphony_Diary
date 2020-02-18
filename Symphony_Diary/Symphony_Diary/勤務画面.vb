@@ -113,6 +113,8 @@ Public Class 勤務画面
         colorDic.Add("Disable", Color.FromKnownColor(KnownColor.Control))
         '日曜 or 祝日
         colorDic.Add("Holiday", Color.FromArgb(255, 200, 200))
+        '名前列選択時
+        colorDic.Add("SelectedNam", Color.FromKnownColor(KnownColor.Yellow))
     End Sub
 
     ''' <summary>
@@ -1293,6 +1295,12 @@ Public Class 勤務画面
 
     End Sub
 
+    ''' <summary>
+    ''' CellFormattingイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
     Private Sub dgvWork_CellFormatting(sender As Object, e As System.Windows.Forms.DataGridViewCellFormattingEventArgs) Handles dgvWork.CellFormatting
         If e.RowIndex > 0 AndAlso dgvWork.Columns(e.ColumnIndex).Name = "Jyo" Then
             If e.RowIndex Mod 2 = 1 Then
@@ -1307,6 +1315,24 @@ Public Class 勤務画面
                 End If
             End If
             e.FormattingApplied = True
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' CellMouseClickイベント
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub dgvWork_CellMouseClick(sender As Object, e As System.Windows.Forms.DataGridViewCellMouseEventArgs) Handles dgvWork.CellMouseClick
+        If e.RowIndex >= 1 AndAlso e.RowIndex <= INPUT_ROW_COUNT Then
+            Dim columnName As String = dgvWork.Columns(e.ColumnIndex).Name
+            If columnName = "Nam" Then
+                Dim bc As Color = If(dgvWork(e.ColumnIndex, e.RowIndex).Style.BackColor = colorDic("SelectedNam"), colorDic("Default"), colorDic("SelectedNam"))
+                For Each cell As DataGridViewCell In dgvWork.Rows(e.RowIndex).Cells
+                    cell.Style.BackColor = bc
+                Next
+            End If
         End If
     End Sub
 End Class
