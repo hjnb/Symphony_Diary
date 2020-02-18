@@ -1015,12 +1015,13 @@ Public Class 勤務画面
 
         '集計行部分
         addComboBoxItem("看護師", "Syu")
-        addComboBoxItem("介護士　介護職", "Syu")
-        addComboBoxItem("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ", "Syu")
+        addComboBoxItem("介護士 介護職", "Syu")
+        addComboBoxItem("介護士ﾊﾟｰﾄ 介護職ﾊﾟｰﾄ", "Syu")
         addComboBoxItem("計", "Syu")
         dgvWork.Rows(161).Cells("Syu").Value = "看護師"
-        dgvWork.Rows(163).Cells("Syu").Value = "介護士　介護職"
-        dgvWork.Rows(165).Cells("Syu").Value = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
+        dgvWork.Rows(163).Cells("Syu").Value = "介護士 介護職"
+        dgvWork.Rows(165).Cells("Syu").Value = "介護士ﾊﾟｰﾄ 介護職ﾊﾟｰﾄ"
+        dgvWork.Rows(165).Cells("Syu").Style.Font = New Font("MS UI Gothic", 8)
         dgvWork.Rows(167).Cells("Syu").Value = "計"
 
         '集計処理
@@ -1328,15 +1329,37 @@ Public Class 勤務画面
         If e.RowIndex >= 1 AndAlso e.RowIndex <= INPUT_ROW_COUNT Then
             Dim columnName As String = dgvWork.Columns(e.ColumnIndex).Name
             If columnName = "Nam" Then
-                Dim bc As Color = If(dgvWork(e.ColumnIndex, e.RowIndex).Style.BackColor = colorDic("SelectedNam"), colorDic("Default"), colorDic("SelectedNam"))
-                For Each cell As DataGridViewCell In dgvWork.Rows(e.RowIndex).Cells
-                    cell.Style.BackColor = bc
-                Next
-                If bc = colorDic("Default") Then
-                    setHolidayColumnColor()
-                    dgvWork("Type", e.RowIndex).Style.BackColor = colorDic("Disable")
-                End If
+                '選択行の背景色設定
+                setSelectedBackColor(e.RowIndex)
             End If
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' 名前列選択時の行の背景色設定
+    ''' </summary>
+    ''' <param name="rowIndex">選択行index</param>
+    ''' <remarks></remarks>
+    Private Sub setSelectedBackColor(rowIndex As Integer)
+        Dim setBackColor As Color = If(dgvWork("Nam", rowIndex).Style.BackColor = colorDic("SelectedNam"), colorDic("Default"), colorDic("SelectedNam"))
+        If setBackColor = colorDic("Default") Then
+            For Each cell As DataGridViewCell In dgvWork.Rows(rowIndex).Cells
+                Dim columnName As String = dgvWork.Columns(cell.ColumnIndex).Name
+                If columnName = "Type" Then
+                    cell.Style.BackColor = colorDic("Disable")
+                Else
+                    Dim youbi As String = Util.checkDBNullValue(dgvWork(cell.ColumnIndex, 0).Value)
+                    If youbi = "日" Then
+                        cell.Style.BackColor = colorDic("Holiday")
+                    Else
+                        cell.Style.BackColor = setBackColor
+                    End If
+                End If
+            Next
+        Else
+            For Each cell As DataGridViewCell In dgvWork.Rows(rowIndex).Cells
+                cell.Style.BackColor = setBackColor
+            Next
         End If
     End Sub
 End Class

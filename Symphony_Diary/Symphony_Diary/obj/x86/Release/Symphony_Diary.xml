@@ -739,6 +739,12 @@ Symphony_Diary
 	<param name="sender"></param>
 	<param name="e"></param>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.勤務画面.setSelectedBackColor(System.Int32)">
+	<summary>
+ 名前列選択時の行の背景色設定
+ </summary>
+	<param name="rowIndex">選択行index</param>
+	<remarks></remarks>
 </member>
 </members>
 </doc>
