@@ -156,42 +156,54 @@ Public Class TopForm
                 '特養データコピー確認
                 Dim result As DialogResult = MessageBox.Show("特養の " & ym & " 分をコピーしますか？", "コピー", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
                 If result = Windows.Forms.DialogResult.Yes Then
-                    'コピー
+                    'コピー先データ確認
                     Dim cnn As New ADODB.Connection
                     cnn.Open(DB_Diary)
                     Dim rs As New ADODB.Recordset
-                    Dim sql As String = "select * from KinD where Ym = '" & ym & "' and Hyo = '特養' order by Seq"
+                    Dim sql As String = "select * from KinD where Ym = '" & ym & "' and Hyo = 'ｼｮｰﾄｽﾃｲ' order by Seq"
                     rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockReadOnly)
-                    Dim da As OleDbDataAdapter = New OleDbDataAdapter()
-                    Dim ds As DataSet = New DataSet()
-                    da.Fill(ds, rs, "KinD")
-                    Dim copyDt As DataTable = ds.Tables("KinD")
-                    If copyDt.Rows.Count <= 0 Then
-                        MsgBox("コピー元データが存在しません。", MsgBoxStyle.Exclamation)
-                        cnn.Close()
-                    Else
-                        rs.Open("KinD", cnn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockOptimistic)
-                        For i As Integer = 0 To copyDt.Rows.Count - 1
-                            rs.AddNew()
-                            rs.Fields("Seq").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Seq"))
-                            rs.Fields("Ym").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Ym"))
-                            rs.Fields("Hyo").Value = "ｼｮｰﾄｽﾃｲ"
-                            rs.Fields("Id").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Id"))
-                            rs.Fields("Nam").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Nam"))
-                            rs.Fields("YKei").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("YKei"))
-                            rs.Fields("YSyu").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("YSyu"))
-                            rs.Fields("HKei").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("HKei"))
-                            rs.Fields("HSyu").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("HSyu"))
-                            rs.Fields("Yflg").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Yflg"))
-                            rs.Fields("Hflg").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Hflg"))
-                            For j As Integer = 1 To 31
-                                rs.Fields("Yotei" & j).Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Yotei" & j))
-                                rs.Fields("Henko" & j).Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Henko" & j))
-                            Next
-                        Next
-                        rs.Update()
+                    If rs.RecordCount > 0 Then
+                        MsgBox("コピー先データが存在します。", MsgBoxStyle.Exclamation)
                         rs.Close()
                         cnn.Close()
+                    Else
+                        rs.Close()
+
+                        'コピー
+                        rs = New ADODB.Recordset()
+                        sql = "select * from KinD where Ym = '" & ym & "' and Hyo = '特養' order by Seq"
+                        rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockReadOnly)
+                        Dim da As OleDbDataAdapter = New OleDbDataAdapter()
+                        Dim ds As DataSet = New DataSet()
+                        da.Fill(ds, rs, "KinD")
+                        Dim copyDt As DataTable = ds.Tables("KinD")
+                        If copyDt.Rows.Count <= 0 Then
+                            MsgBox("コピー元データが存在しません。", MsgBoxStyle.Exclamation)
+                            cnn.Close()
+                        Else
+                            rs.Open("KinD", cnn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockOptimistic)
+                            For i As Integer = 0 To copyDt.Rows.Count - 1
+                                rs.AddNew()
+                                rs.Fields("Seq").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Seq"))
+                                rs.Fields("Ym").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Ym"))
+                                rs.Fields("Hyo").Value = "ｼｮｰﾄｽﾃｲ"
+                                rs.Fields("Id").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Id"))
+                                rs.Fields("Nam").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Nam"))
+                                rs.Fields("YKei").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("YKei"))
+                                rs.Fields("YSyu").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("YSyu"))
+                                rs.Fields("HKei").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("HKei"))
+                                rs.Fields("HSyu").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("HSyu"))
+                                rs.Fields("Yflg").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Yflg"))
+                                rs.Fields("Hflg").Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Hflg"))
+                                For j As Integer = 1 To 31
+                                    rs.Fields("Yotei" & j).Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Yotei" & j))
+                                    rs.Fields("Henko" & j).Value = Util.checkDBNullValue(copyDt.Rows(i).Item("Henko" & j))
+                                Next
+                            Next
+                            rs.Update()
+                            rs.Close()
+                            cnn.Close()
+                        End If
                     End If
                 End If
             End If
