@@ -312,7 +312,13 @@ Public Class 勤務項目名マスタ
         '印刷時項目名
         Dim prt As String = prtBox.Text
         If prt = "" Then
-            prt = ent
+            '空白の場合、入力時項目名の頭文字２文字取得
+            Dim entLength As Integer = ent.Length
+            If entLength >= 2 Then
+                prt = ent.Substring(0, 2)
+            Else
+                prt = ent.Substring(0, 1)
+            End If
         End If
 
         '表示順が空の場合
