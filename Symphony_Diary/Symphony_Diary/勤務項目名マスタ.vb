@@ -327,7 +327,7 @@ Public Class 勤務項目名マスタ
         Dim rs As New ADODB.Recordset()
         Dim sql As String
         If seq = "" Then
-            sql = "select top 1 Seq from KmkM order by Seq Desc"
+            sql = "select top 1 Seq from KmkM where Kin = '" & kin & "' order by Seq Desc"
             rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockOptimistic)
             If rs.RecordCount >= 1 Then
                 seq = CInt(rs.Fields("Seq").Value) + 1
