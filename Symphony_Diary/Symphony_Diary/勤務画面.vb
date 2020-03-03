@@ -749,12 +749,12 @@ Public Class 勤務画面
         Else
             rowY.Cells("Tuki").Value = totalY
         End If
-        '変更
-        If totalH = 0.0 Then
-            rowH.Cells("Tuki").Value = ""
-        Else
-            rowH.Cells("Tuki").Value = If(totalY <> totalH, totalH, "")
-        End If
+        '変更(表示はしない)
+        'If totalH = 0.0 Then
+        '    rowH.Cells("Tuki").Value = ""
+        'Else
+        '    rowH.Cells("Tuki").Value = If(totalY <> totalH, totalH, "")
+        'End If
 
         '常勤換算後の人数
         '予定
