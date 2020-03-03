@@ -842,7 +842,7 @@ Public Class 勤務画面
         Else
             '数値以外の場合、ConstMに勤務がある、且つ、公休有休欠勤以外は該当
             work = If(shortWorkDic.ContainsKey(work), shortWorkDic(work), work)
-            If workTimeDic.ContainsKey(work) AndAlso work <> "公休" AndAlso work <> "有休" AndAlso work <> "欠勤" Then
+            If workTimeDic.ContainsKey(work) AndAlso work <> "振替" AndAlso work <> "公休" AndAlso work <> "有休" AndAlso work <> "欠勤" Then
                 Return True
             Else
                 Return False
