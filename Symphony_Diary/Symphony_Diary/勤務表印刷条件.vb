@@ -41,6 +41,9 @@ Public Class 勤務表印刷条件
     '短縮勤務名Dic
     Private shortWorkDic As New Dictionary(Of String, String)
 
+    '勤務表示列(H～AL)
+    Private workColumn() As String = {"H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL"}
+
     ''' <summary>
     ''' コンストラクタ
     ''' </summary>
@@ -416,6 +419,13 @@ Public Class 勤務表印刷条件
         End If
         '曜日行設定
         oSheet.Range("H8", "AL8").Value = youbi
+        For i As Integer = 1 To 31
+            Dim day As String = youbi(i - 1)
+            If day = "日" Then
+                Dim column As String = workColumn(i - 1)
+                oSheet.Range(column & "7", column & "44").Interior.Pattern = 17
+            End If
+        Next
 
         '必要ページ分コピペ
         For i As Integer = 0 To dataList.Count - 2
@@ -772,6 +782,13 @@ Public Class 勤務表印刷条件
         oSheet.Range("AL4").Value = daysInMonth
         '曜日行設定
         oSheet.Range("H8", "AL8").Value = youbi
+        For i As Integer = 1 To 31
+            Dim day As String = youbi(i - 1)
+            If day = "日" Then
+                Dim column As String = workColumn(i - 1)
+                oSheet.Range(column & "7", column & "62").Interior.Pattern = 17
+            End If
+        Next
 
         '必要ページ分コピペ
         For i As Integer = 0 To dataList.Count - 2
@@ -1128,6 +1145,13 @@ Public Class 勤務表印刷条件
         oSheet.Range("AL4").Value = daysInMonth
         '曜日行設定
         oSheet.Range("H8", "AL8").Value = youbi
+        For i As Integer = 1 To 31
+            Dim day As String = youbi(i - 1)
+            If day = "日" Then
+                Dim column As String = workColumn(i - 1)
+                oSheet.Range(column & "7", column & "62").Interior.Pattern = 17
+            End If
+        Next
 
         '必要ページ分コピペ
         For i As Integer = 0 To dataList.Count - 2
@@ -1413,6 +1437,13 @@ Public Class 勤務表印刷条件
         oSheet.Range("AL4").Value = daysInMonth
         '曜日行設定
         oSheet.Range("H8", "AL8").Value = youbi
+        For i As Integer = 1 To 31
+            Dim day As String = youbi(i - 1)
+            If day = "日" Then
+                Dim column As String = workColumn(i - 1)
+                oSheet.Range(column & "7", column & "62").Interior.Pattern = 17
+            End If
+        Next
 
         '必要ページ分コピペ
         For i As Integer = 0 To dataList.Count - 2
