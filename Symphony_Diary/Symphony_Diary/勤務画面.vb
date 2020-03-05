@@ -859,7 +859,7 @@ Public Class 勤務画面
     Private Function canCountWork(work As String) As Boolean
         Dim result As Boolean = False
         Dim convWork As String = If(shortWorkDic.ContainsKey(work), shortWorkDic(work), work)
-        If workTimeDic.ContainsKey(convWork) Then
+        If workTimeDic.ContainsKey(convWork) AndAlso convWork <> "1/3勤" AndAlso convWork <> "1/3半" Then
             Return True
         Else
             If convWork = "有休" Then

@@ -261,7 +261,7 @@ Public Class 勤務表印刷条件
     Private Function canCountWork(work As String) As Boolean
         Dim result As Boolean = False
         Dim convWork As String = If(shortWorkDic.ContainsKey(work), shortWorkDic(work), work)
-        If workTimeDic.ContainsKey(convWork) Then
+        If workTimeDic.ContainsKey(convWork) AndAlso convWork <> "1/3勤" AndAlso convWork <> "1/3半" Then
             Return True
         Else
             If convWork = "有休" Then
@@ -302,8 +302,10 @@ Public Class 勤務表印刷条件
             Return "早遅特"
         ElseIf work = "半Ａ" OrElse work = "半Ｂ" OrElse work = "半勤" OrElse work = "半夜" OrElse work = "半行" Then
             Return "半"
-        ElseIf work = "Ａ勤" OrElse work = "Ｂ勤" OrElse work = "Ｃ勤" OrElse work = "研修" Then
+        ElseIf work = "Ａ勤" OrElse work = "Ｂ勤" OrElse work = "Ｃ勤" OrElse work = "研修" OrElse work = "振替" Then
             Return "ＡＢＣ"
+        ElseIf work = "日直" Then
+            Return "直１２"
         ElseIf work = "深夜" OrElse work = "夜勤" OrElse work = "宿直" OrElse work = "明け" Then
             Return "夜宿明"
         Else
@@ -513,11 +515,6 @@ Public Class 勤務表印刷条件
             For i As Integer = 1 To 31
                 Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
                 Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
-                If writeType = "予定／実績" Then
-                    henko = If(yotei = henko, "", henko)
-                End If
-                dataArray(arrayRowIndex, 5 + i) = yotei
-                dataArray(arrayRowIndex + 1, 5 + i) = henko
                 '集計(職種)
                 If i <= 28 AndAlso canCountWork(yotei) Then
                     Dim cSyu As String = convSyu(syu) '対応する職種に変換
@@ -544,6 +541,11 @@ Public Class 勤務表印刷条件
                         calcSyuDic(cWorkH)(1, i - 1) += 1
                     End If
                 End If
+                If writeType = "予定／実績" Then
+                    henko = If(yotei = henko, "", henko)
+                End If
+                dataArray(arrayRowIndex, 5 + i) = yotei
+                dataArray(arrayRowIndex + 1, 5 + i) = henko
             Next
 
             '月合計(予定行のみ)
@@ -566,19 +568,19 @@ Public Class 勤務表印刷条件
             '予定
             Dim kansanY As String = (Math.Floor((totalY / KANSAN) * 100) / 100).ToString("0.00")
             kansanY = If(CDec(kansanY) > 1.0, "1.00", kansanY)
-            kansanY = If(kei = "常勤専従", "1.00", kansanY)
             If kansanY = "0.00" Then
                 dataArray(arrayRowIndex, 37) = ""
             Else
+                kansanY = If(kei = "常勤専従", "1.00", kansanY)
                 dataArray(arrayRowIndex, 37) = kansanY
             End If
             '変更
             Dim kansanH As String = (Math.Floor((totalH / KANSAN) * 100) / 100).ToString("0.00")
             kansanH = If(CDec(kansanH) > 1.0, "1.00", kansanH)
-            kansanH = If(kei = "常勤専従", "1.00", kansanH)
             If kansanH = "0.00" Then
                 dataArray(arrayRowIndex + 1, 37) = ""
             Else
+                kansanH = If(kei = "常勤専従", "1.00", kansanH)
                 dataArray(arrayRowIndex + 1, 37) = If(kansanY <> kansanH, kansanH, "")
             End If
             '集計用
@@ -876,11 +878,6 @@ Public Class 勤務表印刷条件
             For i As Integer = 1 To 31
                 Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
                 Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
-                If writeType = "予定／実績" Then
-                    henko = If(yotei = henko, "", henko)
-                End If
-                dataArray(arrayRowIndex, 5 + i) = yotei
-                dataArray(arrayRowIndex + 1, 5 + i) = henko
                 '集計(職種)
                 If i <= 28 AndAlso canCountWork(yotei) Then
                     Dim cSyu As String = convSyu(syu) '対応する職種に変換
@@ -907,6 +904,11 @@ Public Class 勤務表印刷条件
                         calcSyuDic(cWorkH)(1, i - 1) += 1
                     End If
                 End If
+                If writeType = "予定／実績" Then
+                    henko = If(yotei = henko, "", henko)
+                End If
+                dataArray(arrayRowIndex, 5 + i) = yotei
+                dataArray(arrayRowIndex + 1, 5 + i) = henko
             Next
 
             '月合計(予定行のみ)
@@ -929,19 +931,19 @@ Public Class 勤務表印刷条件
             '予定
             Dim kansanY As String = (Math.Floor((totalY / KANSAN) * 100) / 100).ToString("0.00")
             kansanY = If(CDec(kansanY) > 1.0, "1.00", kansanY)
-            kansanY = If(kei = "常勤専従", "1.00", kansanY)
             If kansanY = "0.00" Then
                 dataArray(arrayRowIndex, 37) = ""
             Else
+                kansanY = If(kei = "常勤専従", "1.00", kansanY)
                 dataArray(arrayRowIndex, 37) = kansanY
             End If
             '変更
             Dim kansanH As String = (Math.Floor((totalH / KANSAN) * 100) / 100).ToString("0.00")
             kansanH = If(CDec(kansanH) > 1.0, "1.00", kansanH)
-            kansanH = If(kei = "常勤専従", "1.00", kansanH)
             If kansanH = "0.00" Then
                 dataArray(arrayRowIndex + 1, 37) = ""
             Else
+                kansanH = If(kei = "常勤専従", "1.00", kansanH)
                 dataArray(arrayRowIndex + 1, 37) = If(kansanY <> kansanH, kansanH, "")
             End If
             '集計用
@@ -1237,11 +1239,6 @@ Public Class 勤務表印刷条件
             For i As Integer = 1 To 31
                 Dim yotei As String = Util.checkDBNullValue(rs.Fields("Yotei" & i).Value)
                 Dim henko As String = Util.checkDBNullValue(rs.Fields("Henko" & i).Value)
-                If writeType = "予定／実績" Then
-                    henko = If(yotei = henko, "", henko)
-                End If
-                dataArray(arrayRowIndex, 5 + i) = yotei
-                dataArray(arrayRowIndex + 1, 5 + i) = henko
                 '集計(職種)
                 If i <= 28 AndAlso canCountWork(yotei) Then
                     Dim cSyu As String = convSyu(syu) '対応する職種に変換
@@ -1268,6 +1265,11 @@ Public Class 勤務表印刷条件
                         calcSyuDic(cWorkH)(1, i - 1) += 1
                     End If
                 End If
+                If writeType = "予定／実績" Then
+                    henko = If(yotei = henko, "", henko)
+                End If
+                dataArray(arrayRowIndex, 5 + i) = yotei
+                dataArray(arrayRowIndex + 1, 5 + i) = henko
             Next
 
             arrayRowIndex += 2
