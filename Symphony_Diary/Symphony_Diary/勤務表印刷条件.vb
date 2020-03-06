@@ -183,13 +183,13 @@ Public Class 勤務表印刷条件
             If Not printWorkDic.ContainsKey(ent) Then
                 printWorkDic.Add(ent, prt)
             End If
-            If Not shortWorkDic.ContainsKey(prt) Then
-                shortWorkDic.Add(prt, ent)
-            End If
             rs.MoveNext()
         End While
         rs.Close()
         cnn.Close()
+
+        shortWorkDic.Add("早", "早出")
+        shortWorkDic.Add("遅", "遅出")
     End Sub
 
     ''' <summary>

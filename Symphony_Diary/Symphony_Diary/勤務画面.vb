@@ -659,21 +659,9 @@ Public Class 勤務画面
     ''' </summary>
     ''' <remarks></remarks>
     Private Sub loadKmkM()
-        Dim cnn As New ADODB.Connection
-        cnn.Open(TopForm.DB_Diary)
-        Dim rs As New ADODB.Recordset
-        Dim sql As String = "select Ent, Prt from KmkM where Kin = '" & formType & "'"
-        rs.Open(sql, cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly)
-        While Not rs.EOF
-            Dim ent As String = Util.checkDBNullValue(rs.Fields("Ent").Value)
-            Dim prt As String = Util.checkDBNullValue(rs.Fields("Prt").Value)
-            If Not shortWorkDic.ContainsKey(prt) Then
-                shortWorkDic.Add(prt, ent)
-            End If
-            rs.MoveNext()
-        End While
-        rs.Close()
-        cnn.Close()
+        '早、遅のみ対応する文字列に変換するため
+        shortWorkDic.Add("早", "早出")
+        shortWorkDic.Add("遅", "遅出")
     End Sub
 
     ''' <summary>
@@ -840,7 +828,7 @@ Public Class 勤務画面
             '数値の場合、該当
             Return True
         Else
-            '数値以外の場合、ConstMに勤務がある、且つ、公休有休欠勤以外は該当
+            '数値以外の場合、ConstMに勤務がある、且つ、振替公休有休欠勤以外は該当
             work = If(shortWorkDic.ContainsKey(work), shortWorkDic(work), work)
             If workTimeDic.ContainsKey(work) AndAlso work <> "振替" AndAlso work <> "公休" AndAlso work <> "有休" AndAlso work <> "欠勤" Then
                 Return True
