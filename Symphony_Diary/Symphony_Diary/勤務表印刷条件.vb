@@ -630,16 +630,19 @@ Public Class 勤務表印刷条件
 
         '固定文字列設定
         For Each d As String(,) In dataList
-            d(34, 0) = "看護師"
-            d(36, 0) = "介護士　介護職"
-            d(38, 0) = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
-            d(40, 0) = "計"
+            If hyo = "特養" OrElse hyo = "ｼｮｰﾄｽﾃｲ" Then
+                d(34, 0) = "看護師"
+                d(36, 0) = "介護士　介護職"
+                d(38, 0) = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
+                d(40, 0) = "計"
+            End If
             d(42, 5) = "日勤"
             d(44, 5) = "早遅特"
             d(46, 5) = "半"
             d(48, 5) = "直１２"
             d(50, 5) = "ＡＢＣ"
             d(52, 5) = "夜宿明"
+
             '左下勤務名 時間
             For i As Integer = 0 To timeList.Count - 1
                 If i >= 12 Then
@@ -652,26 +655,28 @@ Public Class 勤務表印刷条件
         '貼り付けデータに集計データを代入
         Dim lastData(,) As String = dataList(dataList.Count - 1)
         For i As Integer = 0 To 27
-            '看護師
-            Dim y1 As String = convNumber(calcSyuDic("看護師")(0, i))
-            Dim h1 As String = convNumber(calcSyuDic("看護師")(1, i))
-            lastData(34, 6 + i) = y1
-            lastData(35, 6 + i) = If(y1 = h1, "", h1)
-            '介護士　介護職
-            Dim y2 As String = convNumber(calcSyuDic("介護士　介護職")(0, i))
-            Dim h2 As String = convNumber(calcSyuDic("介護士　介護職")(1, i))
-            lastData(36, 6 + i) = y2
-            lastData(37, 6 + i) = If(y2 = h2, "", h2)
-            '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
-            Dim y3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, i))
-            Dim h3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, i))
-            lastData(38, 6 + i) = y3
-            lastData(39, 6 + i) = If(y3 = h3, "", h3)
-            '計
-            Dim y4 As String = convNumber(calcSyuDic("計")(0, i))
-            Dim h4 As String = convNumber(calcSyuDic("計")(1, i))
-            lastData(40, 6 + i) = y4
-            lastData(41, 6 + i) = If(y4 = h4, "", h4)
+            If hyo = "特養" OrElse hyo = "ｼｮｰﾄｽﾃｲ" Then
+                '看護師
+                Dim y1 As String = convNumber(calcSyuDic("看護師")(0, i))
+                Dim h1 As String = convNumber(calcSyuDic("看護師")(1, i))
+                lastData(34, 6 + i) = y1
+                lastData(35, 6 + i) = If(y1 = h1, "", h1)
+                '介護士　介護職
+                Dim y2 As String = convNumber(calcSyuDic("介護士　介護職")(0, i))
+                Dim h2 As String = convNumber(calcSyuDic("介護士　介護職")(1, i))
+                lastData(36, 6 + i) = y2
+                lastData(37, 6 + i) = If(y2 = h2, "", h2)
+                '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
+                Dim y3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, i))
+                Dim h3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, i))
+                lastData(38, 6 + i) = y3
+                lastData(39, 6 + i) = If(y3 = h3, "", h3)
+                '計
+                Dim y4 As String = convNumber(calcSyuDic("計")(0, i))
+                Dim h4 As String = convNumber(calcSyuDic("計")(1, i))
+                lastData(40, 6 + i) = y4
+                lastData(41, 6 + i) = If(y4 = h4, "", h4)
+            End If
 
             '日勤
             Dim y5 As String = convNumber(calcSyuDic("日勤")(0, i))
@@ -705,26 +710,28 @@ Public Class 勤務表印刷条件
             lastData(53, 6 + i) = If(y10 = h10, "", h10)
         Next
         '常勤換算集計
-        '看護師
-        Dim jy1 As String = convNumber(calcJyoDic("看護師")(0, 0))
-        Dim jh1 As String = convNumber(calcJyoDic("看護師")(1, 0))
-        lastData(34, 37) = jy1
-        lastData(35, 37) = If(jy1 = jh1, "", jh1)
-        '介護士　介護職
-        Dim jy2 As String = convNumber(calcJyoDic("介護士　介護職")(0, 0))
-        Dim jh2 As String = convNumber(calcJyoDic("介護士　介護職")(1, 0))
-        lastData(36, 37) = jy2
-        lastData(37, 37) = If(jy2 = jh2, "", jh2)
-        '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
-        Dim jy3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, 0))
-        Dim jh3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, 0))
-        lastData(38, 37) = jy3
-        lastData(39, 37) = If(jy3 = jh3, "", jh3)
-        '計
-        Dim jy4 As String = convNumber(calcJyoDic("計")(0, 0))
-        Dim jh4 As String = convNumber(calcJyoDic("計")(1, 0))
-        lastData(40, 37) = jy4
-        lastData(41, 37) = If(jy4 = jh4, "", jh4)
+        If hyo = "特養" OrElse hyo = "ｼｮｰﾄｽﾃｲ" Then
+            '看護師
+            Dim jy1 As String = convNumber(calcJyoDic("看護師")(0, 0))
+            Dim jh1 As String = convNumber(calcJyoDic("看護師")(1, 0))
+            lastData(34, 37) = jy1
+            lastData(35, 37) = If(jy1 = jh1, "", jh1)
+            '介護士　介護職
+            Dim jy2 As String = convNumber(calcJyoDic("介護士　介護職")(0, 0))
+            Dim jh2 As String = convNumber(calcJyoDic("介護士　介護職")(1, 0))
+            lastData(36, 37) = jy2
+            lastData(37, 37) = If(jy2 = jh2, "", jh2)
+            '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
+            Dim jy3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, 0))
+            Dim jh3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, 0))
+            lastData(38, 37) = jy3
+            lastData(39, 37) = If(jy3 = jh3, "", jh3)
+            '計
+            Dim jy4 As String = convNumber(calcJyoDic("計")(0, 0))
+            Dim jh4 As String = convNumber(calcJyoDic("計")(1, 0))
+            lastData(40, 37) = jy4
+            lastData(41, 37) = If(jy4 = jh4, "", jh4)
+        End If
 
         'writeType:予定、実績の場合はそれぞれ不必要のデータ削除
         If writeType = "予定" Then
@@ -993,10 +1000,12 @@ Public Class 勤務表印刷条件
 
         '固定文字列設定
         For Each d As String(,) In dataList
-            d(34, 0) = "看護師"
-            d(36, 0) = "介護士　介護職"
-            d(38, 0) = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
-            d(40, 0) = "計"
+            If hyo = "特養" OrElse hyo = "ｼｮｰﾄｽﾃｲ" Then
+                d(34, 0) = "看護師"
+                d(36, 0) = "介護士　介護職"
+                d(38, 0) = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
+                d(40, 0) = "計"
+            End If
             d(42, 5) = "日勤"
             d(44, 5) = "早遅特"
             d(46, 5) = "半"
@@ -1015,26 +1024,28 @@ Public Class 勤務表印刷条件
         '貼り付けデータに集計データを代入
         Dim lastData(,) As String = dataList(dataList.Count - 1)
         For i As Integer = 0 To 27
-            '看護師
-            Dim y1 As String = convNumber(calcSyuDic("看護師")(0, i))
-            Dim h1 As String = convNumber(calcSyuDic("看護師")(1, i))
-            lastData(34, 6 + i) = y1
-            lastData(35, 6 + i) = If(y1 = h1, "", h1)
-            '介護士　介護職
-            Dim y2 As String = convNumber(calcSyuDic("介護士　介護職")(0, i))
-            Dim h2 As String = convNumber(calcSyuDic("介護士　介護職")(1, i))
-            lastData(36, 6 + i) = y2
-            lastData(37, 6 + i) = If(y2 = h2, "", h2)
-            '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
-            Dim y3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, i))
-            Dim h3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, i))
-            lastData(38, 6 + i) = y3
-            lastData(39, 6 + i) = If(y3 = h3, "", h3)
-            '計
-            Dim y4 As String = convNumber(calcSyuDic("計")(0, i))
-            Dim h4 As String = convNumber(calcSyuDic("計")(1, i))
-            lastData(40, 6 + i) = y4
-            lastData(41, 6 + i) = If(y4 = h4, "", h4)
+            If hyo = "特養" OrElse hyo = "ｼｮｰﾄｽﾃｲ" Then
+                '看護師
+                Dim y1 As String = convNumber(calcSyuDic("看護師")(0, i))
+                Dim h1 As String = convNumber(calcSyuDic("看護師")(1, i))
+                lastData(34, 6 + i) = y1
+                lastData(35, 6 + i) = If(y1 = h1, "", h1)
+                '介護士　介護職
+                Dim y2 As String = convNumber(calcSyuDic("介護士　介護職")(0, i))
+                Dim h2 As String = convNumber(calcSyuDic("介護士　介護職")(1, i))
+                lastData(36, 6 + i) = y2
+                lastData(37, 6 + i) = If(y2 = h2, "", h2)
+                '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
+                Dim y3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, i))
+                Dim h3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, i))
+                lastData(38, 6 + i) = y3
+                lastData(39, 6 + i) = If(y3 = h3, "", h3)
+                '計
+                Dim y4 As String = convNumber(calcSyuDic("計")(0, i))
+                Dim h4 As String = convNumber(calcSyuDic("計")(1, i))
+                lastData(40, 6 + i) = y4
+                lastData(41, 6 + i) = If(y4 = h4, "", h4)
+            End If
 
             '日勤
             Dim y5 As String = convNumber(calcSyuDic("日勤")(0, i))
@@ -1068,26 +1079,28 @@ Public Class 勤務表印刷条件
             lastData(53, 6 + i) = If(y10 = h10, "", h10)
         Next
         '常勤換算集計
-        '看護師
-        Dim jy1 As String = convNumber(calcJyoDic("看護師")(0, 0))
-        Dim jh1 As String = convNumber(calcJyoDic("看護師")(1, 0))
-        lastData(34, 37) = jy1
-        lastData(35, 37) = If(jy1 = jh1, "", jh1)
-        '介護士　介護職
-        Dim jy2 As String = convNumber(calcJyoDic("介護士　介護職")(0, 0))
-        Dim jh2 As String = convNumber(calcJyoDic("介護士　介護職")(1, 0))
-        lastData(36, 37) = jy2
-        lastData(37, 37) = If(jy2 = jh2, "", jh2)
-        '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
-        Dim jy3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, 0))
-        Dim jh3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, 0))
-        lastData(38, 37) = jy3
-        lastData(39, 37) = If(jy3 = jh3, "", jh3)
-        '計
-        Dim jy4 As String = convNumber(calcJyoDic("計")(0, 0))
-        Dim jh4 As String = convNumber(calcJyoDic("計")(1, 0))
-        lastData(40, 37) = jy4
-        lastData(41, 37) = If(jy4 = jh4, "", jh4)
+        If hyo = "特養" OrElse hyo = "ｼｮｰﾄｽﾃｲ" Then
+            '看護師
+            Dim jy1 As String = convNumber(calcJyoDic("看護師")(0, 0))
+            Dim jh1 As String = convNumber(calcJyoDic("看護師")(1, 0))
+            lastData(34, 37) = jy1
+            lastData(35, 37) = If(jy1 = jh1, "", jh1)
+            '介護士　介護職
+            Dim jy2 As String = convNumber(calcJyoDic("介護士　介護職")(0, 0))
+            Dim jh2 As String = convNumber(calcJyoDic("介護士　介護職")(1, 0))
+            lastData(36, 37) = jy2
+            lastData(37, 37) = If(jy2 = jh2, "", jh2)
+            '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
+            Dim jy3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, 0))
+            Dim jh3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, 0))
+            lastData(38, 37) = jy3
+            lastData(39, 37) = If(jy3 = jh3, "", jh3)
+            '計
+            Dim jy4 As String = convNumber(calcJyoDic("計")(0, 0))
+            Dim jh4 As String = convNumber(calcJyoDic("計")(1, 0))
+            lastData(40, 37) = jy4
+            lastData(41, 37) = If(jy4 = jh4, "", jh4)
+        End If
 
         'writeType:予定、実績の場合はそれぞれ不必要のデータ削除
         If writeType = "予定" Then
@@ -1306,10 +1319,12 @@ Public Class 勤務表印刷条件
 
         '固定文字列設定
         For Each d As String(,) In dataList
-            d(34, 0) = "看護師"
-            d(36, 0) = "介護士　介護職"
-            d(38, 0) = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
-            d(40, 0) = "計"
+            If hyo = "特養" OrElse hyo = "ｼｮｰﾄｽﾃｲ" Then
+                d(34, 0) = "看護師"
+                d(36, 0) = "介護士　介護職"
+                d(38, 0) = "介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ"
+                d(40, 0) = "計"
+            End If
             d(42, 5) = "日勤"
             d(44, 5) = "早遅特"
             d(46, 5) = "半"
@@ -1328,26 +1343,28 @@ Public Class 勤務表印刷条件
         '貼り付けデータに集計データを代入
         Dim lastData(,) As String = dataList(dataList.Count - 1)
         For i As Integer = 0 To 27
-            '看護師
-            Dim y1 As String = convNumber(calcSyuDic("看護師")(0, i))
-            Dim h1 As String = convNumber(calcSyuDic("看護師")(1, i))
-            lastData(34, 6 + i) = y1
-            lastData(35, 6 + i) = If(y1 = h1, "", h1)
-            '介護士　介護職
-            Dim y2 As String = convNumber(calcSyuDic("介護士　介護職")(0, i))
-            Dim h2 As String = convNumber(calcSyuDic("介護士　介護職")(1, i))
-            lastData(36, 6 + i) = y2
-            lastData(37, 6 + i) = If(y2 = h2, "", h2)
-            '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
-            Dim y3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, i))
-            Dim h3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, i))
-            lastData(38, 6 + i) = y3
-            lastData(39, 6 + i) = If(y3 = h3, "", h3)
-            '計
-            Dim y4 As String = convNumber(calcSyuDic("計")(0, i))
-            Dim h4 As String = convNumber(calcSyuDic("計")(1, i))
-            lastData(40, 6 + i) = y4
-            lastData(41, 6 + i) = If(y4 = h4, "", h4)
+            If hyo = "特養" OrElse hyo = "ｼｮｰﾄｽﾃｲ" Then
+                '看護師
+                Dim y1 As String = convNumber(calcSyuDic("看護師")(0, i))
+                Dim h1 As String = convNumber(calcSyuDic("看護師")(1, i))
+                lastData(34, 6 + i) = y1
+                lastData(35, 6 + i) = If(y1 = h1, "", h1)
+                '介護士　介護職
+                Dim y2 As String = convNumber(calcSyuDic("介護士　介護職")(0, i))
+                Dim h2 As String = convNumber(calcSyuDic("介護士　介護職")(1, i))
+                lastData(36, 6 + i) = y2
+                lastData(37, 6 + i) = If(y2 = h2, "", h2)
+                '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
+                Dim y3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, i))
+                Dim h3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, i))
+                lastData(38, 6 + i) = y3
+                lastData(39, 6 + i) = If(y3 = h3, "", h3)
+                '計
+                Dim y4 As String = convNumber(calcSyuDic("計")(0, i))
+                Dim h4 As String = convNumber(calcSyuDic("計")(1, i))
+                lastData(40, 6 + i) = y4
+                lastData(41, 6 + i) = If(y4 = h4, "", h4)
+            End If
 
             '日勤
             Dim y5 As String = convNumber(calcSyuDic("日勤")(0, i))

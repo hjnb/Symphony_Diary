@@ -1087,26 +1087,28 @@ Public Class 勤務画面
             dgvWork("Y" & i, 168).Value = If(h4 = y4, "", h4)
         Next
         '常勤換算部分
-        '看護師
-        Dim jy1 As String = convNumber(calcJyoDic("看護師")(0, 0))
-        Dim jh1 As String = convNumber(calcJyoDic("看護師")(1, 0))
-        dgvWork("Jyo", 161).Value = jy1
-        dgvWork("Jyo", 162).Value = If(jh1 = jy1, "", jh1)
-        '介護士　介護職
-        Dim jy2 As String = convNumber(calcJyoDic("介護士　介護職")(0, 0))
-        Dim jh2 As String = convNumber(calcJyoDic("介護士　介護職")(1, 0))
-        dgvWork("Jyo", 163).Value = jy2
-        dgvWork("Jyo", 164).Value = If(jh2 = jy2, "", jh2)
-        '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
-        Dim jy3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, 0))
-        Dim jh3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, 0))
-        dgvWork("Jyo", 165).Value = jy3
-        dgvWork("Jyo", 166).Value = If(jh3 = jy3, "", jh3)
-        '計
-        Dim jy4 As String = convNumber(calcJyoDic("計")(0, 0))
-        Dim jh4 As String = convNumber(calcJyoDic("計")(1, 0))
-        dgvWork("Jyo", 167).Value = jy4
-        dgvWork("Jyo", 168).Value = If(jh4 = jy4, "", jh4)
+        If formType = "特養" OrElse formType = "ｼｮｰﾄｽﾃｲ" Then
+            '看護師
+            Dim jy1 As String = convNumber(calcJyoDic("看護師")(0, 0))
+            Dim jh1 As String = convNumber(calcJyoDic("看護師")(1, 0))
+            dgvWork("Jyo", 161).Value = jy1
+            dgvWork("Jyo", 162).Value = If(jh1 = jy1, "", jh1)
+            '介護士　介護職
+            Dim jy2 As String = convNumber(calcJyoDic("介護士　介護職")(0, 0))
+            Dim jh2 As String = convNumber(calcJyoDic("介護士　介護職")(1, 0))
+            dgvWork("Jyo", 163).Value = jy2
+            dgvWork("Jyo", 164).Value = If(jh2 = jy2, "", jh2)
+            '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
+            Dim jy3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, 0))
+            Dim jh3 As String = convNumber(calcJyoDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, 0))
+            dgvWork("Jyo", 165).Value = jy3
+            dgvWork("Jyo", 166).Value = If(jh3 = jy3, "", jh3)
+            '計
+            Dim jy4 As String = convNumber(calcJyoDic("計")(0, 0))
+            Dim jh4 As String = convNumber(calcJyoDic("計")(1, 0))
+            dgvWork("Jyo", 167).Value = jy4
+            dgvWork("Jyo", 168).Value = If(jh4 = jy4, "", jh4)
+        End If
     End Sub
 
     ''' <summary>
