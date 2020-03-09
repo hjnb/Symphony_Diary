@@ -1064,28 +1064,31 @@ Public Class 勤務画面
             End If
         Next
         '集計結果表示
-        For i As Integer = 1 To 28
-            '看護師
-            Dim y1 As String = convNumber(calcSyuDic("看護師")(0, i - 1))
-            Dim h1 As String = convNumber(calcSyuDic("看護師")(1, i - 1))
-            dgvWork("Y" & i, 161).Value = y1
-            dgvWork("Y" & i, 162).Value = If(h1 = y1, "", h1)
-            '介護士　介護職
-            Dim y2 As String = convNumber(calcSyuDic("介護士　介護職")(0, i - 1))
-            Dim h2 As String = convNumber(calcSyuDic("介護士　介護職")(1, i - 1))
-            dgvWork("Y" & i, 163).Value = y2
-            dgvWork("Y" & i, 164).Value = If(h2 = y2, "", h2)
-            '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
-            Dim y3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, i - 1))
-            Dim h3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, i - 1))
-            dgvWork("Y" & i, 165).Value = y3
-            dgvWork("Y" & i, 166).Value = If(h3 = y3, "", h3)
-            '計
-            Dim y4 As String = convNumber(calcSyuDic("計")(0, i - 1))
-            Dim h4 As String = convNumber(calcSyuDic("計")(1, i - 1))
-            dgvWork("Y" & i, 167).Value = y4
-            dgvWork("Y" & i, 168).Value = If(h4 = y4, "", h4)
-        Next
+        If formType = "特養" OrElse formType = "ｼｮｰﾄｽﾃｲ" Then
+            For i As Integer = 1 To 28
+                '看護師
+                Dim y1 As String = convNumber(calcSyuDic("看護師")(0, i - 1))
+                Dim h1 As String = convNumber(calcSyuDic("看護師")(1, i - 1))
+                dgvWork("Y" & i, 161).Value = y1
+                dgvWork("Y" & i, 162).Value = If(h1 = y1, "", h1)
+                '介護士　介護職
+                Dim y2 As String = convNumber(calcSyuDic("介護士　介護職")(0, i - 1))
+                Dim h2 As String = convNumber(calcSyuDic("介護士　介護職")(1, i - 1))
+                dgvWork("Y" & i, 163).Value = y2
+                dgvWork("Y" & i, 164).Value = If(h2 = y2, "", h2)
+                '介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ
+                Dim y3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(0, i - 1))
+                Dim h3 As String = convNumber(calcSyuDic("介護士ﾊﾟｰﾄ　介護職ﾊﾟｰﾄ")(1, i - 1))
+                dgvWork("Y" & i, 165).Value = y3
+                dgvWork("Y" & i, 166).Value = If(h3 = y3, "", h3)
+                '計
+                Dim y4 As String = convNumber(calcSyuDic("計")(0, i - 1))
+                Dim h4 As String = convNumber(calcSyuDic("計")(1, i - 1))
+                dgvWork("Y" & i, 167).Value = y4
+                dgvWork("Y" & i, 168).Value = If(h4 = y4, "", h4)
+            Next
+        End If
+        
         '常勤換算部分
         If formType = "特養" OrElse formType = "ｼｮｰﾄｽﾃｲ" Then
             '看護師
