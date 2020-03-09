@@ -450,7 +450,7 @@ Public Class 勤務画面
                 End If
             Next
             seqCount += 2
-            If seqCount >= INPUT_ROW_COUNT Then
+            If seqCount > INPUT_ROW_COUNT Then
                 Exit While
             End If
             rs.MoveNext()
