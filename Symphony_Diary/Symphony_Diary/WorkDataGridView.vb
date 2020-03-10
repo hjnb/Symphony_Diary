@@ -7,6 +7,8 @@ Public Class WorkDataGridView
 
     Private wordDictionary As Dictionary(Of String, String) '勤務略名dic
 
+    Private inputNumList As New List(Of Integer)
+
     Protected Overrides Sub InitLayout()
         MyBase.InitLayout()
 
@@ -39,9 +41,12 @@ Public Class WorkDataGridView
                     '編集終了時に値の変換処理をする
                     Try
                         '入力文字に対応する勤務略名を選択しているセルに設定
+                        If wordDictionary.ContainsKey(inputStr) AndAlso Not inputNumList.Contains(inputStr) Then
+                            MsgBox("定数登録されていません。", MsgBoxStyle.Exclamation, "Diary")
+                        End If
                         CType(Me.EditingControl, DataGridViewTextBoxEditingControl).Text = wordDictionary(inputStr)
                     Catch ex As KeyNotFoundException
-                        MsgBox("正しく入力して下さい。", MsgBoxStyle.Exclamation, "Work")
+                        MsgBox("正しく入力して下さい。", MsgBoxStyle.Exclamation, "Diary")
                         EndEdit()
                         Return False
                     End Try
@@ -66,10 +71,6 @@ Public Class WorkDataGridView
     Protected Overrides Function ProcessDataGridViewKey(e As System.Windows.Forms.KeyEventArgs) As Boolean
         Dim inputStr As String = Util.checkDBNullValue(Me.CurrentCell.Value)
         If e.KeyCode = Keys.Enter Then
-            'If Me.CurrentCell.RowIndex <= 0 OrElse 51 <= Me.CurrentCell.RowIndex Then
-            '    Return Me.ProcessTabKey(e.KeyCode)
-            'End If
-
             Dim columnName As String = Me.Columns(CurrentCell.ColumnIndex).Name
             If columnName = "Kei" OrElse columnName = "Syu" OrElse columnName = "Nam" Then
                 BeginEdit(True)
@@ -84,9 +85,12 @@ Public Class WorkDataGridView
                     '編集終了時に値の変換処理をする
                     Try
                         '入力文字に対応する勤務略名を選択しているセルに設定
+                        If wordDictionary.ContainsKey(inputStr) AndAlso Not inputNumList.Contains(inputStr) Then
+                            MsgBox("定数登録されていません。", MsgBoxStyle.Exclamation, "Diary")
+                        End If
                         Me.CurrentCell.Value = wordDictionary(inputStr)
                     Catch ex As KeyNotFoundException
-                        MsgBox("正しく入力して下さい。", MsgBoxStyle.Exclamation, "Work")
+                        MsgBox("正しく入力して下さい。", MsgBoxStyle.Exclamation, "Diary")
                         BeginEdit(True)
                         Return False
                     End Try
@@ -219,5 +223,14 @@ Public Class WorkDataGridView
     ''' <remarks></remarks>
     Public Sub setWordDictionary(wordDictionary As Dictionary(Of String, String))
         Me.wordDictionary = wordDictionary
+    End Sub
+
+    ''' <summary>
+    ''' 入力可能な勤務数字リストを設定
+    ''' </summary>
+    ''' <param name="numList"></param>
+    ''' <remarks></remarks>
+    Public Sub setInputNumList(numList As List(Of Integer))
+        Me.inputNumList = numList
     End Sub
 End Class

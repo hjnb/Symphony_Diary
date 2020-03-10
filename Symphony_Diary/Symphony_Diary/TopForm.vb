@@ -63,11 +63,11 @@ Public Class TopForm
         End If
 
         '管理者パスワードフォーム表示
-        Dim passForm As Form = New passwordForm(iniFilePath, 1)
-        If passForm.ShowDialog() <> Windows.Forms.DialogResult.OK Then
-            Me.Close()
-            Exit Sub
-        End If
+        'Dim passForm As Form = New passwordForm(iniFilePath, 1)
+        'If passForm.ShowDialog() <> Windows.Forms.DialogResult.OK Then
+        '    Me.Close()
+        '    Exit Sub
+        'End If
 
         '画面サイズ
         Me.WindowState = FormWindowState.Maximized

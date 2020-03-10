@@ -44,7 +44,7 @@ Public Class 勤務画面
     Private dayCharArray() As String = {"日", "月", "火", "水", "木", "金", "土"}
 
     '勤務
-    Private workDic As New Dictionary(Of String, String) From {{"1", "日勤"}, {"2", "半勤"}, {"3", "早出"}, {"4", "遅出"}, {"5", "Ａ勤"}, {"6", "Ｂ勤"}, {"7", "振替"}, {"8", "夜勤"}, {"9", "宿直"}, {"10", "日直"}, {"11", "Ｃ勤"}, {"12", "明け"}, {"13", "特日"}, {"14", "研修"}, {"15", "深夜"}, {"16", "1/3勤"}, {"17", "1/3半"}, {"18", "日早"}, {"19", "日遅"}, {"20", "遅々"}, {"21", "半Ａ"}, {"22", "半Ｂ"}, {"23", "半夜"}, {"24", "半行"}, {"25", "公休"}, {"26", "有休"}, {"27", "欠勤"}}
+    Private workDic As New Dictionary(Of String, String) From {{"0", ""}, {"1", "日勤"}, {"2", "半勤"}, {"3", "早出"}, {"4", "遅出"}, {"5", "Ａ勤"}, {"6", "Ｂ勤"}, {"7", "振替"}, {"8", "夜勤"}, {"9", "宿直"}, {"10", "日直"}, {"11", "Ｃ勤"}, {"12", "明け"}, {"13", "特日"}, {"14", "研修"}, {"15", "深夜"}, {"16", "1/3勤"}, {"17", "1/3半"}, {"18", "日早"}, {"19", "日遅"}, {"20", "遅々"}, {"21", "半Ａ"}, {"22", "半Ｂ"}, {"23", "半夜"}, {"24", "半行"}, {"25", "公休"}, {"26", "有休"}, {"27", "欠勤"}}
 
     Private workArray() As String = {"日勤", "半勤", "早出", "遅出", "Ａ勤", "Ｂ勤", "振替", "夜勤", "宿直", "日直", "Ｃ勤", "明け", "特日", "研修", "深夜", "1/3勤", "1/3半", "日早", "日遅", "遅々", "半Ａ", "半Ｂ", "半夜", "半行"}
 
@@ -56,6 +56,9 @@ Public Class 勤務画面
 
     'ラベル表示用
     Private labelList As New List(Of String)
+
+    '勤務入力制御用
+    Private workNumList As New List(Of Integer) From {0, 25, 26, 27}
 
     ''' <summary>
     ''' コンストラクタ
@@ -355,6 +358,7 @@ Public Class 勤務画面
         End With
 
         dgvWork.setWordDictionary(workDic)
+        dgvWork.setInputNumList(workNumList)
     End Sub
 
     ''' <summary>
@@ -699,6 +703,7 @@ Public Class 勤務画面
                 workTimeDic.Add(workArray(i - 1), time)
                 If time <> "0" Then
                     labelList.Add(i & " ： " & workArray(i - 1))
+                    workNumList.Add(i)
                 End If
             Next
             rs.MoveNext()

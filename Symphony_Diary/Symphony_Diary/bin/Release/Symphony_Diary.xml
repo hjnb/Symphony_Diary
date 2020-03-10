@@ -40,6 +40,12 @@ Symphony_Diary
  </summary>
 	<param name="wordDictionary"></param>
 	<remarks></remarks>
+</member><member name="M:Symphony_Diary.WorkDataGridView.setInputNumList(System.Collections.Generic.List{System.Int32})">
+	<summary>
+ 入力可能な勤務数字リストを設定
+ </summary>
+	<param name="numList"></param>
+	<remarks></remarks>
 </member><member name="M:Symphony_Diary.Util.EnableDoubleBuffering(System.Windows.Forms.Control)">
 	<summary>
  コントロールのDoubleBufferedプロパティをTrueにする
