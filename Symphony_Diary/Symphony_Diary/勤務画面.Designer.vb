@@ -39,10 +39,10 @@ Partial Class 勤務画面
         '
         'adBox
         '
-        Me.adBox.dateText = "20"
-        Me.adBox.Location = New System.Drawing.Point(30, 25)
+        Me.adBox.dateText = "12"
+        Me.adBox.Location = New System.Drawing.Point(30, 4)
         Me.adBox.Mode = 3
-        Me.adBox.monthText = "01"
+        Me.adBox.monthText = "03"
         Me.adBox.Name = "adBox"
         Me.adBox.Size = New System.Drawing.Size(130, 35)
         Me.adBox.TabIndex = 0
@@ -50,7 +50,7 @@ Partial Class 勤務画面
         '
         'btnDisplay
         '
-        Me.btnDisplay.Location = New System.Drawing.Point(168, 30)
+        Me.btnDisplay.Location = New System.Drawing.Point(168, 9)
         Me.btnDisplay.Name = "btnDisplay"
         Me.btnDisplay.Size = New System.Drawing.Size(50, 25)
         Me.btnDisplay.TabIndex = 1
@@ -59,7 +59,7 @@ Partial Class 勤務画面
         '
         'btnRowInsert
         '
-        Me.btnRowInsert.Location = New System.Drawing.Point(393, 30)
+        Me.btnRowInsert.Location = New System.Drawing.Point(393, 9)
         Me.btnRowInsert.Name = "btnRowInsert"
         Me.btnRowInsert.Size = New System.Drawing.Size(50, 25)
         Me.btnRowInsert.TabIndex = 3
@@ -68,7 +68,7 @@ Partial Class 勤務画面
         '
         'btnRowDelete
         '
-        Me.btnRowDelete.Location = New System.Drawing.Point(444, 30)
+        Me.btnRowDelete.Location = New System.Drawing.Point(444, 9)
         Me.btnRowDelete.Name = "btnRowDelete"
         Me.btnRowDelete.Size = New System.Drawing.Size(50, 25)
         Me.btnRowDelete.TabIndex = 4
@@ -77,7 +77,7 @@ Partial Class 勤務画面
         '
         'btnRegist
         '
-        Me.btnRegist.Location = New System.Drawing.Point(684, 27)
+        Me.btnRegist.Location = New System.Drawing.Point(684, 6)
         Me.btnRegist.Name = "btnRegist"
         Me.btnRegist.Size = New System.Drawing.Size(69, 33)
         Me.btnRegist.TabIndex = 5
@@ -86,7 +86,7 @@ Partial Class 勤務画面
         '
         'btnConv
         '
-        Me.btnConv.Location = New System.Drawing.Point(752, 27)
+        Me.btnConv.Location = New System.Drawing.Point(752, 6)
         Me.btnConv.Name = "btnConv"
         Me.btnConv.Size = New System.Drawing.Size(69, 33)
         Me.btnConv.TabIndex = 6
@@ -95,7 +95,7 @@ Partial Class 勤務画面
         '
         'btnPrint
         '
-        Me.btnPrint.Location = New System.Drawing.Point(888, 27)
+        Me.btnPrint.Location = New System.Drawing.Point(888, 6)
         Me.btnPrint.Name = "btnPrint"
         Me.btnPrint.Size = New System.Drawing.Size(69, 33)
         Me.btnPrint.TabIndex = 8
@@ -104,7 +104,7 @@ Partial Class 勤務画面
         '
         'btnDelete
         '
-        Me.btnDelete.Location = New System.Drawing.Point(820, 27)
+        Me.btnDelete.Location = New System.Drawing.Point(820, 6)
         Me.btnDelete.Name = "btnDelete"
         Me.btnDelete.Size = New System.Drawing.Size(69, 33)
         Me.btnDelete.TabIndex = 7
@@ -113,7 +113,7 @@ Partial Class 勤務画面
         '
         'btnPersonal
         '
-        Me.btnPersonal.Location = New System.Drawing.Point(956, 27)
+        Me.btnPersonal.Location = New System.Drawing.Point(956, 6)
         Me.btnPersonal.Name = "btnPersonal"
         Me.btnPersonal.Size = New System.Drawing.Size(69, 33)
         Me.btnPersonal.TabIndex = 9
@@ -122,7 +122,7 @@ Partial Class 勤務画面
         '
         'labelPanel
         '
-        Me.labelPanel.Location = New System.Drawing.Point(68, 741)
+        Me.labelPanel.Location = New System.Drawing.Point(68, 716)
         Me.labelPanel.Name = "labelPanel"
         Me.labelPanel.Size = New System.Drawing.Size(957, 71)
         Me.labelPanel.TabIndex = 10
@@ -130,7 +130,7 @@ Partial Class 勤務画面
         'dgvWork
         '
         Me.dgvWork.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.dgvWork.Location = New System.Drawing.Point(30, 68)
+        Me.dgvWork.Location = New System.Drawing.Point(30, 44)
         Me.dgvWork.Name = "dgvWork"
         Me.dgvWork.RowTemplate.Height = 21
         Me.dgvWork.Size = New System.Drawing.Size(995, 667)
@@ -140,7 +140,7 @@ Partial Class 勤務画面
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1072, 817)
+        Me.ClientSize = New System.Drawing.Size(1072, 805)
         Me.Controls.Add(Me.labelPanel)
         Me.Controls.Add(Me.btnPersonal)
         Me.Controls.Add(Me.btnPrint)
