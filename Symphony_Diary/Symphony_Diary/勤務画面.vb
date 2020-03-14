@@ -130,7 +130,7 @@ Public Class 勤務画面
         'デフォルト表示　0：ｸﾘｱ、25：公休、26：有休、27：欠勤
         Dim zeroLabel As New Label()
         zeroLabel.ForeColor = System.Drawing.Color.Blue
-        zeroLabel.Location = New System.Drawing.Point(7, 10)
+        zeroLabel.Location = New System.Drawing.Point(7, 5)
         zeroLabel.Name = "label0"
         zeroLabel.Size = New System.Drawing.Size(44, 12)
         zeroLabel.TabIndex = 0
@@ -138,7 +138,7 @@ Public Class 勤務画面
         labelPanel.Controls.Add(zeroLabel)
         Dim label25 As New Label()
         label25.ForeColor = System.Drawing.Color.Blue
-        label25.Location = New System.Drawing.Point(722, 33)
+        label25.Location = New System.Drawing.Point(722, 23)
         label25.Name = "label25"
         label25.Size = New System.Drawing.Size(55, 12)
         label25.TabIndex = 25
@@ -146,7 +146,7 @@ Public Class 勤務画面
         labelPanel.Controls.Add(label25)
         Dim label26 As New Label()
         label26.ForeColor = System.Drawing.Color.Blue
-        label26.Location = New System.Drawing.Point(787, 33)
+        label26.Location = New System.Drawing.Point(787, 23)
         label26.Name = "label26"
         label26.Size = New System.Drawing.Size(55, 12)
         label26.TabIndex = 26
@@ -154,7 +154,7 @@ Public Class 勤務画面
         labelPanel.Controls.Add(label26)
         Dim label27 As New Label()
         label27.ForeColor = System.Drawing.Color.Blue
-        label27.Location = New System.Drawing.Point(852, 33)
+        label27.Location = New System.Drawing.Point(852, 23)
         label27.Name = "label27"
         label27.Size = New System.Drawing.Size(55, 12)
         label27.TabIndex = 27
@@ -171,9 +171,9 @@ Public Class 勤務画面
             workLabel.TabIndex = i * 10
             workLabel.Text = labelList(i - 1)
             If i <= 13 Then
-                workLabel.Location = New System.Drawing.Point(7 + (65 * i), 10)
+                workLabel.Location = New System.Drawing.Point(7 + (65 * i), 5)
             Else
-                workLabel.Location = New System.Drawing.Point(7 + (65 * (i - 13)), 33)
+                workLabel.Location = New System.Drawing.Point(7 + (65 * (i - 13)), 23)
             End If
             labelPanel.Controls.Add(workLabel)
         Next
@@ -197,7 +197,7 @@ Public Class 勤務画面
             .BackgroundColor = Color.FromKnownColor(KnownColor.Control)
             .DefaultCellStyle.SelectionForeColor = Color.Black
             .RowTemplate.Height = 17
-            .ColumnHeadersHeight = 19
+            .ColumnHeadersHeight = 17
             .ShowCellToolTips = False
             .EnableHeadersVisualStyles = False
             .DefaultCellStyle.Font = New Font("MS UI Gothic", 9)
@@ -568,6 +568,10 @@ Public Class 勤務画面
 
             Dim rowJ As DataRow = workDt.NewRow()
             Dim rowY As DataRow = workDt.NewRow()
+            For i As Integer = 0 To workDt.Columns.Count - 1
+                rowJ.Item(i) = ""
+                rowY.Item(i) = ""
+            Next
             rowY("Seq") = selectedRowIndex + 1
 
             '行追加
@@ -626,10 +630,15 @@ Public Class 勤務画面
             Next
 
             '下に２行追加
-            Dim row As DataRow = workDt.NewRow()
-            row("Seq") = INPUT_ROW_COUNT
-            workDt.Rows.InsertAt(workDt.NewRow(), INPUT_ROW_COUNT - 1)
-            workDt.Rows.InsertAt(row, INPUT_ROW_COUNT - 1)
+            Dim rowJ As DataRow = workDt.NewRow()
+            Dim rowY As DataRow = workDt.NewRow()
+            For i As Integer = 0 To workDt.Columns.Count - 1
+                rowJ.Item(i) = ""
+                rowY.Item(i) = ""
+            Next
+            rowY("Seq") = INPUT_ROW_COUNT
+            workDt.Rows.InsertAt(rowJ, INPUT_ROW_COUNT - 1)
+            workDt.Rows.InsertAt(rowY, INPUT_ROW_COUNT - 1)
 
             '追加した行の設定
             dgvWork("Type", INPUT_ROW_COUNT - 1).Style.BackColor = colorDic("Disable")
@@ -1304,12 +1313,12 @@ Public Class 勤務画面
         If e.RowIndex > 0 AndAlso dgvWork.Columns(e.ColumnIndex).Name = "Jyo" Then
             If e.RowIndex Mod 2 = 1 Then
                 '予定行
-                If e.Value = "0.00" Then
+                If Util.checkDBNullValue(e.Value) = "0.00" Then
                     e.Value = ""
                 End If
             Else
                 '変更行
-                If e.Value = "0.00" OrElse e.Value = Util.checkDBNullValue(dgvWork("Jyo", e.RowIndex - 1).Value) Then
+                If Util.checkDBNullValue(e.Value) = "0.00" OrElse Util.checkDBNullValue(e.Value) = Util.checkDBNullValue(dgvWork("Jyo", e.RowIndex - 1).Value) Then
                     e.Value = ""
                 End If
             End If
